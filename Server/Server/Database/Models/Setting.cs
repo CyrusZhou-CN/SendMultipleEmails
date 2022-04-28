@@ -12,28 +12,34 @@ namespace Server.Database.Models
         /// <summary>
         /// 用户名
         /// </summary>
-        public string userId { get; set; }
-        
+        [BsonField("userId")]
+        public string UserId { get; set; }
+
         /// <summary>
         /// 时间间隔最大值
         /// </summary>
-        public double sendInterval_max { get; set; }
+        [BsonField("sendInterval_max")]
+        public double SendInterval_max { get; set; }
 
         /// <summary>
         /// 发送时间间隔最小值
         /// </summary>
-        public double sendInterval_min { get; set; }
+        [BsonField("sendInterval_min")]
+        public double SendInterval_min { get; set; }
 
         // 是否自动发送
-        public bool isAutoResend { get; set; }
+        [BsonField("isAutoResend")]
+        public bool IsAutoResend { get; set; }
 
         /// <summary>
         /// 图文混发
         /// </summary>
-        public bool sendWithImageAndHtml { get; set; }
+        [BsonField("sendWithImageAndHtml")]
+        public bool SendWithImageAndHtml { get; set; }
 
         // 单日最大发件量
-        public int maxEmailsPerDay { get; set; }
+        [BsonField("maxEmailsPerDay")]
+        public int MaxEmailsPerDay { get; set; }
 
         /// <summary>
         /// 生成默认配置
@@ -44,12 +50,12 @@ namespace Server.Database.Models
         {
             return new Setting()
             {
-                userId = userId,
-                maxEmailsPerDay = 40,
-                isAutoResend = true,
-                sendInterval_max = 8,
-                sendInterval_min = 3,
-                sendWithImageAndHtml = false,
+                UserId = userId,
+                MaxEmailsPerDay = 40,
+                IsAutoResend = true,
+                SendInterval_max = 8,
+                SendInterval_min = 3,
+                SendWithImageAndHtml = false,
             };
         }
     }

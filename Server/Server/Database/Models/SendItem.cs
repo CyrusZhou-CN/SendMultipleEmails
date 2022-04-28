@@ -11,53 +11,74 @@ namespace Server.Database.Models
     public class SendItem : AutoObjectId
     {
         // 历史id
-        public string historyId { get; set; }
+        [BsonField("historyId")]
+        public string HistoryId { get; set; }
 
         // 发送者信息
-        public string senderName { get; set; }
-        public string senderEmail { get; set; }
+        [BsonField("senderName")]
+        public string SenderName { get; set; }
+
+        [BsonField("senderEmail")]
+        public string SenderEmail { get; set; }
 
         // 接收者信息
-        public string receiverName { get; set; }
-        public string receiverEmail { get; set; }
+        [BsonField("receiverName")]
+        public string ReceiverName { get; set; }
+
+        [BsonField("receiverEmail")]
+        public string ReceiverEmail { get; set; }
 
         // 抄送人邮箱
-        public List<string> copyToEmails { get; set; }
+        [BsonField("copyToEmails")]
+        public List<string> CopyToEmails { get; set; }
 
         // 邮件主题
-        public string subject { get; set; }
+        [BsonField("subject")]
+        public string Subject { get; set; }
 
         // 邮件 html 内容
-        public string html { get; set; }
+        [BsonField("html")]
+        public string Html { get; set; }
 
         // 进度信息
-        public int index { get; set; }
-        public int total { get; set; }
+        [BsonField("index")]
+        public int Index { get; set; }
+
+        [BsonField("total")]
+        public int Total { get; set; }
 
         // 生成成果
-        public string sendMessage { get; set; }
-        public bool isSent { get; set; }
+        [BsonField("sendMessage")]
+        public string SendMessage { get; set; }
+
+        [BsonField("isSent")]
+        public bool IsSent { get; set; }
 
         // 尝试次数
-        public int tryCount { get; set; }
+        [BsonField("tryCount")]
+        public int TryCount { get; set; }
 
         // 发送时间
-        public DateTime sendDate { get; set; }
+        [BsonField("sendDate")]
+        public DateTime SendDate { get; set; }
 
         // 发送格式
-        public SendItemType sendItemType { get; set; }
+        [BsonField("sendItemType")]
+        public SendItemType SendItemType { get; set; }
 
         /// <summary>
         /// 内容 url
         /// </summary>
-        public string dataUrl { get; set; }
+        [BsonField("dataUrl")]
+        public string DataUrl { get; set; }
 
         // 待发附件
-        public List<EmailAttachment> attachments { get; set; }
+        [BsonField("attachments")]
+        public List<EmailAttachment> Attachments { get; set; }
 
         public override string GetFilterString()
         {
-            return base.GetFilterString() + senderName + senderEmail + receiverEmail + receiverEmail + subject + sendMessage;
+            return base.GetFilterString() + SenderName + SenderEmail + ReceiverEmail + ReceiverEmail + Subject + SendMessage;
         }
     }
 

@@ -7,19 +7,32 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
+    /// <summary>
+    /// 邮箱信息
+    /// </summary>
     public class EmailInfo : AutoObjectId
     {
         /// <summary>
         /// name 具有唯一性
         /// </summary>
-        public string userName { get; set; }
+        [BsonField("userName")]
+        public string UserName { get; set; }
 
-        public string email { get; set; }
-        public string groupId { get; set; }
+        /// <summary>
+        /// 邮箱名称
+        /// </summary>
+        [BsonField("email")]
+        public string Email { get; set; }
+
+        /// <summary>
+        /// 组 Id
+        /// </summary>
+        [BsonField("groupId")]
+        public string GroupId { get; set; }
 
         public override string GetFilterString()
         {
-            return $"{base.GetFilterString()}{userName}{email}";
+            return $"{base.GetFilterString()}{UserName}{Email}";
         }
     }
 }

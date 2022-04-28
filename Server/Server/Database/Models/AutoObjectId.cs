@@ -9,11 +9,11 @@ namespace Server.Database.Models
 {
     public abstract class AutoObjectId
     {
-        [BsonId]
-        public string _id { get; set; }
+        [BsonId,BsonField("_id")]
+        public string Id { get; set; }
         public AutoObjectId()
         {
-            _id = ObjectId.NewObjectId().ToString();
+            Id = ObjectId.NewObjectId().ToString();
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Server.Database.Models
         /// <returns></returns>
         public virtual string GetFilterString()
         {
-            return _id;
+            return Id;
         }
 
         /// <summary>

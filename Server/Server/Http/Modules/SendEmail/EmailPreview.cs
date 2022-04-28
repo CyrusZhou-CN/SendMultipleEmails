@@ -84,12 +84,12 @@ namespace Server.Http.Modules.SendEmail
             Subject = data.SelectToken(Fields.subject).ValueOrDefault(Fields.default_);
             Receivers = data.SelectToken(Fields.receivers).ValueOrDefault(new JArray());
             Data = data.SelectToken(Fields.data).ValueOrDefault(new JArray());            
-            Attachments = data.SelectToken(Fields.attachments).ValueOrDefault(new JArray()).ToList().ConvertAll(item => new EmailAttachment() { fullName = item.ToString() });
+            Attachments = data.SelectToken(Fields.attachments).ValueOrDefault(new JArray()).ToList().ConvertAll(item => new EmailAttachment() { FullName = item.ToString() });
             CopyTo = data.SelectToken(Fields.copyToEmails).ValueOrDefault(new JArray());
 
             string templateId = data.Value<string>(Fields.templateId);
             // 获取模板
-            Template = LiteDb.SingleOrDefault<Template>(t => t._id == templateId);
+            Template = LiteDb.SingleOrDefault<Template>(t => t.Id == templateId);
         }
 
         /// <summary>
@@ -130,14 +130,14 @@ namespace Server.Http.Modules.SendEmail
                     if (string.IsNullOrEmpty(userName)) continue;
 
                     // 从数据库中查找
-                    var receiver = LiteDb.FirstOrDefault<ReceiveBox>(r => r.userName == userName);
+                    var receiver = LiteDb.FirstOrDefault<ReceiveBox>(r => r.UserName == userName);
                     if (receiver != null) receiveBoxes.Add(receiver);
                 }
             }
 
             // 获取全局的抄送人
             List<ReceiveBox> copyToBoxes = TraverseReciveBoxes(CopyTo);
-            var copyToEmails = copyToBoxes.ConvertAll(cb => cb.email);
+            var copyToEmails = copyToBoxes.ConvertAll(cb => cb.Email);
 
             // 开始添加                
             foreach (var re in receiveBoxes)
@@ -145,11 +145,11 @@ namespace Server.Http.Modules.SendEmail
 
                 var item = new SendItem()
                 {
-                    receiverName = re.userName,
-                    receiverEmail = re.email,
+                    ReceiverName = re.UserName,
+                    ReceiverEmail = re.Email,
                 };
 
-                string sendHtml = Template.html;
+                string sendHtml = Template.Html;
                 string subjectTemp = Subject;
 
                 // 处理模板数据
@@ -157,19 +157,19 @@ namespace Server.Http.Modules.SendEmail
                 JObject itemObj = new JObject();
                 if (Data != null && Data.Count > 0)
                 {
-                    if (Data.FirstOrDefault(jt => jt.Value<string>(Fields.userName) == re.userName) is JObject itemDataTemp) itemObj = itemDataTemp;
+                    if (Data.FirstOrDefault(jt => jt.Value<string>(Fields.userName) == re.UserName) is JObject itemDataTemp) itemObj = itemDataTemp;
                 }
 
                 // 添加默认用户名
                 if (!itemObj.ContainsKey(Fields.userName))
                 {
-                    itemObj.Add(new JProperty(Fields.userName, re.userName));
+                    itemObj.Add(new JProperty(Fields.userName, re.UserName));
                 }
 
                 // 添加收件箱
                 if (!itemObj.ContainsKey(Fields.inbox))
                 {
-                    itemObj.Add(new JProperty(Fields.inbox, re.email));
+                    itemObj.Add(new JProperty(Fields.inbox, re.Email));
                 }
 
                 // 获取数据
@@ -195,17 +195,17 @@ namespace Server.Http.Modules.SendEmail
                     if (!string.IsNullOrEmpty(customTemplateName))
                     {
                         // 获取新模板，如果失败，则跳过，不发送
-                        var customTemplate = LiteDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
+                        var customTemplate = LiteDb.SingleOrDefault<Template>(t => t.Name == customTemplateName);
                         if (customTemplate != null)
                         {
-                            sendHtml = customTemplate.html;
+                            sendHtml = customTemplate.Html;
                         }
                     }
                 }
 
                 // 添加附件
                 // 判断是否有自定义附件
-                item.attachments = Attachments;
+                item.Attachments = Attachments;
                 if (keys.Contains(Fields.attachments))
                 {
                     // 中间用分号分隔，然后将 \\ 转成 /
@@ -213,11 +213,11 @@ namespace Server.Http.Modules.SendEmail
                     if (!string.IsNullOrEmpty(attStr))
                     {
                         var attStrArr = attStr.Split(';');
-                        item.attachments = attStrArr.ToList().ConvertAll(att =>
+                        item.Attachments = attStrArr.ToList().ConvertAll(att =>
                         {
 
                             var fullName = att.Replace('\\', '/').Trim();
-                            return new EmailAttachment() { fullName = fullName };
+                            return new EmailAttachment() { FullName = fullName };
 
                         });
                     }
@@ -225,7 +225,7 @@ namespace Server.Http.Modules.SendEmail
 
                 // 添加抄送人
                 // 判断是否有自定义抄送人
-                item.copyToEmails = copyToEmails;
+                item.CopyToEmails = copyToEmails;
                 if (keys.Contains(Fields.copyToEmails))
                 {
                     // 中间用分号分隔
@@ -236,7 +236,7 @@ namespace Server.Http.Modules.SendEmail
                     if (!string.IsNullOrEmpty(attStr))
                     {
                         var attStrArr = attStr.Split(';');
-                        item.copyToEmails = attStrArr.ToList().ConvertAll(att => att.Trim()).FindAll(att =>
+                        item.CopyToEmails = attStrArr.ToList().ConvertAll(att => att.Trim()).FindAll(att =>
                           {
                               return regex.IsMatch(att);
                           });
@@ -254,8 +254,8 @@ namespace Server.Http.Modules.SendEmail
                 }
 
 
-                item.html = sendHtml;
-                item.subject = subjectTemp;
+                item.Html = sendHtml;
+                item.Subject = subjectTemp;
 
                 // 添加到保存的集合中
                 _sendItems.Add(item);
@@ -264,8 +264,8 @@ namespace Server.Http.Modules.SendEmail
             // 添加序号
             for (int i = 0; i < _sendItems.Count; i++)
             {
-                _sendItems[i].index = i;
-                _sendItems[i].total = _sendItems.Count;
+                _sendItems[i].Index = i;
+                _sendItems[i].Total = _sendItems.Count;
             }
 
             PreviewItemCreated(_sendItems, receiveBoxes);
@@ -323,19 +323,19 @@ namespace Server.Http.Modules.SendEmail
                 if (type == Fields.group)
                 {
                     // 找到group下所有的用户
-                    List<ReceiveBox> boxes = LiteDb.Fetch<ReceiveBox>(r => r.groupId == id);
+                    List<ReceiveBox> boxes = LiteDb.Fetch<ReceiveBox>(r => r.GroupId == id);
 
                     // 如果没有，才添加
                     foreach (ReceiveBox box in boxes)
                     {
-                        if (receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
+                        if (receiveBoxes.Find(item => item.Id == box.Id) == null) receiveBoxes.Add(box);
                     }
                 }
                 else
                 {
                     // 选择了单个用户
-                    var box = LiteDb.SingleOrDefault<ReceiveBox>(r => r._id == id);
-                    if (box != null && receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
+                    var box = LiteDb.SingleOrDefault<ReceiveBox>(r => r.Id == id);
+                    if (box != null && receiveBoxes.Find(item => item.Id == box.Id) == null) receiveBoxes.Add(box);
                 }
             }
 

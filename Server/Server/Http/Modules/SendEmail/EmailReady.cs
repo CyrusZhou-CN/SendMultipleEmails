@@ -61,21 +61,21 @@ namespace Server.Http.Modules.SendEmail
             // 添加历史
             HistoryGroup historyGroup = new HistoryGroup()
             {
-                userId = _userId,
-                createDate = DateTime.Now,
-                subject = Subject,
-                data = JsonConvert.SerializeObject(Data),
-                receiverIds = receiveBoxes.ConvertAll(rec => rec._id),
-                templateId = Template._id,
-                templateName = Template.name,
-                senderIds = senders.ConvertAll(s => s._id),
-                sendStatus = SendStatus.Sending,
+                UserId = _userId,
+                CreateDate = DateTime.Now,
+                Subject = Subject,
+                Data = JsonConvert.SerializeObject(Data),
+                ReceiverIds = receiveBoxes.ConvertAll(rec => rec.Id),
+                TemplateId = Template.Id,
+                TemplateName = Template.Name,
+                SenderIds = senders.ConvertAll(s => s.Id),
+                SendStatus = SendStatus.Sending,
             };
 
             LiteDb.Database.GetCollection<HistoryGroup>().Insert(historyGroup);
 
             // 反回发件信息
-            _info.historyId = historyGroup._id;
+            _info.historyId = historyGroup.Id;
 
             // 如果选择发件人，默认从数据中读取发件人，所以选择的发件人数量为0
             if (Receivers == null || Receivers.Count < 1) _info.selectedReceiverCount = 0;
@@ -87,7 +87,7 @@ namespace Server.Http.Modules.SendEmail
             _info.senderCount = senders.Count;
 
             // 将所有的待发信息添加到数据库
-            sendItems.ForEach(item => item.historyId = historyGroup._id);
+            sendItems.ForEach(item => item.HistoryId = historyGroup.Id);
             LiteDb.Database.GetCollection<SendItem>().InsertBulk(sendItems);
         }
 
@@ -108,19 +108,19 @@ namespace Server.Http.Modules.SendEmail
                 if (type == Fields.group)
                 {
                     // 找到group下所有的用户
-                    var boxes = LiteDb.Fetch<SendBox>(r => r.groupId == id);
+                    var boxes = LiteDb.Fetch<SendBox>(r => r.GroupId == id);
 
                     // 如果没有，才添加
                     foreach (var box in boxes)
                     {
-                        if (sendBoxes.Find(item => item._id == box._id) == null) sendBoxes.Add(box);
+                        if (sendBoxes.Find(item => item.Id == box.Id) == null) sendBoxes.Add(box);
                     }
                 }
                 else
                 {
                     // 选择了单个用户
-                    var box = LiteDb.SingleOrDefault<SendBox>(r => r._id == id);
-                    if (box != null && sendBoxes.Find(item => item._id == box._id) == null) sendBoxes.Add(box);
+                    var box = LiteDb.SingleOrDefault<SendBox>(r => r.Id == id);
+                    if (box != null && sendBoxes.Find(item => item.Id == box.Id) == null) sendBoxes.Add(box);
                 }
             }
 

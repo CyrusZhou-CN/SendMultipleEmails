@@ -54,7 +54,7 @@ namespace Server.Http.Modules.SendEmail
 
             // 获取设置
             // 获取设置
-            _setting = _liteDb.SingleOrDefault<Setting>(s => s.userId == userId);
+            _setting = _liteDb.SingleOrDefault<Setting>(s => s.UserId == userId);
 
             _cancellationTokenSource = new CancellationTokenSource();
         }
@@ -76,7 +76,7 @@ namespace Server.Http.Modules.SendEmail
                     // 开始并行发送
                     //确定smtp服务器地址 实例化一个Smtp客户端
                     SmtpClient smtpclient = new SmtpClient();
-                    smtpclient.Host = _sendBox.smtp;
+                    smtpclient.Host = _sendBox.Smtp;
                     //smtpClient.Port = "";//qq邮箱可以不用端口
                     //邮件发送方式  通过网络发送到smtp服务器
                     smtpclient.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -91,22 +91,22 @@ namespace Server.Http.Modules.SendEmail
                         //是否使用默认凭据，若为false，则使用自定义的证书，就是下面的networkCredential实例对象
                         smtpclient.UseDefaultCredentials = false;
                         //指定邮箱账号和密码,需要注意的是，这个密码是你在QQ邮箱设置里开启服务的时候给你的那个授权码
-                        NetworkCredential networkCredential = new NetworkCredential(_sendBox.email, _sendBox.password);
+                        NetworkCredential networkCredential = new NetworkCredential(_sendBox.Email, _sendBox.Password);
                         smtpclient.Credentials = networkCredential;
 
                         //发送邮件
                         smtpclient.Send(mailMessage);
 
                         // 发送成功后，马上从原始数据中移除
-                        var index = sendItemsList.FindIndex(item => item._id == sendItem._id);
+                        var index = sendItemsList.FindIndex(item => item.Id == sendItem.Id);
                         if (index > -1) sendItemsList.RemoveAt(index);
 
                         // 发送成功后，更新数据，更新到数据库
-                        sendItem.senderEmail = _sendBox.email;
-                        sendItem.senderName = _sendBox.userName;
-                        sendItem.isSent = true;
-                        sendItem.sendMessage = "邮件送达";
-                        sendItem.sendDate = DateTime.Now;
+                        sendItem.SenderEmail = _sendBox.Email;
+                        sendItem.SenderName = _sendBox.UserName;
+                        sendItem.IsSent = true;
+                        sendItem.SendMessage = "邮件送达";
+                        sendItem.SendDate = DateTime.Now;
                         _liteDb.Upsert(sendItem);
 
                         // 更新到当前进度中
@@ -127,7 +127,7 @@ namespace Server.Http.Modules.SendEmail
                     catch (Exception ex)
                     {
                         // 超过最大尝试次数就退出
-                        if (sendItem.tryCount > 5)
+                        if (sendItem.TryCount > 5)
                         {
                             // 此时也要更新进度
                             SendCompleted?.Invoke(new SendResult()
@@ -137,19 +137,19 @@ namespace Server.Http.Modules.SendEmail
                                 IsSent = false
                             });
                         }
-                        else if (_setting.isAutoResend) // 重新发送时，才重新推入栈中
+                        else if (_setting.IsAutoResend) // 重新发送时，才重新推入栈中
                         {
                             // 更新状态                      
-                            sendItem.tryCount++;
-                            sendItem.isSent = false;
+                            sendItem.TryCount++;
+                            sendItem.IsSent = false;
 
                             // 重新推入栈中
                             sendItems.Push(sendItem);
                         }
 
                         // 添加失败原因
-                        if (ex.InnerException == null) sendItem.sendMessage = ex.Message;
-                        else sendItem.sendMessage = ex.InnerException.Message;
+                        if (ex.InnerException == null) sendItem.SendMessage = ex.Message;
+                        else sendItem.SendMessage = ex.InnerException.Message;
                         _liteDb.Upsert(sendItem);
 
                         // 标记当前邮件失败次数
@@ -162,7 +162,7 @@ namespace Server.Http.Modules.SendEmail
                         double sleep = new Random().NextDouble() * 3 + 2;
                         if (_setting != null)
                         {
-                            sleep = _setting.sendInterval_min + new Random().NextDouble() * (_setting.sendInterval_max - _setting.sendInterval_min);
+                            sleep = _setting.SendInterval_min + new Random().NextDouble() * (_setting.SendInterval_max - _setting.SendInterval_min);
                         }
 
                         // 线程暂停
@@ -180,7 +180,7 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="sendItem"></param>
         private async Task<bool> ConvertToImage(Setting setting, SendItem sendItem)
         {
-            if (sendItem.sendItemType == SendItemType.dataUrl && setting.sendWithImageAndHtml && string.IsNullOrEmpty(sendItem.dataUrl))
+            if (sendItem.SendItemType == SendItemType.dataUrl && setting.SendWithImageAndHtml && string.IsNullOrEmpty(sendItem.DataUrl))
             {
                 // 从前端转存图片
                 ReceivedMessage message = await SendCallback.Insance.SendAsync(_userId, new Protocol.Response()
@@ -197,7 +197,7 @@ namespace Server.Http.Modules.SendEmail
 
                 dataUrl = dataUrl.Value<string>();
 
-                sendItem.dataUrl = $"<img src=\"{dataUrl}\">";
+                sendItem.DataUrl = $"<img src=\"{dataUrl}\">";
 
                 // 更新保存的数据
                 _liteDb.Update(sendItem);
@@ -225,17 +225,17 @@ namespace Server.Http.Modules.SendEmail
         // 添加附件
         private void AddAttachmenets(MailMessage mail, SendItem sendItem)
         {
-            if (sendItem.attachments == null || sendItem.attachments.Count < 1) return;
+            if (sendItem.Attachments == null || sendItem.Attachments.Count < 1) return;
 
-            for (int i = 0; i < sendItem.attachments.Count; i++)
+            for (int i = 0; i < sendItem.Attachments.Count; i++)
             {
-                string pathFileName = sendItem.attachments[i].fullName.Replace('/', '\\');
+                string pathFileName = sendItem.Attachments[i].FullName.Replace('/', '\\');
                 var fileInfo = new FileInfo(pathFileName);
 
                 if (!fileInfo.Exists)
                 {
-                    sendItem.attachments[i].isSent = false;
-                    sendItem.attachments[i].reason = "文件不存在";
+                    sendItem.Attachments[i].IsSent = false;
+                    sendItem.Attachments[i].Reason = "文件不存在";
                     continue;
                 }
 
@@ -247,14 +247,14 @@ namespace Server.Http.Modules.SendEmail
                 cd.ReadDate = fileInfo.LastAccessTime;//设置附件的访问时间
                 mail.Attachments.Add(attachment);//将附件添加到mailmessage对象
 
-                sendItem.attachments[i].isSent = true;
+                sendItem.Attachments[i].IsSent = true;
             }
         }
 
         // 添加抄送
         private void AddCopyToEmails(MailMessage mail, SendItem sendItem)
         {
-            foreach (var email in sendItem.copyToEmails)
+            foreach (var email in sendItem.CopyToEmails)
             {
                 mail.CC.Add(email);
             }
@@ -275,23 +275,23 @@ namespace Server.Http.Modules.SendEmail
         private async Task<MailMessage> GenerateMailMessage(SendItem sendItem)
         {
             //确定发件地址与收件地址
-            MailAddress sendAddress = new MailAddress(_sendBox.email);
+            MailAddress sendAddress = new MailAddress(_sendBox.Email);
 
             // 判断是否需要转成图片
             await ConvertToImage(_setting, sendItem);
 
-            MailAddress receiveAddress = new MailAddress(sendItem.receiverEmail);
+            MailAddress receiveAddress = new MailAddress(sendItem.ReceiverEmail);
 
             //构造一个Email的Message对象 内容信息
             MailMessage mailMessage = new MailMessage(sendAddress, receiveAddress)
             {
-                Subject = sendItem.subject,
+                Subject = sendItem.Subject,
                 SubjectEncoding = Encoding.UTF8
             };
 
             // 设置发件主体                        
-            if (sendItem.sendItemType == SendItemType.dataUrl && !string.IsNullOrEmpty(sendItem.dataUrl)) mailMessage.Body = sendItem.dataUrl;
-            else mailMessage.Body = sendItem.html;
+            if (sendItem.SendItemType == SendItemType.dataUrl && !string.IsNullOrEmpty(sendItem.DataUrl)) mailMessage.Body = sendItem.DataUrl;
+            else mailMessage.Body = sendItem.Html;
 
             // 发件编码
             mailMessage.BodyEncoding = Encoding.UTF8;

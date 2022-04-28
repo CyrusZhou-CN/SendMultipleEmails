@@ -12,34 +12,47 @@ namespace Server.Database.Models
 {
     public class HistoryGroup:AutoObjectId
     {
-        public string userId { get; set; }
+        [BsonField("userId")]
+        public string UserId { get; set; }
 
         // 发送人的id
-        public List<string> senderIds { get; set; }
+        [BsonField("senderIds")]
+        public List<string> SenderIds { get; set; }
 
         // 收件人的id
-        public List<string> receiverIds { get; set; }
+        [BsonField("receiverIds")]
+        public List<string> ReceiverIds { get; set; }
 
         // 通用的抄送人id
-        public List<string> copyToUserIds { get; set; }
+        [BsonField("copyToUserIds")]
+        public List<string> CopyToUserIds { get; set; }
 
-        public DateTime createDate { get; set; }
+        [BsonField("createDate")]
+        public DateTime CreateDate { get; set; }
 
-        public string subject { get; set; }
-        public string templateId { get; set; }
-        public string templateName { get; set; }
+        [BsonField("subject")]
+        public string Subject { get; set; }
+
+        [BsonField("templateId")]
+        public string TemplateId { get; set; }
+
+        [BsonField("templateName")]
+        public string TemplateName { get; set; }
 
         // json 格式的数据
-        public string data { get; set; }
+        [BsonField("data")]
+        public string Data { get; set; }
 
-        public SendStatus sendStatus { get; set; }
+        [BsonField("sendStatus")]
+        public SendStatus SendStatus { get; set; }
 
         // 临时数据:发送成功的数量
-        public int successCount { get; set; }
+        [BsonField("successCount")]
+        public int SuccessCount { get; set; }
 
         public override string GetFilterString()
         {
-            return base.GetFilterString() + subject + templateName + senderIds.Count + receiverIds.Count;
+            return base.GetFilterString() + Subject + TemplateName + SenderIds.Count + ReceiverIds.Count;
         }
     }
 }

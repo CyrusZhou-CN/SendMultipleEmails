@@ -9,12 +9,19 @@ namespace Server.Database.Models
 {
     public  class User:AutoObjectId
     {
-        public string userId { get; set; }
-        public string password { get; set; }
-        public DateTime createDate { get; set; }
+        [BsonField("userId")]
+        public string UserId { get; set; }
+
+        [BsonField("password")]
+        public string Password { get; set; }
+
+        [BsonField("createDate")]
+        public DateTime CreateDate { get; set; }
+
         /// <summary>
         /// 头像
         /// </summary>
-        public string avatar { get; set; }
+        [BsonField("avatar")]
+        public string Avatar { get; set; }
     }
 }

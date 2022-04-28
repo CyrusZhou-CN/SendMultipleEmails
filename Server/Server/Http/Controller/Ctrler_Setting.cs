@@ -19,7 +19,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/setting")]
         public async Task GetUserSettings()
         {
-            Setting setting = LiteDb.SingleOrDefault<Setting>(s => s.userId == Token.UserId);
+            Setting setting = LiteDb.SingleOrDefault<Setting>(s => s.UserId == Token.UserId);
             await ResponseSuccessAsync(setting);
         }
 
@@ -35,11 +35,11 @@ namespace Server.Http.Controller
             double min = body.SelectToken("sendInterval.min").ValueOrDefault(3d);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new Setting()
             {
-                userId = Token.UserId,
-                sendInterval_max = max,
-                sendInterval_min = min,
+                UserId = Token.UserId,
+                SendInterval_max = max,
+                SendInterval_min = min,
             }, new UpdateOptions() { "sendInterval_max", "sendInterval_min" });
 
             // 返回成功
@@ -58,10 +58,10 @@ namespace Server.Http.Controller
             bool isAutoResend = body.SelectToken("isAutoResend").ValueOrDefault(true);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new Setting()
             {
-                userId = Token.UserId,
-                isAutoResend = isAutoResend,
+                UserId = Token.UserId,
+                IsAutoResend = isAutoResend,
             }, new UpdateOptions() { "isAutoResend" });
 
             // 返回成功
@@ -80,10 +80,10 @@ namespace Server.Http.Controller
             bool sendWithImageAndHtml = body.SelectToken("sendWithImageAndHtml").ValueOrDefault(false);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new Setting()
             {
-                userId = Token.UserId,
-                sendWithImageAndHtml = sendWithImageAndHtml,
+                UserId = Token.UserId,
+                SendWithImageAndHtml = sendWithImageAndHtml,
             }, new UpdateOptions() { "sendWithImageAndHtml" });
 
             // 返回成功
@@ -102,10 +102,10 @@ namespace Server.Http.Controller
             var value = body.SelectToken("maxCount").ValueOrDefault(0);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new Setting()
             {
-                userId = Token.UserId,
-                maxEmailsPerDay = value,
+                UserId = Token.UserId,
+                MaxEmailsPerDay = value,
             }, new UpdateOptions() { "maxEmailsPerDay" });
 
             // 返回成功

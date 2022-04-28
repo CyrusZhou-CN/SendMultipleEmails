@@ -7,6 +7,7 @@ using Server.Database;
 using Server.Http.Extensions;
 using Server.Http.Headers;
 using StyletIoC;
+using Swan.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,7 +94,7 @@ namespace Server.Http.Controller
             Response.ContentType = MimeType.Json;
             using (var writer = HttpContext.OpenResponseText(Encoding.UTF8, true))
             {
-                writer.Write(JsonConvert.SerializeObject(obj));
+                writer.Write(Json.Serialize(obj,JsonSerializerCase.CamelCase));
             }
         }
     }

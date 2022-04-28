@@ -20,9 +20,9 @@ namespace Server.Http.Controller
         {
             // 获取用户名
             var template = Body.ToObject<Template>();
-            template._id = id;
-            template.userId = Token.UserId;
-            template.createDate = DateTime.Now;
+            template.Id = id;
+            template.UserId = Token.UserId;
+            template.CreateDate = DateTime.Now;
 
             LiteDb.Upsert(template);
 
@@ -36,8 +36,8 @@ namespace Server.Http.Controller
         {
             // 获取用户名
             var template = Body.ToObject<Template>();
-            template.userId = Token.UserId;
-            template.createDate = DateTime.Now;
+            template.UserId = Token.UserId;
+            template.CreateDate = DateTime.Now;
 
             LiteDb.Insert(template);
             await ResponseSuccessAsync(template);
@@ -48,7 +48,7 @@ namespace Server.Http.Controller
         public async Task GetTemplates()
         {
             // 获取用户名
-            List<Template> results = LiteDb.Fetch<Template>(t => t.userId == Token.UserId);
+            List<Template> results = LiteDb.Fetch<Template>(t => t.UserId == Token.UserId);
             await ResponseSuccessAsync(results);
         }
 
@@ -57,7 +57,7 @@ namespace Server.Http.Controller
         public async Task GetTemplates(string id)
         {
             // 获取用户名
-            var result = LiteDb.SingleOrDefault<Template>(t => t.userId == Token.UserId && t._id == id);
+            var result = LiteDb.SingleOrDefault<Template>(t => t.UserId == Token.UserId && t.Id == id);
             await ResponseSuccessAsync(result);
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,17 @@ namespace Server.Database.Models
 {
     public class SendBox : ReceiveBox
     {
-        public string password { get; set; }
-        public string smtp { get; set; }
+        [BsonField("password")]
+        public string Password { get; set; }
+
+        [BsonField("smtp")]
+        public string Smtp { get; set; }
 
         /// <summary>
         /// 发件箱设置
         /// </summary>
-        public SendBoxSetting settings { get; set; } = new SendBoxSetting();
+        [BsonField("settings")]
+        public SendBoxSetting Settings { get; set; } = new SendBoxSetting();
 
         /// <summary>
         /// 递增发件量
@@ -24,28 +29,28 @@ namespace Server.Database.Models
         {
             // 判断日期是否是今天，如果不是，则将当天发件数置 0
             string date = DateTime.Now.ToString("yyyy-MM-dd");
-            if (date != settings.recordDate)
+            if (date != Settings.RecordDate)
             {
-                settings.recordDate = date;
-                settings.sentCountToday = 0;
+                Settings.RecordDate = date;
+                Settings.SentCountToday = 0;
             }
 
-            settings.sentCountToday++;
-            settings.sendCountTotal++;
+            Settings.SentCountToday++;
+            Settings.SendCountTotal++;
 
             // 保存到数据库
             liteDb.Update(this);
 
-            int maxEmails = settings.maxEmailsPerDay > 0 ? settings.maxEmailsPerDay : globalSetting.maxEmailsPerDay;
+            int maxEmails = Settings.MaxEmailsPerDay > 0 ? Settings.MaxEmailsPerDay : globalSetting.MaxEmailsPerDay;
 
             if (maxEmails < 1) return true;
 
-            return settings.sendCountTotal <= maxEmails;
+            return Settings.SendCountTotal <= maxEmails;
         }
 
         public override string GetFilterString()
         {
-            return $"{base.GetFilterString()}{smtp}";
+            return $"{base.GetFilterString()}{Smtp}";
         }
     }
 
@@ -55,20 +60,25 @@ namespace Server.Database.Models
     public class SendBoxSetting
     {
         // 是否作为发件人
-        public bool asSender { get; set; } = true;
+        [BsonField("asSender")]
+        public bool AsSender { get; set; } = true;
 
         // 单日最大发件量
-        public int maxEmailsPerDay { get; set; } = 40;
+        [BsonField("maxEmailsPerDay")]
+        public int MaxEmailsPerDay { get; set; } = 40;
 
         // 总发件量
         // 系统自动增加
-        public double sendCountTotal { get; set; }
+        [BsonField("sendCountTotal")]
+        public double SendCountTotal { get; set; }
 
         // 当天发件数
-        public int sentCountToday { get; set; }
+        [BsonField("sentCountToday")]
+        public int SentCountToday { get; set; }
 
         // 记录单日发件的日期
         // 系统自动修改
-        public string recordDate { get; set; }
+        [BsonField("recordDate")]
+        public string RecordDate { get; set; }
     }
 }

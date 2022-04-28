@@ -108,17 +108,17 @@ namespace Server.Http.Controller
         {
             HistoryGroup historyGroup = LiteDb.SingleById<HistoryGroup>(id);
             // 获取成功的数量
-            int successCount = LiteDb.Fetch<SendItem>(s => s.historyId == id && s.isSent).Count;
+            int successCount = LiteDb.Fetch<SendItem>(s => s.HistoryId == id && s.IsSent).Count;
 
             JObject result;
-            if (successCount == historyGroup.receiverIds.Count)
+            if (successCount == historyGroup.ReceiverIds.Count)
             {
-                string msg = $"发送成功！共发送：{successCount}/{historyGroup.receiverIds.Count}";
+                string msg = $"发送成功！共发送：{successCount}/{historyGroup.ReceiverIds.Count}";
                 result = new JObject(new JProperty("message", msg), new JProperty("ok", true));
             }
             else
             {
-                string msg = $"未完全发送，共发送：{successCount}/{historyGroup.receiverIds.Count}。请在发件历史中查询重发";
+                string msg = $"未完全发送，共发送：{successCount}/{historyGroup.ReceiverIds.Count}。请在发件历史中查询重发";
                 result = new JObject(new JProperty("message", msg), new JProperty("ok", false));
             }
             await ResponseSuccessAsync(result);

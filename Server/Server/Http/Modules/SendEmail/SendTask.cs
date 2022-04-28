@@ -95,8 +95,8 @@ namespace Server.Http.Modules.SendEmail
             // 判断是否结束
             if (!SendStatus.HasFlag(SendStatus.SendFinish)) return false;
 
-            var allSendItems = _liteDb.Fetch<SendItem>(item => item.historyId == _currentHistoryGroupId);
-            var sendItems = allSendItems.FindAll(item => !item.isSent);
+            var allSendItems = _liteDb.Fetch<SendItem>(item => item.HistoryId == _currentHistoryGroupId);
+            var sendItems = allSendItems.FindAll(item => !item.IsSent);
             // 判断数量
             if (sendItems.Count < 1)
             {
@@ -126,14 +126,14 @@ namespace Server.Http.Modules.SendEmail
             var history = _liteDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
             if (history == null) return false;
 
-            history.sendStatus = SendStatus;
+            history.SendStatus = SendStatus;
             _liteDb.Update(history);
 
 
             // 判断需要发送的数量
             if (allSendItems.Count < 1)
             {
-                history.sendStatus = SendStatus.SendFinish;
+                history.SendStatus = SendStatus.SendFinish;
                 _liteDb.Update(history);
 
                 // 获取重发完成的信息
@@ -166,10 +166,10 @@ namespace Server.Http.Modules.SendEmail
             if (sendItems.Count < 1) return;
 
             // 获取设置
-            Setting setting = _liteDb.SingleOrDefault<Setting>(s => s.userId == _userId);
+            Setting setting = _liteDb.SingleOrDefault<Setting>(s => s.UserId == _userId);
 
             // 设置发送的内容           
-            if (setting.sendWithImageAndHtml) SendStatus |= SendStatus.AsImage;
+            if (setting.SendWithImageAndHtml) SendStatus |= SendStatus.AsImage;
             else SendStatus |= SendStatus.AsHtml;
 
             // 奇偶混发
@@ -178,9 +178,9 @@ namespace Server.Http.Modules.SendEmail
                 var sendItem = sendItems[index];
                 // 偶数发图片
                 // 如果被设置了发送类型，就按设置的发送类型进行发送
-                if (index % 2 == 0 && setting.sendWithImageAndHtml && sendItem.sendItemType == SendItemType.none)
+                if (index % 2 == 0 && setting.SendWithImageAndHtml && sendItem.SendItemType == SendItemType.none)
                 {
-                    sendItem.sendItemType = SendItemType.dataUrl;
+                    sendItem.SendItemType = SendItemType.dataUrl;
                 }
             }
 
@@ -215,7 +215,7 @@ namespace Server.Http.Modules.SendEmail
             sendItemList.ForEach(item => sendItemStack.Push(item));
 
             // 获取发件人
-            List<SendBox> senders = _liteDb.Fetch<SendBox>(sb => historyGroup.senderIds.Contains(sb._id));
+            List<SendBox> senders = _liteDb.Fetch<SendBox>(sb => historyGroup.SenderIds.Contains(sb.Id));
 
             // 开始发送邮件，采用异步进行发送
             // 一个发件箱对应一个异步
@@ -238,7 +238,7 @@ namespace Server.Http.Modules.SendEmail
                 if (history != null)
                 {
                     // 更新状态
-                    history.sendStatus = SendStatus.SendFinish;
+                    history.SendStatus = SendStatus.SendFinish;
                     _liteDb.Update(history);
                 }
 
@@ -263,10 +263,10 @@ namespace Server.Http.Modules.SendEmail
                 total = SendingProgressInfo.total,
                 index = SendingProgressInfo.index + 1,
                 historyId = _currentHistoryGroupId,
-                receiverEmail = obj.SendItem.receiverEmail,
-                receiverName = obj.SendItem.receiverName,
-                SenderEmail = obj.SendBox.email,
-                SenderName = obj.SendBox.userName
+                receiverEmail = obj.SendItem.ReceiverEmail,
+                receiverName = obj.SendItem.ReceiverName,
+                SenderEmail = obj.SendBox.Email,
+                SenderName = obj.SendBox.UserName
             };
         }
     }

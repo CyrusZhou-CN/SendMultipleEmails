@@ -9,16 +9,22 @@ namespace Server.Database.Models
 {
     public class Group:AutoObjectId
     {
-        public string userId { get; set; }
+        [BsonField("userId")]
+        public string UserId { get; set; }
 
         /// <summary>
         /// 父组
         /// </summary>
-        public string parentId { get; set; }
+        [BsonField("parentId")]
+        public string ParentId { get; set; }
 
-        public string name { get; set; }
-        public string description { get; set; }
+        [BsonField("name")]
+        public string Name { get; set; }
 
-        public string groupType { get; set; } = "default";
+        [BsonField("description")]
+        public string Description { get; set; }
+
+        [BsonField("groupType")]
+        public string GroupType { get; set; } = "default";
     }
 }

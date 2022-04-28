@@ -49,15 +49,15 @@ namespace Server.Http.Controller
             }
 
             // 获取数据库
-            var user = LiteDb.Query<User>().Where(u => u.userId == userId).FirstOrDefault();
+            var user = LiteDb.Query<User>().Where(u => u.UserId == userId).FirstOrDefault();
             if (user == null)
             {
                 // 新建用户
                 LiteDb.Insert(new User()
                 {
-                    userId = userId,
-                    password = password,
-                    createDate = DateTime.Now
+                    UserId = userId,
+                    Password = password,
+                    CreateDate = DateTime.Now
                 });
 
                 // 新建用户后，同时给用户建立默认配置
@@ -66,7 +66,7 @@ namespace Server.Http.Controller
             else
             {
                 // 判断密码正确性
-                if (user.password != password)
+                if (user.Password != password)
                 {
                     await ResponseErrorAsync("密码错误");
                     return;
@@ -98,14 +98,14 @@ namespace Server.Http.Controller
 
 
             // 返回用户信息
-            var user = LiteDb.Query<User>().Where(u => u.userId == jwtToken.UserId).FirstOrDefault();
+            var user = LiteDb.Query<User>().Where(u => u.UserId == jwtToken.UserId).FirstOrDefault();
             if (user == null)
             {
                 await ResponseErrorAsync("未找到用户！");
                 return;
             }
 
-            if (string.IsNullOrEmpty(user.avatar)) user.avatar = uConfig.DefaultAvatar;
+            if (string.IsNullOrEmpty(user.Avatar)) user.Avatar = uConfig.DefaultAvatar;
 
             await ResponseSuccessAsync(user);
         }
@@ -144,7 +144,7 @@ namespace Server.Http.Controller
                 return;
             }
 
-            var user = LiteDb.Fetch<User>(u => u.userId == userId).FirstOrDefault();
+            var user = LiteDb.Fetch<User>(u => u.UserId == userId).FirstOrDefault();
             if (user == null)
             {
                 await ResponseErrorAsync("用户不存在");
@@ -152,9 +152,9 @@ namespace Server.Http.Controller
             }
 
             // 更新头像
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new User()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new User()
             {
-                avatar = avatarUrl,
+                Avatar = avatarUrl,
             }, new UpdateOptions() { Fields.avatar });
 
             await ResponseSuccessAsync("success");

@@ -28,7 +28,7 @@ namespace Server.Http.Controller
             // 找到当前的用户名
             var userId = Token.UserId;
             // 获取用户发送的历史组
-            var historyGroups = LiteDb.Fetch<HistoryGroup>(g => g.userId == userId).ToList();
+            var historyGroups = LiteDb.Fetch<HistoryGroup>(g => g.UserId == userId).ToList();
 
             if (historyGroups.Count < 1)
             {
@@ -39,7 +39,7 @@ namespace Server.Http.Controller
 
 
             // 查找历史组下面的所有的发件
-            var sendItems = LiteDb.Fetch<SendItem>(Query.In(Fields.historyId, new BsonArray(historyGroups.ConvertAll(hg => new BsonValue(hg._id)))));
+            var sendItems = LiteDb.Fetch<SendItem>(Query.In(Fields.historyId, new BsonArray(historyGroups.ConvertAll(hg => new BsonValue(hg.Id)))));
             if (sendItems.Count < 1)
             {
                 // 返回1
@@ -48,7 +48,7 @@ namespace Server.Http.Controller
             }
 
             // 计算比例
-            var successItems = sendItems.FindAll(item => item.isSent);
+            var successItems = sendItems.FindAll(item => item.IsSent);
             await ResponseSuccessAsync(successItems.Count * 1.0 / sendItems.Count);
         }
 
@@ -61,7 +61,7 @@ namespace Server.Http.Controller
             // 找到当前的用户名
             var userId = Token.UserId;
             // 获取用户发送的历史组
-            var historyGroups = LiteDb.Fetch<HistoryGroup>(g => g.userId == userId).ToList();
+            var historyGroups = LiteDb.Fetch<HistoryGroup>(g => g.UserId == userId).ToList();
             var defaultResults = new JArray()
                 {
                    new JObject(){ { "name","未发件"},{ "value",0} }
@@ -82,7 +82,7 @@ namespace Server.Http.Controller
 
 
             // 查找历史组下面的所有的发件
-            var sendItems = LiteDb.Fetch<SendItem>(Query.In(Fields.historyId, new BsonArray(historyGroups.ConvertAll(hg => new BsonValue(hg._id)))));
+            var sendItems = LiteDb.Fetch<SendItem>(Query.In(Fields.historyId, new BsonArray(historyGroups.ConvertAll(hg => new BsonValue(hg.Id)))));
             if (sendItems.Count < 1)
             {
                 // 返回1
@@ -96,7 +96,7 @@ namespace Server.Http.Controller
             foreach (var sendItem in sendItems)
             {
 
-                var emailType = regex.Match(sendItem.receiverEmail);
+                var emailType = regex.Match(sendItem.ReceiverEmail);
                 if (!emailType.Success) continue;
 
                 var typeKey = emailType.Value;
