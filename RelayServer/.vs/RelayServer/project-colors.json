@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "5342ec78-eb7c-4d3d-aced-4d94730cda7a": {
+      "ProjectGuid": "5342ec78-eb7c-4d3d-aced-4d94730cda7a",
+      "DisplayName": "RelayServer",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}

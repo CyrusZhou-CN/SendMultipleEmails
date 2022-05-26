@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace Server.Http.Modules.Websocket
 {
     /// <summary>
-    /// 未使用本模块，使用 Server.Websocket 模块
+    /// 未使用本模块，使用 Websocket 模块
+    /// 该模块为 embedeio 集成，不太好用
     /// </summary>
     public class WsServer : WebSocketModule
     {

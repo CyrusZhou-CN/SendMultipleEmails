@@ -10,93 +10,104 @@ namespace Server.Database.Models
 {
     public class SendItem : AutoObjectId
     {
+        /// <summary>
+        /// 发件类型
+        /// </summary>
+        public SendType SendType { get; set; } = SendType.Html | SendType.Local;
+
         // 历史id
-        [BsonField("historyId")]
-        public string HistoryId { get; set; }
-
-        // 发送者信息
-        [BsonField("senderName")]
-        public string SenderName { get; set; }
-
-        [BsonField("senderEmail")]
-        public string SenderEmail { get; set; }
+        public string TaskId { get; set; }
 
         // 接收者信息
-        [BsonField("receiverName")]
-        public string ReceiverName { get; set; }
-
-        [BsonField("receiverEmail")]
-        public string ReceiverEmail { get; set; }
+        public EmailInfo Receiver { get; set; }
 
         // 抄送人邮箱
-        [BsonField("copyToEmails")]
-        public List<string> CopyToEmails { get; set; }
+        public List<EmailInfo> CopyToEmails { get; set; }
 
         // 邮件主题
-        [BsonField("subject")]
         public string Subject { get; set; }
 
         // 邮件 html 内容
-        [BsonField("html")]
-        public string Html { get; set; }
-
-        // 进度信息
-        [BsonField("index")]
-        public int Index { get; set; }
-
-        [BsonField("total")]
-        public int Total { get; set; }
-
-        // 生成成果
-        [BsonField("sendMessage")]
-        public string SendMessage { get; set; }
-
-        [BsonField("isSent")]
-        public bool IsSent { get; set; }
-
-        // 尝试次数
-        [BsonField("tryCount")]
-        public int TryCount { get; set; }
-
-        // 发送时间
-        [BsonField("sendDate")]
-        public DateTime SendDate { get; set; }
-
-        // 发送格式
-        [BsonField("sendItemType")]
-        public SendItemType SendItemType { get; set; }
-
-        /// <summary>
-        /// 内容 url
-        /// </summary>
-        [BsonField("dataUrl")]
-        public string DataUrl { get; set; }
+        public string HtmlContent { get; set; }
 
         // 待发附件
-        [BsonField("attachments")]
         public List<EmailAttachment> Attachments { get; set; }
+
+        #region 发件状态
+        /// <summary>
+        /// 是否发送
+        /// </summary>
+        public bool IsSent { get; set; }
+
+        // 发送者信息
+        public EmailInfo Sender { get; set; }
+
+        /// <summary>
+        /// 发送成功的时间
+        /// </summary>
+        public DateTime SentDate { get; set; }
+
+        /// <summary>
+        /// 如果是通过或者给远程发送，此处记录其 Id
+        /// 远程发件时，发件的机器Id
+        /// </summary>
+        public string RemoteServerId { get; set; }
+
+        /// <summary>
+        /// 尝试次数
+        /// </summary>
+        public int TryCount { get; set; }
+
+        // 发送结束后的消息
+        public string SentResultMessage { get; set; }
+        #endregion
 
         public override string GetFilterString()
         {
-            return base.GetFilterString() + SenderName + SenderEmail + ReceiverEmail + ReceiverEmail + Subject + SendMessage;
+            StringBuilder builder = new StringBuilder();
+            builder.Append(base.GetFilterString());
+            builder.Append(Sender.Email);
+            builder.Append(Sender.UserName);
+            builder.Append(Receiver.Email);
+            builder.Append(Receiver.UserName);
+            builder.Append(Subject);
+            builder.Append(HtmlContent);
+            builder.Append(SentResultMessage);
+
+            return builder.ToString();           
         }
     }
 
-    public enum SendItemType
+    /// <summary>
+    /// 发送类型
+    /// </summary
+    [Flags]
+    public enum SendType
     {
         /// <summary>
-        /// 无
+        /// 发送内容为 HTML
         /// </summary>
-        none,
+        Html = 1 << 0,
 
         /// <summary>
-        /// html格式
+        /// 发送内容为图片
         /// </summary>
-        html,
+        ImageDataUrl = 1 << 1,
 
         /// <summary>
-        /// 数据 URL
+        /// 本机发送
         /// </summary>
-        dataUrl,
+        Local = 1 << 2,
+
+        /// <summary>
+        /// 远程机器发送
+        /// </summary>
+        SendByRemote = 1 << 3,
+
+        /// <summary>
+        /// 为远程发送
+        /// 其它机器发送给本机进行发送
+        /// </summary>
+        SendForRemote = 1 << 4,
     }
 }

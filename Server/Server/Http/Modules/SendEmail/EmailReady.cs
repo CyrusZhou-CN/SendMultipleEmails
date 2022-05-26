@@ -59,20 +59,20 @@ namespace Server.Http.Modules.SendEmail
             List<SendBox> senders = TraverseSendBoxes(Senders);
 
             // 添加历史
-            HistoryGroup historyGroup = new HistoryGroup()
+            Database.Models.SendTask historyGroup = new Database.Models.SendTask()
             {
                 UserId = _userId,
                 CreateDate = DateTime.Now,
                 Subject = Subject,
                 Data = JsonConvert.SerializeObject(Data),
-                ReceiverIds = receiveBoxes.ConvertAll(rec => rec.Id),
+                ReceiverEmails = receiveBoxes.ConvertAll(rec => rec.Id),
                 TemplateId = Template.Id,
                 TemplateName = Template.Name,
-                SenderIds = senders.ConvertAll(s => s.Id),
-                SendStatus = SendStatus.Sending,
+                SenderEmails = senders.ConvertAll(s => s.Id),
+                Status = SendStatus.Sending,
             };
 
-            LiteDb.Database.GetCollection<HistoryGroup>().Insert(historyGroup);
+            LiteDb.Database.GetCollection<Database.Models.SendTask>().Insert(historyGroup);
 
             // 反回发件信息
             _info.historyId = historyGroup.Id;
@@ -87,7 +87,7 @@ namespace Server.Http.Modules.SendEmail
             _info.senderCount = senders.Count;
 
             // 将所有的待发信息添加到数据库
-            sendItems.ForEach(item => item.HistoryId = historyGroup.Id);
+            sendItems.ForEach(item => item.TaskId = historyGroup.Id);
             LiteDb.Database.GetCollection<SendItem>().InsertBulk(sendItems);
         }
 

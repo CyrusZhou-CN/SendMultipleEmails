@@ -10,21 +10,32 @@ namespace Server.Database.Models
     /// <summary>
     /// 模板集合
     /// </summary>
-    public class Template:AutoObjectId
+    public class Template : AutoObjectId
     {
-        [BsonField("imageUrl")]
+        /// <summary>
+        /// 图片 url
+        /// 如果是一张图片，就通过这个发送
+        /// </summary>
         public string ImageUrl { get; set; }
 
-        [BsonField("html")]
+        /// <summary>
+        /// HTML 内容
+        /// </summary>
         public string Html { get; set; }
 
-        [BsonField("name")]
+        /// <summary>
+        /// 模板名称
+        /// </summary>
         public string Name { get; set; }
 
-        [BsonField("userId")]
+        /// <summary>
+        /// 所属用户名称
+        /// </summary>
         public string UserId { get; set; }
 
-        [BsonField("createDate")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime CreateDate { get; set; }
     }
 }

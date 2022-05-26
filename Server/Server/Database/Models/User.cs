@@ -7,21 +7,29 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public  class User:AutoObjectId
+    /// <summary>
+    /// 用户信息
+    /// </summary>
+    public class User : AutoObjectId
     {
-        [BsonField("userId")]
+        /// <summary>
+        /// 用户名
+        /// </summary>
         public string UserId { get; set; }
 
-        [BsonField("password")]
+        /// <summary>
+        /// 密码，密码要进行加密
+        /// </summary>
         public string Password { get; set; }
 
-        [BsonField("createDate")]
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 头像
         /// </summary>
-        [BsonField("avatar")]
         public string Avatar { get; set; }
     }
 }

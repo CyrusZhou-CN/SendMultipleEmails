@@ -7,11 +7,20 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
+    /// <summary>
+    /// 发件箱
+    /// </summary>
     public class SendBox : ReceiveBox
     {
+        /// <summary>
+        /// 密码
+        /// </summary>
         [BsonField("password")]
         public string Password { get; set; }
 
+        /// <summary>
+        /// Smtp 设置
+        /// </summary>
         [BsonField("smtp")]
         public string Smtp { get; set; }
 
@@ -25,7 +34,7 @@ namespace Server.Database.Models
         /// 递增发件量
         /// </summary>
         /// <returns>true:可以继续发件；false:发件已达到最大数量</returns>
-        public bool IncreaseSentCount(LiteDBManager liteDb, Setting globalSetting)
+        public bool IncreaseSentCount(LiteDBManager liteDb, UserSetting globalSetting)
         {
             // 判断日期是否是今天，如果不是，则将当天发件数置 0
             string date = DateTime.Now.ToString("yyyy-MM-dd");

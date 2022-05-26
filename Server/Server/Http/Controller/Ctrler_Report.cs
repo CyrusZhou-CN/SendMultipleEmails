@@ -28,7 +28,7 @@ namespace Server.Http.Controller
             // 找到当前的用户名
             var userId = Token.UserId;
             // 获取用户发送的历史组
-            var historyGroups = LiteDb.Fetch<HistoryGroup>(g => g.UserId == userId).ToList();
+            var historyGroups = LiteDb.Fetch<SendTask>(g => g.UserId == userId).ToList();
 
             if (historyGroups.Count < 1)
             {
@@ -61,7 +61,7 @@ namespace Server.Http.Controller
             // 找到当前的用户名
             var userId = Token.UserId;
             // 获取用户发送的历史组
-            var historyGroups = LiteDb.Fetch<HistoryGroup>(g => g.UserId == userId).ToList();
+            var historyGroups = LiteDb.Fetch<SendTask>(g => g.UserId == userId).ToList();
             var defaultResults = new JArray()
                 {
                    new JObject(){ { "name","未发件"},{ "value",0} }

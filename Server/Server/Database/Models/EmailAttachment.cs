@@ -12,19 +12,19 @@ namespace Server.Database.Models
     /// </summary>
     public class EmailAttachment
     {
-        [BsonField("fullName")]
+        /// <summary>
+        /// 路径全称
+        /// </summary>
         public string FullName { get; set; }
 
         /// <summary>
-        /// 是否发送成功
+        /// 是否发送
         /// </summary>
-        [BsonField("isSent")]
         public bool IsSent { get; set; }
 
         /// <summary>
         /// 发送失败原因
         /// </summary>
-        [BsonField("reason")]
         public string Reason { get; set; }
     }
 }

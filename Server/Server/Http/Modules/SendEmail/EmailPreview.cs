@@ -19,7 +19,6 @@ namespace Server.Http.Modules.SendEmail
     /// </summary>
     class EmailPreview
     {
-
         /// <summary>
         /// 创建预览
         /// </summary>

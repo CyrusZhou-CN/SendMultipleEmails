@@ -19,7 +19,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/setting")]
         public async Task GetUserSettings()
         {
-            Setting setting = LiteDb.SingleOrDefault<Setting>(s => s.UserId == Token.UserId);
+            UserSetting setting = LiteDb.SingleOrDefault<UserSetting>(s => s.UserId == Token.UserId);
             await ResponseSuccessAsync(setting);
         }
 
@@ -35,7 +35,7 @@ namespace Server.Http.Controller
             double min = body.SelectToken("sendInterval.min").ValueOrDefault(3d);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.UserId == Token.UserId, new Setting()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new UserSetting()
             {
                 UserId = Token.UserId,
                 SendInterval_max = max,
@@ -58,7 +58,7 @@ namespace Server.Http.Controller
             bool isAutoResend = body.SelectToken("isAutoResend").ValueOrDefault(true);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.UserId == Token.UserId, new Setting()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new UserSetting()
             {
                 UserId = Token.UserId,
                 IsAutoResend = isAutoResend,
@@ -80,7 +80,7 @@ namespace Server.Http.Controller
             bool sendWithImageAndHtml = body.SelectToken("sendWithImageAndHtml").ValueOrDefault(false);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.UserId == Token.UserId, new Setting()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new UserSetting()
             {
                 UserId = Token.UserId,
                 SendWithImageAndHtml = sendWithImageAndHtml,
@@ -102,7 +102,7 @@ namespace Server.Http.Controller
             var value = body.SelectToken("maxCount").ValueOrDefault(0);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.UserId == Token.UserId, new Setting()
+            LiteDb.Upsert2(s => s.UserId == Token.UserId, new UserSetting()
             {
                 UserId = Token.UserId,
                 MaxEmailsPerDay = value,

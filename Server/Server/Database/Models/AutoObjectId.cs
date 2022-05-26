@@ -9,7 +9,10 @@ namespace Server.Database.Models
 {
     public abstract class AutoObjectId
     {
-        [BsonId,BsonField("_id")]
+        /// <summary>
+        /// 数据库 _id
+        /// </summary>
+        [BsonId]
         public string Id { get; set; }
         public AutoObjectId()
         {

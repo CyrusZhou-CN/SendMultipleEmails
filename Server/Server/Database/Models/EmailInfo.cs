@@ -15,19 +15,16 @@ namespace Server.Database.Models
         /// <summary>
         /// name 具有唯一性
         /// </summary>
-        [BsonField("userName")]
         public string UserName { get; set; }
 
         /// <summary>
-        /// 邮箱名称
+        /// 邮箱号
         /// </summary>
-        [BsonField("email")]
         public string Email { get; set; }
 
         /// <summary>
-        /// 组 Id
+        /// 邮箱组 Id
         /// </summary>
-        [BsonField("groupId")]
         public string GroupId { get; set; }
 
         public override string GetFilterString()

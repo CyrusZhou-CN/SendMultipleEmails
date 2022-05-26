@@ -27,7 +27,7 @@ namespace Server.Http.Controller
                 await ResponseErrorAsync("请传递组的类型:[send,receive]");
             };
 
-            var results = LiteDb.Fetch<Group>(g => g.GroupType == groupType).ToList();
+            var results = LiteDb.Fetch<EmailGroup>(g => g.GroupType == groupType).ToList();
             await ResponseSuccessAsync(results);
         }
 
@@ -39,7 +39,7 @@ namespace Server.Http.Controller
             var groupType = Body.Value<string>("groupType");
             var description = Body.Value<string>("description");
 
-            var newGroup = new Group()
+            var newGroup = new EmailGroup()
             {
                 UserId = Token.UserId,
                 ParentId = parentId,
@@ -57,7 +57,7 @@ namespace Server.Http.Controller
         public async Task DeleteGroup()
         {
             List<string> ids = Body["groupIds"].ToObject<List<string>>();
-            LiteDb.DeleteMany<Group>(g => ids.Contains(g.Id));
+            LiteDb.DeleteMany<EmailGroup>(g => ids.Contains(g.Id));
             await ResponseSuccessAsync(ids);
         }
 
@@ -67,7 +67,7 @@ namespace Server.Http.Controller
         {
             // 获取所有待更新的key
             List<string> keys = (Body as JObject).Properties().ToList().ConvertAll(p => p.Name);
-            Group group = Body.ToObject<Group>();
+            EmailGroup group = Body.ToObject<EmailGroup>();
             var res = LiteDb.Upsert2(g => g.Id == id, group, new Database.Definitions.UpdateOptions(keys));
             await ResponseSuccessAsync(res);
         }
@@ -77,7 +77,7 @@ namespace Server.Http.Controller
         public async Task NewEmail(string id)
         {
             // 根据id获取组
-            var group = LiteDb.SingleOrDefault<Group>(g => g.Id == id);
+            var group = LiteDb.SingleOrDefault<EmailGroup>(g => g.Id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -104,7 +104,7 @@ namespace Server.Http.Controller
         public async Task NewEmails(string id)
         {
             // 获取所有待更新的key
-            var group = LiteDb.SingleOrDefault<Group>(g => g.Id == id);
+            var group = LiteDb.SingleOrDefault<EmailGroup>(g => g.Id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -134,7 +134,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/groups/{id}/emails/count")]
         public async Task GetEmailsCount(string id)
         {
-            var group = LiteDb.SingleOrDefault<Group>(g => g.Id == id);
+            var group = LiteDb.SingleOrDefault<EmailGroup>(g => g.Id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -161,7 +161,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/groups/{id}/emails/list")]
         public async Task GetEmails(string id)
         {
-            var group = LiteDb.SingleOrDefault<Group>(g => g.Id == id);
+            var group = LiteDb.SingleOrDefault<EmailGroup>(g => g.Id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -225,7 +225,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Delete, "/groups/{id}/emails")]
         public async Task DeleteEmails(string id)
         {
-            var group = LiteDb.SingleOrDefault<Group>($"_id='{id}'");
+            var group = LiteDb.SingleOrDefault<EmailGroup>($"_id='{id}'");
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");

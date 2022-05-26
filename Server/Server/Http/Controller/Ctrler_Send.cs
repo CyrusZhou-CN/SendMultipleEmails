@@ -84,7 +84,7 @@ namespace Server.Http.Controller
         public async Task StartSending(string historyGroupId)
         {
             // 因为创建 history 的时候，检查了发送模块是否进行，所以此处新建发送模块不会造成冲突
-            if (!SendTask.CreateSendTask(historyGroupId, Token.UserId, LiteDb, out string message))
+            if (!Modules.SendEmail.SendTask.CreateSendTask(historyGroupId, Token.UserId, LiteDb, out string message))
             {
                 await ResponseErrorAsync(message);
                 return;
@@ -106,19 +106,19 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/send/history/{id}/result")]
         public async Task GetHistoryResult(string id)
         {
-            HistoryGroup historyGroup = LiteDb.SingleById<HistoryGroup>(id);
+            Database.Models.SendTask historyGroup = LiteDb.SingleById<Database.Models.SendTask>(id);
             // 获取成功的数量
-            int successCount = LiteDb.Fetch<SendItem>(s => s.HistoryId == id && s.IsSent).Count;
+            int successCount = LiteDb.Fetch<SendItem>(s => s.TaskId == id && s.IsSent).Count;
 
             JObject result;
-            if (successCount == historyGroup.ReceiverIds.Count)
+            if (successCount == historyGroup.ReceiverEmails.Count)
             {
-                string msg = $"发送成功！共发送：{successCount}/{historyGroup.ReceiverIds.Count}";
+                string msg = $"发送成功！共发送：{successCount}/{historyGroup.ReceiverEmails.Count}";
                 result = new JObject(new JProperty("message", msg), new JProperty("ok", true));
             }
             else
             {
-                string msg = $"未完全发送，共发送：{successCount}/{historyGroup.ReceiverIds.Count}。请在发件历史中查询重发";
+                string msg = $"未完全发送，共发送：{successCount}/{historyGroup.ReceiverEmails.Count}。请在发件历史中查询重发";
                 result = new JObject(new JProperty("message", msg), new JProperty("ok", false));
             }
             await ResponseSuccessAsync(result);

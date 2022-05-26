@@ -68,15 +68,19 @@
     <Compile Include="Database\Definitions\UpdateOptions.cs" />
     <Compile Include="Database\Extensions\Ex_LiteRepository.cs" />
     <Compile Include="Database\Extensions\Ex_Query.cs" />
+    <Compile Include="Database\Models\AdminUser.cs" />
     <Compile Include="Database\Models\EmailAttachment.cs" />
     <Compile Include="Database\Models\AutoObjectId.cs" />
     <Compile Include="Database\Models\EmailInfo.cs" />
-    <Compile Include="Database\Models\Group.cs" />
-    <Compile Include="Database\Models\HistoryGroup.cs" />
+    <Compile Include="Database\Models\EmailGroup.cs" />
+    <Compile Include="Database\Models\ProxySendItem.cs" />
+    <Compile Include="Database\Models\RemoteServer.cs" />
+    <Compile Include="Database\Models\SendTask.cs" />
     <Compile Include="Database\Models\ReceiveBox.cs" />
     <Compile Include="Database\Models\SendBox.cs" />
     <Compile Include="Database\Models\SendItem.cs" />
-    <Compile Include="Database\Models\Setting.cs" />
+    <Compile Include="Database\Models\SystemSetting.cs" />
+    <Compile Include="Database\Models\UserSetting.cs" />
     <Compile Include="Database\Models\Template.cs" />
     <Compile Include="Database\Models\User.cs" />
     <Compile Include="Database\LiteDBManager.cs" />
@@ -153,6 +157,7 @@
     <None Include="Config\log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Http\Modules\SendEmail\readme.md" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -200,6 +205,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Http\Modules\Email\" />
     <Folder Include="Websocket\Extensions\" />
   </ItemGroup>
   <ItemGroup>

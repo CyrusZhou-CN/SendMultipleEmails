@@ -24,7 +24,7 @@ namespace Server.Http.Controller
         {
             var data = Body.ToObject<PageQuery>();
             // 进行筛选
-            var histories = LiteDb.Fetch<HistoryGroup>(h => h.UserId == Token.UserId);
+            var histories = LiteDb.Fetch<SendTask>(h => h.UserId == Token.UserId);
 
             var count = histories.GetPageDatasCount(data.filter);
 
@@ -40,7 +40,7 @@ namespace Server.Http.Controller
             var regex = new Regex(data.filter.filter);
 
             // 进行筛选
-            var histories = LiteDb.Fetch<HistoryGroup>(h => h.UserId == Token.UserId);
+            var histories = LiteDb.Fetch<SendTask>(h => h.UserId == Token.UserId);
 
             var results = histories.GetPageDatas(data.filter, data.pagination);
 
@@ -52,10 +52,10 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/histories/{historyId}")]
         public async Task GetHistory(string historyId)
         {
-            var history = LiteDb.SingleById<HistoryGroup>(historyId);
+            var history = LiteDb.SingleById<SendTask>(historyId);
 
             // 获取成功的数量
-            history.SuccessCount = LiteDb.Fetch<SendItem>(s => s.HistoryId == history.Id && s.IsSent).Count;
+            history.SuccessCount = LiteDb.Fetch<SendItem>(s => s.TaskId == history.Id && s.IsSent).Count;
 
 
             // 获取状态
@@ -69,7 +69,7 @@ namespace Server.Http.Controller
             var data = Body.ToObject<PageQuery>();
 
             // 进行筛选
-            var sendItems = LiteDb.Fetch<SendItem>(s => s.HistoryId == historyId);
+            var sendItems = LiteDb.Fetch<SendItem>(s => s.TaskId == historyId);
 
             var count = sendItems.GetPageDatasCount(data.filter);
 
@@ -84,7 +84,7 @@ namespace Server.Http.Controller
             var data = Body.ToObject<PageQuery>();
 
             // 进行筛选
-            var sendItems = LiteDb.Fetch<SendItem>(s => s.HistoryId == historyId);
+            var sendItems = LiteDb.Fetch<SendItem>(s => s.TaskId == historyId);
                
             var results = sendItems.GetPageDatas(data.filter,data.pagination);
 
@@ -97,10 +97,10 @@ namespace Server.Http.Controller
         public async Task DeleteHistoryGroup(string historyId)
         {
             // 删除发送记录
-            LiteDb.DeleteMany<SendItem>(item => item.HistoryId == historyId);
+            LiteDb.DeleteMany<SendItem>(item => item.TaskId == historyId);
 
             // 删除组
-            LiteDb.Delete<HistoryGroup>(historyId);
+            LiteDb.Delete<SendTask>(historyId);
 
             // 获取状态
             await ResponseSuccessAsync(true);

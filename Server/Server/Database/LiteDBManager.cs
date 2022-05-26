@@ -9,9 +9,16 @@ using System.Threading.Tasks;
 
 namespace Server.Database
 {
+    /// <summary>
+    /// 数据库
+    /// </summary>
     public class LiteDBManager : LiteRepository
     {
-        private UserConfig _config;
+        /// <summary>
+        /// 数据库静态引用
+        /// </summary>
+        public static LiteDBManager Instance { get; private set; } 
+
         /// <summary>
         /// 数据库操作
         /// </summary>
@@ -21,7 +28,7 @@ namespace Server.Database
             Upgrade = true
         })
         {
-            _config = config;
+            Instance = this;
         }
     }
 }

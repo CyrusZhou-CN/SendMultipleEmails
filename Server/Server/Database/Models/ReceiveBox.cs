@@ -11,5 +11,6 @@ namespace Server.Database.Models
     /// </summary>
     public class ReceiveBox:EmailInfo
     {
+
     }
 }

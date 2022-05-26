@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "L1BWD5xelCE/bg+T+vEVFd/YwZYXjj8gixehCfcLnn80S+ZXdQhvdi6c+LggbKjNtH9nvgouuslbxWbTSEQ4PQ==",
+  "success": true,
+  "projectFilePath": "D:\\Personal\\Attempt\\SendMultipleEmails\\RelayServer\\RelayServer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\galens\\.nuget\\packages\\litedb\\5.0.11\\litedb.5.0.11.nupkg.sha512",
+    "C:\\Users\\galens\\.nuget\\packages\\microsoft.netcore.platforms\\3.0.0\\microsoft.netcore.platforms.3.0.0.nupkg.sha512",
+    "C:\\Users\\galens\\.nuget\\packages\\microsoft.win32.systemevents\\4.6.0\\microsoft.win32.systemevents.4.6.0.nupkg.sha512",
+    "C:\\Users\\galens\\.nuget\\packages\\stylet\\1.3.6\\stylet.1.3.6.nupkg.sha512",
+    "C:\\Users\\galens\\.nuget\\packages\\system.drawing.common\\4.6.0\\system.drawing.common.4.6.0.nupkg.sha512"
+  ],
+  "logs": []
+}

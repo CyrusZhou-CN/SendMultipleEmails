@@ -33,7 +33,7 @@ namespace Server.Http.Modules.SendEmail
         private string _userId;
         private SendBox _sendBox;
         private LiteDBManager _liteDb;
-        private Setting _setting;
+        private UserSetting _setting;
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -54,7 +54,7 @@ namespace Server.Http.Modules.SendEmail
 
             // 获取设置
             // 获取设置
-            _setting = _liteDb.SingleOrDefault<Setting>(s => s.UserId == userId);
+            _setting = _liteDb.SingleOrDefault<UserSetting>(s => s.UserId == userId);
 
             _cancellationTokenSource = new CancellationTokenSource();
         }
@@ -105,7 +105,7 @@ namespace Server.Http.Modules.SendEmail
                         sendItem.SenderEmail = _sendBox.Email;
                         sendItem.SenderName = _sendBox.UserName;
                         sendItem.IsSent = true;
-                        sendItem.SendMessage = "邮件送达";
+                        sendItem.SentResultMessage = "邮件送达";
                         sendItem.SendDate = DateTime.Now;
                         _liteDb.Upsert(sendItem);
 
@@ -148,8 +148,8 @@ namespace Server.Http.Modules.SendEmail
                         }
 
                         // 添加失败原因
-                        if (ex.InnerException == null) sendItem.SendMessage = ex.Message;
-                        else sendItem.SendMessage = ex.InnerException.Message;
+                        if (ex.InnerException == null) sendItem.SentResultMessage = ex.Message;
+                        else sendItem.SentResultMessage = ex.InnerException.Message;
                         _liteDb.Upsert(sendItem);
 
                         // 标记当前邮件失败次数
@@ -178,7 +178,7 @@ namespace Server.Http.Modules.SendEmail
         /// 将发送内容转成图片
         /// </summary>
         /// <param name="sendItem"></param>
-        private async Task<bool> ConvertToImage(Setting setting, SendItem sendItem)
+        private async Task<bool> ConvertToImage(UserSetting setting, SendItem sendItem)
         {
             if (sendItem.SendItemType == SendItemType.dataUrl && setting.SendWithImageAndHtml && string.IsNullOrEmpty(sendItem.DataUrl))
             {
