@@ -74,6 +74,7 @@
     <Compile Include="Database\Models\EmailInfo.cs" />
     <Compile Include="Database\Models\EmailGroup.cs" />
     <Compile Include="Database\Models\ProxySendItem.cs" />
+    <Compile Include="Database\Models\RelayServer.cs" />
     <Compile Include="Database\Models\RemoteServer.cs" />
     <Compile Include="Database\Models\SendTask.cs" />
     <Compile Include="Database\Models\ReceiveBox.cs" />
@@ -162,6 +163,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,11 @@ namespace Server.Database.Models
         /// 在程序启动时，需要检查数据库版本是否匹配
         /// </summary>
         public LiteDbVersion LiteDbVersion { get; set; }
+
+        /// <summary>
+        /// 当前发件服务的id
+        /// </summary>
+        public string ClientId { get; set; }= ObjectId.NewObjectId().ToString();
     }
 
     /// <summary>

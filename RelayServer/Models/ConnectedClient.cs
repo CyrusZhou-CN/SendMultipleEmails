@@ -8,14 +8,19 @@ namespace RelayServer.Models
 {
     /// <summary>
     /// 已经连接的客户端
+    /// 非数据库定义
     /// </summary>
     internal class ConnectedClient
     {
         /// <summary>
         /// Id
         /// </summary>
-        public string Id { get;private set; } 
+        public string? Id { get;private set; } 
 
-        public string 
+        /// <summary>
+        /// 描述
+        /// </summary>
+
+        public string? Description { get; set; }
     }
 }
