@@ -9,16 +9,15 @@ namespace Server.Database.Models
 {
     public class SendBox : ReceiveBox
     {
-        [BsonField("password")]
+       
         public string Password { get; set; }
 
-        [BsonField("smtp")]
+
         public string Smtp { get; set; }
 
         /// <summary>
         /// 发件箱设置
-        /// </summary>
-        [BsonField("settings")]
+        /// </summary>       
         public SendBoxSetting Settings { get; set; } = new SendBoxSetting();
 
         /// <summary>

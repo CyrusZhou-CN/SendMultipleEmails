@@ -1,5 +1,6 @@
 ﻿using EmbedIO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,10 @@ namespace Server.Http.Controller
             Response.ContentType = MimeType.Json;
             using (var writer = HttpContext.OpenResponseText(Encoding.UTF8, true))
             {
-                await writer.WriteAsync(JsonConvert.SerializeObject(obj));
+                await writer.WriteAsync(JsonConvert.SerializeObject(obj,new JsonSerializerSettings()
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                }));
             }
         }
 

@@ -16,10 +16,11 @@ namespace Server.Database
         /// 数据库操作
         /// </summary>
         public LiteDBManager(UserConfig config) : base(new ConnectionString()
-        {
-            Filename = config.LiteDbPath,
-            Upgrade = true
-        })
+            {
+                Filename = config.LiteDbPath,
+                Upgrade = true
+            }, new BsonMapper() { }.UseCamelCase()
+        )
         {
             _config = config;
         }

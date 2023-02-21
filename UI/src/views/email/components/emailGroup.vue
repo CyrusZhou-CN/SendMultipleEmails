@@ -71,11 +71,11 @@
           >
             <q-list bordered class="rounded-borders text-primary" dense>
               <q-item
-                clickable
                 v-if="groupsData.length === 0"
                 v-close-popup
-                @click="showNewGroupDialog(null)"
+                clickable
                 dense
+                @click="showNewGroupDialog(null)"
               >
                 <q-item-section>添加组</q-item-section>
               </q-item>
@@ -155,6 +155,8 @@ export default {
 
   computed: {
     groupsData() {
+      if (this.groupsOrigin.length < 1) return []
+
       // 将所有的组解析成树的结构
       const ltt = new LTT(this.groupsOrigin, {
         key_id: '_id',
@@ -171,7 +173,7 @@ export default {
 
   watch: {
     filterTreeText(val) {
-      this.$refs.groupTree.filter(val)
+      // this.$refs.groupTree.filter(val)
     }
   },
 
@@ -181,8 +183,9 @@ export default {
 
     this.groupsOrigin = res.data
     // 选择第一个
-    if (this.groupsOrigin && this.groupsOrigin.length > 0)
+    if (this.groupsOrigin && this.groupsOrigin.length > 0) {
       this.selectedNode = this.groupsOrigin[0]._id
+    }
   },
 
   methods: {

@@ -24,7 +24,6 @@ namespace Server.Config
         public UserConfig()
         {
             // 读取配置文件，如果有的话，会覆盖原来的配置
-
             // 检查磁盘目录是否存在，不存在要新建
             string dirPath = Path.GetDirectoryName(LiteDbPath);
             Directory.CreateDirectory(dirPath);

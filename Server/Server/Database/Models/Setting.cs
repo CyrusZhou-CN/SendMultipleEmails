@@ -12,33 +12,27 @@ namespace Server.Database.Models
         /// <summary>
         /// 用户名
         /// </summary>
-        [BsonField("userId")]
         public string UserId { get; set; }
 
         /// <summary>
         /// 时间间隔最大值
         /// </summary>
-        [BsonField("sendInterval_max")]
         public double SendInterval_max { get; set; }
 
         /// <summary>
         /// 发送时间间隔最小值
         /// </summary>
-        [BsonField("sendInterval_min")]
         public double SendInterval_min { get; set; }
 
         // 是否自动发送
-        [BsonField("isAutoResend")]
         public bool IsAutoResend { get; set; }
 
         /// <summary>
         /// 图文混发
         /// </summary>
-        [BsonField("sendWithImageAndHtml")]
         public bool SendWithImageAndHtml { get; set; }
 
         // 单日最大发件量
-        [BsonField("maxEmailsPerDay")]
         public int MaxEmailsPerDay { get; set; }
 
         /// <summary>
