@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Uamazing.SME.Server.Execute
+namespace Uamazing.SME.Server.Model
 {
-    public enum CommandTable
+    public class InBoxGroup : Group
     {
-        None,
+
     }
 }

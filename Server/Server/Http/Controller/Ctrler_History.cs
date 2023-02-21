@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Server.Http.Controller
+namespace Uamazing.SME.Server.Http.Controller
 {
     /// <summary>
     /// 发件历史

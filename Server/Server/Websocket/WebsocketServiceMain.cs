@@ -11,7 +11,7 @@ using System.IO;
 using Server.Config;
 using StyletIoC;
 
-namespace Server.Websocket
+namespace Uamazing.SME.Server.Websocket
 {
     internal class WebsocketServiceMain
     {

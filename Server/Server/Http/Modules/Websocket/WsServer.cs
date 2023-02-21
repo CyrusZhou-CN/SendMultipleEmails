@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Modules.Websocket
+namespace Uamazing.SME.Server.Http.Modules.Websocket
 {
     /// <summary>
     /// 未使用本模块，使用 Server.Websocket 模块

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace Server.Websocket.AsyncWebsocket
+namespace Uamazing.SME.Server.Websocket.AsyncWebsocket
 {
     class CallbackOption<T>
     {

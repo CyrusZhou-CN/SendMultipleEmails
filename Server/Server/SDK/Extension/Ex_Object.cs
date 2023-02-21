@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.SDK.Extension
+namespace Uamazing.SME.Server.SDK.Extension
 {
     public static class Ex_Object
     {

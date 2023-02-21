@@ -9,7 +9,7 @@ using Server.Config;
 using Server.Http;
 using Server.Websocket.Temp;
 
-namespace Server
+namespace Uamazing.SME.Server
 {
     public class Bootstrapper : Bootstrapper<ShellViewModel>
     {

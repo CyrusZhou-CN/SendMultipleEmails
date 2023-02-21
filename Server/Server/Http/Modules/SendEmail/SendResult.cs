@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Modules.SendEmail
+namespace Uamazing.SME.Server.Http.Modules.SendEmail
 {
     /// <summary>
     /// 发送结果数据

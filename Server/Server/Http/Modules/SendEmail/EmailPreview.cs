@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Server.Http.Modules.SendEmail
+namespace Uamazing.SME.Server.Http.Modules.SendEmail
 {
     /// <summary>
     /// 邮箱预览

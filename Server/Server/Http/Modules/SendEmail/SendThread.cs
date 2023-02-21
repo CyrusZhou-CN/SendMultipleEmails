@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Server.Http.Modules.SendEmail
+namespace Uamazing.SME.Server.Http.Modules.SendEmail
 {
     /// <summary>
     /// 发送线程

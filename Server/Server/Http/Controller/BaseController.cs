@@ -15,7 +15,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Controller
+namespace Uamazing.SME.Server.Http.Controller
 {
     public abstract class BaseController : WebApiController
     {

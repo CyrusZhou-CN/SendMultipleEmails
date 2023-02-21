@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{90CD3129-9CAA-4AF0-BFD1-EFF5F9340626}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Server</RootNamespace>
+    <RootNamespace>Uamazing.SME.Server</RootNamespace>
     <AssemblyName>邮件批量发送</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -68,17 +68,18 @@
     <Compile Include="Database\Definitions\UpdateOptions.cs" />
     <Compile Include="Database\Extensions\Ex_LiteRepository.cs" />
     <Compile Include="Database\Extensions\Ex_Query.cs" />
-    <Compile Include="Database\Models\EmailAttachment.cs" />
-    <Compile Include="Database\Models\AutoObjectId.cs" />
-    <Compile Include="Database\Models\EmailInfo.cs" />
-    <Compile Include="Database\Models\Group.cs" />
-    <Compile Include="Database\Models\HistoryGroup.cs" />
-    <Compile Include="Database\Models\ReceiveBox.cs" />
-    <Compile Include="Database\Models\SendBox.cs" />
-    <Compile Include="Database\Models\SendItem.cs" />
-    <Compile Include="Database\Models\Setting.cs" />
-    <Compile Include="Database\Models\Template.cs" />
-    <Compile Include="Database\Models\User.cs" />
+    <Compile Include="Model\AutoObjectId.cs" />
+    <Compile Include="Model\EmailInfo.cs" />
+    <Compile Include="Model\Group.cs" />
+    <Compile Include="Model\HistoryGroup.cs" />
+    <Compile Include="Model\InBox.cs" />
+    <Compile Include="Model\InBoxGroup.cs" />
+    <Compile Include="Model\OutBox.cs" />
+    <Compile Include="Model\OutBoxGroup.cs" />
+    <Compile Include="Model\SendItem.cs" />
+    <Compile Include="Model\Setting.cs" />
+    <Compile Include="Model\Template.cs" />
+    <Compile Include="Model\User.cs" />
     <Compile Include="Database\LiteDBManager.cs" />
     <Compile Include="Http\Controller\BaseControllerAsync.cs" />
     <Compile Include="Http\Controller\Ctrler_Group.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Http\Extensions\HttpContextExtensions.cs" />
     <Compile Include="Http\Extensions\WebServerExtensions.cs" />
     <Compile Include="Http\Definitions\SendStatus.cs" />
+    <Compile Include="Model\UserLinking.cs" />
     <Compile Include="SDK\Extension\Ex_Json.cs" />
     <Compile Include="SDK\Extension\Ex_Object.cs" />
     <Compile Include="Websocket\AsyncWebsocket\CallbackOption.cs" />
@@ -200,6 +202,8 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Database\LiteDB\" />
+    <Folder Include="Database\Models\" />
     <Folder Include="Websocket\Extensions\" />
   </ItemGroup>
   <ItemGroup>

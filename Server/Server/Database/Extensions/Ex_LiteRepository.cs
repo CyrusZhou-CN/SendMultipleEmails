@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database.Extensions
+namespace Uamazing.SME.Server.Database.Extensions
 {
     public static class Ex_LiteRepository
     {

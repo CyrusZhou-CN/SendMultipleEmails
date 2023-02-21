@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Uamazing.SME.Server.Http.Modules.SendEmail
+namespace Uamazing.SME.Server.Model
 {
     /// <summary>
-    /// 定时发送
-    /// 程序启动时，要打开定时任务
+    /// 收件箱
     /// </summary>
-    class ScheduleSending
+    public class InBox : EmailInfo
     {
-        
     }
 }

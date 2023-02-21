@@ -9,7 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Server.Protocol
+namespace Uamazing.SME.Server.Protocol
 {
     public class ReceivedMessage
     {

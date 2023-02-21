@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Websocket.Commands
+namespace Uamazing.SME.Server.Websocket.Commands
 {
     class Login : IWebsocketCommand
     {

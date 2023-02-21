@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database.Models
+namespace Uamazing.SME.Server.Model
 {
     public abstract class AutoObjectId
     {
@@ -13,6 +13,7 @@ namespace Server.Database.Models
         public string Id { get; set; }
         public AutoObjectId()
         {
+            // 必须要用字符串当 id,方便格式化给前端使用
             Id = ObjectId.NewObjectId().ToString();
         }
 

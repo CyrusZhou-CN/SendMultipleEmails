@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Protocol
+namespace Uamazing.SME.Server.Protocol
 {
     /// <summary>
     /// get 时传递

@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database.Models
+namespace Uamazing.SME.Server.Model
 {
-    public class SendItem : AutoObjectId
+    public class SendItem : UserLinking
     {
         // 历史id
        

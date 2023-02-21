@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database.Models
+namespace Uamazing.SME.Server.Database.Models
 {
     public class HistoryGroup:AutoObjectId
     {

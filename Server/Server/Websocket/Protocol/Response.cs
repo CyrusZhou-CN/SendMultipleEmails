@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Server.Protocol
+namespace Uamazing.SME.Server.Protocol
 {
     /// <summary>
     /// 返回时传递

@@ -3,7 +3,7 @@ using Server.Config;
 using Server.Http;
 using Stylet;
 
-namespace Server.Pages
+namespace Uamazing.SME.Server.Pages
 {
     public class ShellViewModel : Screen
     {        

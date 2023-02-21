@@ -9,7 +9,7 @@ using Server.Websocket.Temp;
 using System.Threading.Tasks;
 using Server.Websocket.AsyncWebsocket;
 
-namespace Server.Execute
+namespace Uamazing.SME.Server.Execute
 {
     /// <summary>
     /// 单例

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database
+namespace Uamazing.SME.Server.Database
 {
     public class LiteDBManager : LiteRepository
     {

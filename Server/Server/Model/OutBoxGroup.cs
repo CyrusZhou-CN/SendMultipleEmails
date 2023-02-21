@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database.Models
+namespace Uamazing.SME.Server.Model
 {
-    /// <summary>
-    /// 收件箱
-    /// </summary>
-    public class ReceiveBox:EmailInfo
+    public class OutBoxGroup:Group
     {
+
     }
 }

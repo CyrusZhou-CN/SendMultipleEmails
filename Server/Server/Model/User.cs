@@ -4,15 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Uamazing.SME.Server.Model;
 
-namespace Server.Database.Models
+namespace Uamazing.SME.Server.Models
 {
-    public class User : AutoObjectId
+    /// <summary>
+    /// 用户表
+    /// </summary>
+    public class User : UserLinking
     {
-        public string UserId { get; set; }
-
+        /// <summary>
+        /// 密码
+        /// </summary>
         public string Password { get; set; }
 
+        /// <summary>
+        /// 创建日期
+        /// </summary>
         public DateTime CreateDate { get; set; }
 
         /// <summary>

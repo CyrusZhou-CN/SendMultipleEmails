@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Server.Http.Controller
+namespace Uamazing.SME.Server.Http.Controller
 {
     public class Home : BaseController
     {

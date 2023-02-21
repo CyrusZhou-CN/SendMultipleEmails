@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Server.Database.Extensions
+namespace Uamazing.SME.Server.Database.Extensions
 {
     internal static class Ex_Query
     {

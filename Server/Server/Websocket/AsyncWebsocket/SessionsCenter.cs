@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Websocket.Temp
+namespace Uamazing.SME.Server.Websocket.Temp
 {
     /// <summary>
     /// 保存用户的 session 方便在 http 中调用

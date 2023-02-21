@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Config
+namespace Uamazing.SME.Server.Config
 {
    public  class UserConfig
     {

@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 using Server.Http.Modules.SendEmail;
 using Microsoft.Web.WebView2.Wpf;
 
-namespace Server.Http.Controller
+namespace Uamazing.SME.Server.Http.Controller
 {
     /// <summary>
     /// 本类主要用于发送，一次只能一个发送任务

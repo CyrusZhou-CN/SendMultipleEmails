@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Server
+namespace Uamazing.SME.Server
 {
     /// <summary>
     /// App.xaml 的交互逻辑

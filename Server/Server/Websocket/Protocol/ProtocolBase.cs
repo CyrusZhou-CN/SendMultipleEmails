@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Protocol
+namespace Uamazing.SME.Server.Protocol
 {
    public class ProtocolBase
     {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Modules
+namespace Uamazing.SME.Server.Http.Modules
 {
     // 参考 https://github.com/unosquare/embedio/wiki/EmbedIO-and-IoC-containers#using-ioc-in-your-modules
     public class IoCModule : WebModuleBase

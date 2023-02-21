@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Response
+namespace Uamazing.SME.Server.Http.Response
 {
     public class HttpResponse
     {

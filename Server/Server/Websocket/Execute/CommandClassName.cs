@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Execute
+namespace Uamazing.SME.Server.Execute
 {
     /// <summary>
     /// 命令类的键值

@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Group = Server.Database.Models.Group;
 
-namespace Server.Http.Modules.SendEmail
+namespace Uamazing.SME.Server.Http.Modules.SendEmail
 {
     /// <summary>
     /// 发件中心

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Definitions
+namespace Uamazing.SME.Server.Http.Definitions
 {
     [Flags]
     public enum SendStatus

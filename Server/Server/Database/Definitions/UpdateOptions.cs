@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database.Definitions
+namespace Uamazing.SME.Server.Database.Definitions
 {
     public class UpdateOptions : List<string>
     {

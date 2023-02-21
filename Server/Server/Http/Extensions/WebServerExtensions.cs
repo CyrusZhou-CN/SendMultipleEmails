@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Extensions
+namespace Uamazing.SME.Server.Http.Extensions
 {
     public static class WebServerExtensions
     {

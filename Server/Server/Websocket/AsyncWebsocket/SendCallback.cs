@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Websocket.Temp
+namespace Uamazing.SME.Server.Websocket.Temp
 {
     class SendCallback : Dictionary<string, CallbackOption<ReceivedMessage>>
     {

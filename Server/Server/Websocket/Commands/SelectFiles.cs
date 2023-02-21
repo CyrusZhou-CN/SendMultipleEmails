@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Server.Websocket.Commands
+namespace Uamazing.SME.Server.Websocket.Commands
 {
     class SelectFiles : IWebsocketCommand
     {

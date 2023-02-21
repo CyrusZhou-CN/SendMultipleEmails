@@ -5,18 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database.Models
+namespace Uamazing.SME.Server.Model
 {
     /// <summary>
     /// 邮箱信息
     /// </summary>
-    public class EmailInfo : AutoObjectId
+    public class EmailInfo : UserLinking
     {
-        /// <summary>
-        /// 称呼
-        /// </summary>
-        public string UserName { get; set; }
-
         /// <summary>
         /// 邮箱名称
         /// 具有唯一性
@@ -24,7 +19,13 @@ namespace Server.Database.Models
         public string Email { get; set; }
 
         /// <summary>
-        /// 组 Id
+        /// 姓名
+        /// </summary>
+        public string UserName { get; set; }
+
+
+        /// <summary>
+        /// 邮箱组 id
         /// </summary>
         public string GroupId { get; set; }
 

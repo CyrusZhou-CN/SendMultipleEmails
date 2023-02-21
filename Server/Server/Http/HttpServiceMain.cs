@@ -13,7 +13,7 @@ using StyletIoC;
 using Server.Http.Extensions;
 using LiteDB;
 
-namespace Server.Http
+namespace Uamazing.SME.Server.Http
 {
     class HttpServiceMain
     {

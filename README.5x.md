@@ -48,6 +48,21 @@
 
 ## 开发架构
 
+### 目录约定
+
+| 目录名     | 作用          |
+| ---------- | ------------- |
+| Config     | 配置相关      |
+| Core       | 发件内核      |
+| Service    | 数据库适配器  |
+| Model      | 数据库类      |
+| Utils      | 功能类        |
+| Pages      | WPF 页面      |
+| Controller | 路由          |
+| Websocket  | websocket相关 |
+
+
+
 ### 整体架构
 
 ### 发件模块

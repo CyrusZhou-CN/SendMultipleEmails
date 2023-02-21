@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Headers
+namespace Uamazing.SME.Server.Http.Headers
 {
     public class JwtToken
     {
