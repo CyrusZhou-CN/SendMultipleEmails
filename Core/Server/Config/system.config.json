@@ -1,0 +1,28 @@
+{
+  "system": {
+    "name": "SendMultipleEmails",
+    "icon": ""
+  },
+  "resource": {
+    "path": "resource"
+  },
+  "http": {
+    "port": 22345,
+    "statickName": "public",
+    "baseRoute": "/api/v1",
+    "tokenSecret": "helloworld01"
+  },
+  "websocket": {
+    "port": 22345
+  },
+  "database": {
+    "liteDbPath": "data/litedb.db"
+  },
+  "logger": {
+    "httpLogPath": "log/sme.http.log",
+    "log4netPath": "log/sme.stdout.log"
+  },
+  "user": {
+    "cachePath": "users/{0}"
+  }
+}
