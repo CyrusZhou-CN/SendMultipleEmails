@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Uamazing.SME.Server.Config
 {
-    internal class SytemConfig
+    internal class SystemConfig 
     {
     }
 }

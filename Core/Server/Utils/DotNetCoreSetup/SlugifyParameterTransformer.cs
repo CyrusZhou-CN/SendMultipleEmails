@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Uamazing.SME.Server.Utils.Route
+namespace Uamazing.SME.Server.Utils.DotNetCoreSetup
 {
     public class SlugifyParameterTransformer : IOutboundParameterTransformer
     {

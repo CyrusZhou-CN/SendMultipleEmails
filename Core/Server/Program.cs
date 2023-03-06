@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Uamazing.SME.Server.Utils.Route;
+using Uamazing.SME.Server.Config;
+using Uamazing.SME.Server.Utils.DotNetCoreSetup;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -13,12 +14,11 @@ services.AddSwaggerGen();
 // 添加 signalR
 services.AddSignalR();
 
-// 设置小写路由
-services.AddControllersWithViews(options =>
-{
-    options.Conventions.Add(new RouteTokenTransformerConvention(
-                                 new SlugifyParameterTransformer()));
-});
+// 设置 hyphen-case 路由
+services.SetupSlugifyCaseRoute();
+
+// 绑定配置
+builder.MapConfiguration(new ConfigurationMapper());
 
 var app = builder.Build();
 
@@ -29,8 +29,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
