@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Uamazing.SME.Server.Utils.DotNetCoreSetup;
+using Uamazing.Utils.DotNETCore.Configure;
 
 namespace Uamazing.SME.Server.Config
 {

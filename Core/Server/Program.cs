@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 using Uamazing.SME.Server.Config;
-using Uamazing.SME.Server.Utils.DotNetCoreSetup;
+using Uamazing.Utils.DotNETCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -9,7 +11,18 @@ var services = builder.Services;
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+
+// 配置 swagger
+services.AddSwaggerGen(new OpenApiInfo()
+{
+    Title = "WowToolAPI",
+    Contact = new OpenApiContact()
+    {
+        Name = "galens",
+        Url = new Uri("https://galens.uamazing.cn"),
+        Email = "gmx_galens@163.com"
+    }
+},"Server.xml");
 
 // 添加 signalR
 services.AddSignalR();
@@ -19,6 +32,19 @@ services.SetupSlugifyCaseRoute();
 
 // 绑定配置
 builder.MapConfiguration(new ConfigurationMapper());
+
+// 批量注册服务
+services.MapServices();
+
+// 配置 jwt 验证
+var secretKey = builder.Configuration["TokenParams:SecretKey"];
+services.AddJWTAuthentication(secretKey);
+
+// 关闭参数自动检验
+services.Configure<ApiBehaviorOptions>(o =>
+{
+    o.SuppressModelStateInvalidFilter = true;
+});
 
 var app = builder.Build();
 

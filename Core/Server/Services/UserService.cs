@@ -1,7 +1,7 @@
 ﻿using LiteDB;
 using Uamazing.SME.Server.Database;
 using Uamazing.SME.Server.Models;
-using Uamazing.SME.Server.Utils.LiteDB;
+using Uamazing.Utils.LiteDB;
 
 namespace Uamazing.SME.Server.Services
 {
