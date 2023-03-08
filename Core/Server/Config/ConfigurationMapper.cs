@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Uamazing.Utils.DotNETCore.Configure;
+using Uamazing.Utils.DotNETCore.Token;
 
 namespace Uamazing.SME.Server.Config
 {
@@ -11,13 +12,14 @@ namespace Uamazing.SME.Server.Config
             _builder = builder;
             var services = builder.Services;
 
-            // 系统配置
+            // 映射系统配置
             services.Configure<SystemConfig>(GetSection<SystemConfig>())
                 .Configure<HttpConfig>(GetSection<HttpConfig>())
                 .Configure<DatabaseConfig>(GetSection<DatabaseConfig>())
                 .Configure<UserConfig>(GetSection<UserConfig>())
                 .Configure<WebsocketConfig>(GetSection<WebsocketConfig>())
-                .Configure<LoggerConfig>(GetSection<LoggerConfig>());
+                .Configure<LoggerConfig>(GetSection<LoggerConfig>())
+                .Configure<TokenParams>(GetSection<TokenParams>());
 
             return builder.Services;
         }

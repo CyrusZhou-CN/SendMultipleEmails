@@ -1,6 +1,7 @@
 ﻿using LiteDB;
 using Uamazing.SME.Server.Database;
 using Uamazing.SME.Server.Models;
+using Uamazing.Utils.Extensions;
 using Uamazing.Utils.LiteDB;
 
 namespace Uamazing.SME.Server.Services
@@ -10,15 +11,31 @@ namespace Uamazing.SME.Server.Services
     /// </summary>
     public class UserService : ServiceBase
     {
-        public UserService(LiteRepository liteRepository) : base(liteRepository) { }
+        public UserService(ILiteRepository liteRepository) : base(liteRepository) { }
+
+        public async Task<User> GetUser(string userId)
+        {
+            var result = LiteRepository.FirstOrDefault<User>(x => x.UserId == userId);
+            return result;
+        }
+
+        public async Task<User> GetUser(string userId ,string password)
+        {
+            var result = LiteRepository.FirstOrDefault<User>(x => x.UserId == userId && x.Password==password);
+            return result;
+        }
 
         /// <summary>
         /// 新建用户
         /// </summary>
+        /// <param name="user"></param>
         /// <returns></returns>
-        public User NewUser(User user)
+        public async Task<User> CreateUser(User user)
         {
-            return null;
+            // 对密码进行加密
+            user.Password = user.Password.EncryptMD5().Data;
+            LiteRepository.Insert(user);
+            return user;
         }
 
         /// <summary>
@@ -39,8 +56,8 @@ namespace Uamazing.SME.Server.Services
         /// <param name="userId"></param>
         public void ClearSignalRConnectionId(string userId)
         {
-            LiteRepository.Update2(x => x.UserId == userId, 
-                new User() { ConnectionId = string.Empty }, 
+            LiteRepository.Update2(x => x.UserId == userId,
+                new User() { ConnectionId = string.Empty },
                 new UpdateOptions { FieldMap.connectionId });
         }
     }

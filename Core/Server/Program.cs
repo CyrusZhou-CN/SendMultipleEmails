@@ -15,7 +15,7 @@ services.AddEndpointsApiExplorer();
 // 配置 swagger
 services.AddSwaggerGen(new OpenApiInfo()
 {
-    Title = "WowToolAPI",
+    Title = "SendMutipleEmails",
     Contact = new OpenApiContact()
     {
         Name = "galens",
@@ -37,7 +37,7 @@ builder.MapConfiguration(new ConfigurationMapper());
 services.MapServices();
 
 // 配置 jwt 验证
-var secretKey = builder.Configuration["TokenParams:SecretKey"];
+var secretKey = builder.Configuration["TokenParams:Secret"];
 services.AddJWTAuthentication(secretKey);
 
 // 关闭参数自动检验
@@ -45,6 +45,9 @@ services.Configure<ApiBehaviorOptions>(o =>
 {
     o.SuppressModelStateInvalidFilter = true;
 });
+
+// 注册 liteDB
+builder.AddLiteDB();
 
 var app = builder.Build();
 
