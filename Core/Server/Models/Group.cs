@@ -15,7 +15,7 @@ namespace Uamazing.SME.Server.Models
         /// <summary>
         /// 父组
         /// </summary>
-        public string ParentId { get; set; }
+        public int ParentId { get; set; }
 
         /// <summary>
         /// 组名

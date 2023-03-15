@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Uamazing.ConfValidatation.Core.Entrance;
+using Uamazing.ConfValidatation.Core.Validators;
 using Uamazing.SME.Server.Models;
 using Uamazing.SME.Server.Services;
 using Uamazing.Utils.DotNETCore.Token;
 using Uamazing.Utils.Extensions;
+using Uamazing.Utils.Token.Extensions;
 using Uamazing.Utils.Validate;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
@@ -17,16 +20,14 @@ namespace Uamazing.SME.Server.Controllers
     /// </summary>
     public class UserController : SMEControllerBase
     {
-        private readonly ILiteRepository _liteRepository;
         private readonly UserService _userService;
         private readonly TokenParams _tokenParams;
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="liteRepository"></param>
-        public UserController(ILiteRepository liteRepository, UserService userService, IOptions<TokenParams>  tokenParams)
+        /// <param name="userService"></param>
+        public UserController(UserService userService, IOptions<TokenParams>  tokenParams)
         {
-            _liteRepository = liteRepository;
             _userService = userService;
             _tokenParams = tokenParams.Value;
         }
@@ -43,6 +44,13 @@ namespace Uamazing.SME.Server.Controllers
             var existUser = await _userService.GetUser(user.UserId);
             if (existUser != null) return new ErrorResponse<User>($"用户 {existUser.UserId} 已经存在");
 
+            // 验证用户
+            user.Validate(new VdObj
+            {
+                { ()=>user.UserId,new IsString("用户名最小长度不小于3个字符"){ MinLength=3} },
+                { ()=>user.Password,new IsString("密码最小长度不小于6个字符"){ MinLength=6} }
+            },ValidateOption.ThrowError);
+
             // 密码校验
             if (string.IsNullOrEmpty(user.Password)) return new ErrorResponse<User>("请输入密码");
 
@@ -58,7 +66,7 @@ namespace Uamazing.SME.Server.Controllers
         /// <param name="password"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        [HttpGet("/token")]
+        [HttpGet("token")]
         public async Task<ResponseResult<string>> GetToken([FromQuery] string userId, [FromQuery] string password)
         {
             // 验证用户名密码是否正确
@@ -66,7 +74,7 @@ namespace Uamazing.SME.Server.Controllers
             if (string.IsNullOrEmpty(password)) return new ErrorResponse<string>("请输入密码");
 
             // 验证用户名和密码
-            var passwordMd5 = password.EncryptMD5().Data;
+            var passwordMd5 = password.EncryptMD5();
             var user = await _userService.GetUser(userId, passwordMd5);
             if (user == null) return new ErrorResponse<string>("用户名或密码错误");
 

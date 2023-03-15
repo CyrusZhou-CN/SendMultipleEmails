@@ -33,7 +33,7 @@ namespace Uamazing.SME.Server.Services
         public async Task<User> CreateUser(User user)
         {
             // 对密码进行加密
-            user.Password = user.Password.EncryptMD5().Data;
+            user.Password = user.Password.EncryptMD5();
             LiteRepository.Insert(user);
             return user;
         }
@@ -45,7 +45,7 @@ namespace Uamazing.SME.Server.Services
         /// <param name="connectionId"></param>
         public void SetSignalRConnectionId(string userId, string connectionId)
         {
-            LiteRepository.Update2(x => x.UserId == userId,
+            LiteRepository.UpdateOne(x => x.UserId == userId,
                 new User() { ConnectionId = connectionId },
                 new UpdateOptions() { FieldMap.connectionId });
         }
@@ -56,7 +56,7 @@ namespace Uamazing.SME.Server.Services
         /// <param name="userId"></param>
         public void ClearSignalRConnectionId(string userId)
         {
-            LiteRepository.Update2(x => x.UserId == userId,
+            LiteRepository.UpdateOne(x => x.UserId == userId,
                 new User() { ConnectionId = string.Empty },
                 new UpdateOptions { FieldMap.connectionId });
         }
