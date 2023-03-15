@@ -1,4 +1,7 @@
-build/*.js
-src/assets
-public
-dist
+/dist
+/src-capacitor
+/src-cordova
+/.quasar
+/node_modules
+.eslintrc.js
+/src-ssr
