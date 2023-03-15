@@ -44,7 +44,7 @@ namespace Uamazing.SME.Server.Controllers
         protected (string, string) GetTokenInfo(TokenParams tokenParams)
         {
             var token = GetToken();
-            var userId = tokenParams.GetTokenPayload(token).Data.ValueOrDefault("userId", "");
+            var userId = tokenParams.GetTokenPayload(token).ValueOrDefault("userId", "");
             return (userId, token);
         }
         #endregion

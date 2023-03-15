@@ -83,7 +83,7 @@ namespace Uamazing.SME.Server.Controllers
             {
                 { "userId",user.UserId}
             });
-            return token.Data.ToSuccessResponse();
+            return token.ToSuccessResponse();
         }
     }
 }

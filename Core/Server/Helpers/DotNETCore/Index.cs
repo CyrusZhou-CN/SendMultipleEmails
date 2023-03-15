@@ -48,7 +48,7 @@ namespace Uamazing.Utils.DotNETCore
         public static IServiceCollection MapServices(this IServiceCollection services)
         {
             // 批量注入 Services 单例
-            var serviceBaseType = typeof(IService);          
+            var serviceBaseType = typeof(IService);
             var serviceTypeList = Assembly.GetCallingAssembly()
                 .GetTypes()
                 .Where(x => !x.IsAbstract && serviceBaseType.IsAssignableFrom(x))
@@ -64,7 +64,7 @@ namespace Uamazing.Utils.DotNETCore
         /// <param name="services"></param>
         /// <param name="apiInfo"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSwaggerGen(this IServiceCollection services, OpenApiInfo apiInfo,string xmlCommentsPath)
+        public static IServiceCollection AddSwaggerGen(this IServiceCollection services, OpenApiInfo apiInfo, string xmlCommentsPath)
         {
             services.AddSwaggerGen(swaggerOptions =>
             {
@@ -118,11 +118,12 @@ namespace Uamazing.Utils.DotNETCore
         /// <param name="services"></param>
         /// <param name="secretKey"></param>
         /// <returns></returns>
-        public static IServiceCollection AddJWTAuthentication(this IServiceCollection services,string secretKey)
+        public static IServiceCollection AddJWTAuthentication(this IServiceCollection services, string secretKey)
         {
             services.AddAuthentication(x =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultAuthenticateScheme=JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(x =>
@@ -137,7 +138,7 @@ namespace Uamazing.Utils.DotNETCore
                     // 是否验证令牌有效期
                     ValidateLifetime = true,
                     // 每次颁发令牌，令牌有效时间
-                    ClockSkew = TimeSpan.FromMinutes(120)
+                    ClockSkew = TimeSpan.FromMinutes(1440)
                 };
             });
             return services;

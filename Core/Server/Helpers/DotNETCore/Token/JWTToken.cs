@@ -14,35 +14,37 @@ namespace Uamazing.Utils.Token.Extensions
     public static class JWTToken
     {
         /// <summary>
-        /// 传入
+        /// 创建 token
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        public static Result<string> CreateToken(this TokenParams tokenParam, Dictionary<string, string> payload)
+        public static string CreateToken(this TokenParams tokenParam, Dictionary<string, string> payload)
         {
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                // token的有效时间
-                Expires = DateTime.UtcNow.AddMilliseconds(tokenParam.Expire),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParam.Secret)), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = tokenParam.Issuer,
-                Audience = tokenParam.Audience,
-            };
 
+            // 定义用户信息
+            var claims = new List<Claim>();
             if (payload != null)
             {
-                List<Claim> claims = payload.ToList().ConvertAll(kv =>
+                claims = payload.ToList().ConvertAll(kv =>
                 {
-                    return new Claim(kv.Key,kv.Value);
+                    return new Claim(kv.Key, kv.Value);
                 });
-                tokenDescriptor.Subject = new ClaimsIdentity(claims);
             }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-            var token = tokenHandler.WriteToken(securityToken);
+            // 和 Startup 中的配置一致
+            SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(tokenParam.Secret));
 
-            return new SuccessResult<string>(token);
+            JwtSecurityToken token = new(
+                issuer: tokenParam.Issuer,
+                audience: tokenParam.Audience,
+                claims: claims,
+                notBefore: DateTime.Now,
+                expires: DateTime.Now.AddMinutes(1440),
+                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+            );
+
+            string jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwtToken;
         }
 
         /// <summary>
@@ -51,7 +53,7 @@ namespace Uamazing.Utils.Token.Extensions
         /// <param name="tokenParam"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Result<JObject> GetTokenPayload(this TokenParams tokenParam, string token)
+        public static JObject GetTokenPayload(this TokenParams tokenParam, string token)
         {
             //校验token
             var validateParameter = new TokenValidationParameters()
@@ -64,32 +66,13 @@ namespace Uamazing.Utils.Token.Extensions
                 ValidAudience = tokenParam.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParam.Secret))
             };
-            //不校验，直接解析token
-            //jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token1);
-            try
-            {
-                //校验并解析token
-                var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token, validateParameter, out SecurityToken validatedToken);//validatedToken:解密后的对象
-                var jwtPayload = ((JwtSecurityToken)validatedToken).Payload.SerializeToJson(); //获取payload中的数据
-                var jobj = JObject.Parse(jwtPayload);
 
-                return new SuccessResult<JObject>(jobj);   
-            }
-            catch (SecurityTokenExpiredException expireException)
-            {
-                //表示过期
-                return new ErrorResult<JObject>(null,expireException.Message);
-            }
-            catch (SecurityTokenException error)
-            {
-                //表示token错误
-                return new ErrorResult<JObject>(null,error.Message);
-            }
-            catch(Exception ex)
-            {
-                // 其它错误
-                return new ErrorResult<JObject>(null,ex.Message);
-            }
+            // 校验并解析token
+            new JwtSecurityTokenHandler().ValidateToken(token, validateParameter, out SecurityToken validatedToken);//validatedToken:解密后的对象
+            var jwtPayload = ((JwtSecurityToken)validatedToken).Payload.SerializeToJson(); //获取payload中的数据
+            var jobj = JObject.Parse(jwtPayload);
+
+            return jobj;
         }
     }
 }
