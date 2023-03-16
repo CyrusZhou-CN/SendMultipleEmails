@@ -203,13 +203,13 @@ const stringOptions = [
 export default {
   name: 'MyLayout',
 
-  setup () {
+  setup() {
     const text = ref('')
     const options = ref(null)
     const filteredOptions = ref([])
     const search = ref(null) // $refs.search
 
-    function filter (val, update) {
+    function filter(val, update) {
       if (options.value === null) {
         // load data
         setTimeout(() => {

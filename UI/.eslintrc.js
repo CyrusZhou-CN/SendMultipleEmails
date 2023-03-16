@@ -86,6 +86,8 @@ module.exports = {
 
     quotes: ['warn', 'single', { avoidEscape: true }],
 
+    'space-before-function-paren': ['error', 'never'],
+
     // this rule, if on, would require explicit return type on the `render` function
     '@typescript-eslint/explicit-function-return-type': 'off',
 
