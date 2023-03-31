@@ -22,4 +22,7 @@
   //"files.autoSave": "onFocusChange", // optional but recommended
   // set as "true" to run 'prettier' last not first
   "vs-code-prettier-eslint.prettierLast": false,
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
 }

@@ -1,10 +1,18 @@
 import { RouteRecordRaw } from 'vue-router'
 
+const normalLayout = () => import('src/layouts/normalLayout/index.vue')
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: normalLayout,
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }]
+  },
+
+  {
+    path: '/outbox',
+    component: normalLayout,
+    children: [{ path: '', component: () => import('pages/outbox/outboxMain.vue') }]
   },
 
   // Always leave this as last one,
