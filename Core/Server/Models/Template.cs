@@ -1,4 +1,4 @@
-﻿using Uamazing.Utils.Models;
+﻿using Uamazing.Utils.Database.LiteDB;
 
 namespace Uamazing.SME.Server.Models
 {

@@ -32,5 +32,35 @@ namespace Uamazing.SME.Server.Models
         /// signalR 连接 id
         /// </summary>
         public string ConnectionId { get; set; }
+
+        /// <summary>
+        /// 是否是管理员
+        /// </summary>
+        public bool IsAdmin { get; set; }=false;
+
+        /// <summary>
+        /// 账户状态
+        /// </summary>
+        public UserStatus Status { get; set; } = UserStatus.Normal;
+    }
+
+    /// <summary>
+    /// 用户状态
+    /// </summary>
+    public enum UserStatus
+    {
+        /// <summary>
+        /// 被删除
+        /// </summary>
+        Deleted,
+
+        /// <summary>
+        /// </summary>
+        Normal,
+
+        /// <summary>
+        /// 不允许登陆
+        /// </summary>
+        NotAllowedToLogin
     }
 }

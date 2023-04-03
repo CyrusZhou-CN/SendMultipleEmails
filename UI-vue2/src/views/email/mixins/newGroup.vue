@@ -3,13 +3,6 @@ import { newGroup } from '@/api/group'
 import { notifySuccess } from '@/components/iPrompt'
 
 export default {
-  computed: {
-    newGroupTitle() {
-      if (this.groupType === 'send') return '添加发件箱'
-
-      return '添加收件箱'
-    }
-  },
   data() {
     return {
       isShowNewGroupDialog: false,
@@ -26,7 +19,8 @@ export default {
             label: '组类型',
             required: true,
             readonly: true,
-            default: this.groupType
+            default: this.groupType,
+            hidden: true
           },
           {
             name: 'parentId',
@@ -59,6 +53,15 @@ export default {
       }
     }
   },
+
+  computed: {
+    newGroupTitle() {
+      if (this.groupType === 'send') return '添加发件箱'
+
+      return '添加收件箱'
+    }
+  },
+
 
   methods: {
     showNewGroupDialog(data) {

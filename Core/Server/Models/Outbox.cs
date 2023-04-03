@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Uamazing.Utils.Database.Attributes;
 
 namespace Uamazing.SME.Server.Models
 {
     /// <summary>
     /// 发件箱
     /// </summary>
-    public class Outbox : LinkingUserId
+    [CollectionName("EmailBox")]
+    public class Outbox : EmailBox
     {       
         /// <summary>
         /// smtp 密码

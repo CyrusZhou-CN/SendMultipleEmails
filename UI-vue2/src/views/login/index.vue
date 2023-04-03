@@ -1,81 +1,57 @@
 <template>
   <div class="login-container column justify-center">
-    <div
-      class="row justify-center"
-      style="font-size: 2em; font-family: cursive; margin-bottom: 100px"
-    >
+    <div class="row justify-center" style="font-size: 2em; font-family: cursive; margin-bottom: 100px">
       众里寻他千百度，无件可发凭风孤
     </div>
     <div class="row justify-center">
-      <embed src="resources/images/login-logo.svg" class="svg-style" />
+      <embed src="resources/images/login-logo.svg" class="svg-style">
 
-      <el-form
-        ref="loginForm"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form"
-        auto-complete="on"
-        label-position="left"
-      >
-        <el-form-item prop="userName">
+      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on"
+        label-position="left">
+        <el-form-item prop="userId">
           <span class="svg-container">
             <svg-icon icon-class="user" />
           </span>
-          <el-input
-            ref="userName"
-            v-model="loginForm.userName"
-            placeholder="Username"
-            name="userName"
-            type="text"
-            tabindex="1"
-            auto-complete="on"
-          />
+          <el-input ref="userId" v-model="loginForm.userId" placeholder="userId" name="userId" type="text" tabindex="1"
+            auto-complete="on" />
         </el-form-item>
 
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="Password"
-            name="password"
-            tabindex="2"
-            auto-complete="on"
-            @keyup.enter.native="handleLogin"
-          />
+          <el-input :key="passwordType" ref="password" v-model="loginForm.password" :type="passwordType"
+            placeholder="Password" name="password" tabindex="2" auto-complete="on" @keyup.enter.native="handleLogin" />
           <span class="show-pwd" @click="showPwd">
-            <svg-icon
-              :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-            />
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
           </span>
         </el-form-item>
 
-        <el-button
-          :loading="loading"
-          type="primary"
-          style="width: 100%"
-          class="bg-primary"
-          @click.native.prevent="handleLogin"
-        >
-          登陆/注册
-        </el-button>
+        <div class="row">
+          <el-button :loading="signUpLoading" type="primary" class="bg-secondary" style="width: 80px;"
+            @click.native.prevent="handleSignUp">
+            注册
+          </el-button>
+
+          <el-button :loading="loading" type="primary" class="bg-primary col-grow" @click.native.prevent="handleLogin">
+            登陆
+          </el-button>
+        </div>
       </el-form>
     </div>
   </div>
 </template>
 
 <script>
-// import { validUsername } from '@/utils/validate'
-import ws from '@/utils/websocket'
+// import { validuserId } from '@/utils/validate'
+// import ws from '@/utils/websocket'
+import signIn from './mixins/signIn.vue'
 
 export default {
   name: 'Login',
+  mixins: [signIn],
   data() {
-    const validateUsername = (rule, value, callback) => {
+    const validateuserId = (rule, value, callback) => {
       if (!value || value.length < 2) {
         callback(new Error('用户名长度至少 2 位'))
       } else {
@@ -91,18 +67,19 @@ export default {
     }
     return {
       loginForm: {
-        userName: 'admin',
-        password: '111111'
+        userId: 'admin',
+        password: '123456'
       },
       loginRules: {
-        userName: [
-          { required: true, trigger: 'blur', validator: validateUsername }
+        userId: [
+          { required: true, trigger: 'blur', validator: validateuserId }
         ],
         password: [
           { required: true, trigger: 'blur', validator: validatePassword }
         ]
       },
       loading: false,
+      signUpLoading: false,
       passwordType: 'password',
       redirect: undefined
     }
@@ -124,31 +101,6 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.password.focus()
-      })
-    },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
-            .then(async () => {
-              // 登陆成功后，进行websocket 登陆
-              await ws.sendRequest({
-                name: 'Login',
-                command: 'storeSession'
-              })
-
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
       })
     }
   }

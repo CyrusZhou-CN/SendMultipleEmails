@@ -1,13 +1,15 @@
 ﻿using LiteDB;
 using System.Linq.Expressions;
-using Uamazing.Utils.LiteDB;
+using System.Text.RegularExpressions;
+using Uamazing.Utils.Database.LiteDB;
+using Uamazing.Utils.Web.RequestModel;
 
 namespace Uamazing.SME.Server.Services
 {
     /// <summary>
     /// 通用的增删查改组件
     /// </summary>
-    public class CurdService<T> : ServiceBase
+    public partial class CurdService<T> : ServiceBase where T :AutoObjectId
     {
         public CurdService(ILiteRepository liteRepository) : base(liteRepository)
         {
@@ -15,6 +17,7 @@ namespace Uamazing.SME.Server.Services
 
         /// <summary>
         /// 新增
+        /// 会在原来数据上增加 id 字段，返回值与传入参数是一个引用
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -48,6 +51,7 @@ namespace Uamazing.SME.Server.Services
             return result;
         }
 
+
         /// <summary>
         /// 获取所有匹配项
         /// </summary>
@@ -57,6 +61,27 @@ namespace Uamazing.SME.Server.Services
         {
             var results = LiteRepository.Fetch(filter);
             return results;
+        }
+
+        /// <summary>
+        /// 获取分页数据
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="paginationModel"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<T>> GetPageModels(Expression<Func<T, bool>> filter,PaginationModel paginationModel)
+        {
+            var query = LiteRepository.Query<T>().Where(filter);
+            if (paginationModel.Descending)
+            {
+                query = query.OrderByDescending($"$.{paginationModel.SortBy}");
+            }
+            else
+            {
+                query = query.OrderBy($"$.{paginationModel.SortBy}");
+            }
+            var results = query.Skip(paginationModel.Skip).Limit(paginationModel.Limit);
+            return results.ToList();
         }
 
         /// <summary>

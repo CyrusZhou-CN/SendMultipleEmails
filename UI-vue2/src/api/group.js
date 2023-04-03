@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getGroups(groupType) {
   return request({
-    url: '/group',
+    url: '/email-box-group/all',
     method: 'get',
     params: {
       groupType
@@ -12,26 +12,24 @@ export function getGroups(groupType) {
 
 export function newGroup(data) {
   return request({
-    url: '/group',
+    url: '/email-box-group',
     method: 'post',
     data
   })
 }
 
-export function deleteGroups(groupIds) {
+// 通过组id删除组
+export function deleteGroupById(groupId) {
   return request({
-    url: '/groups',
-    method: 'delete',
-    data: {
-      groupIds
-    }
+    url: `/email-box-group/${groupId}`,
+    method: 'delete'
   })
 }
 
 export function modifyGroup(groupId, data) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/groups/${groupId}`,
+    url: `/email-box-group/${groupId}`,
     method: 'put',
     data: {
       groupId,
@@ -41,10 +39,11 @@ export function modifyGroup(groupId, data) {
 }
 
 // 获取组下的邮箱
+// emailType: inbox,outbox
 export function getEmailsCount(groupId, filter) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/groups/${groupId}/emails/count`,
+    url: `/email-box-group/${groupId}/email-box/count`,
     method: 'post',
     data: {
       filter
@@ -56,7 +55,7 @@ export function getEmailsCount(groupId, filter) {
 export function getEmails(groupId, filter, pagination) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/groups/${groupId}/emails/list`,
+    url: `/email-box-group/${groupId}/email-box/list`,
     method: 'post',
     data: { filter, pagination }
   })
@@ -66,7 +65,7 @@ export function getEmails(groupId, filter, pagination) {
 export function newEmail(data) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/groups/${data.groupId}/email`,
+    url: `/email-box-group/${data.groupId}/email`,
     method: 'post',
     data
   })
@@ -76,7 +75,7 @@ export function newEmail(data) {
 export function newEmails(groupId, data) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/groups/${groupId}/emails`,
+    url: `/email-box-group/${groupId}/email-box`,
     method: 'post',
     data
   })
@@ -86,7 +85,7 @@ export function newEmails(groupId, data) {
 export function deleteEmail(id) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/emails/${id}`,
+    url: `/email-box/${id}`,
     method: 'delete'
   })
 }
@@ -95,7 +94,7 @@ export function deleteEmail(id) {
 export function deleteEmails(groupId) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/groups/${groupId}/emails`,
+    url: `/email-box-group/${groupId}/email-box`,
     method: 'delete'
   })
 }
@@ -104,7 +103,7 @@ export function deleteEmails(groupId) {
 export function modifyEmail(emailId, data) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/emails/${emailId}`,
+    url: `/email-box/${emailId}`,
     method: 'put',
     data
   })
@@ -114,7 +113,7 @@ export function modifyEmail(emailId, data) {
 export function updateSendEmailSettings(emailId, data) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/emails/${emailId}/settings`,
+    url: `/email-box/${emailId}/settings`,
     method: 'put',
     data
   })

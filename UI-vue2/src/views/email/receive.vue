@@ -1,5 +1,5 @@
 <template>
-  <EmailGroup class="email-group" groupType="receive" />
+  <EmailGroup class="email-group" :groupType="2" />
 </template>
 
 <script>
@@ -13,5 +13,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

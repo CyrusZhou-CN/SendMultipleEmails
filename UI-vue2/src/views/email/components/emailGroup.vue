@@ -3,80 +3,36 @@
     <q-splitter v-model="splitterModel" class="email-spliter">
       <template v-slot:before>
         <div class="q-pa-md">
-          <q-tree
-            :nodes="groupsData"
-            node-key="_id"
-            selected-color="primary"
-            label-key="name"
-            :selected.sync="selectedNode"
-            no-connectors
-            no-nodes-label="单击此处右键添加分组"
-          >
+          <q-tree :nodes="groupsData" node-key="_id" selected-color="primary" label-key="name"
+            :selected.sync="selectedNode" no-connectors no-nodes-label="单击此处右键添加分组">
             <template v-slot:default-header="prop">
               <div>
                 {{ prop.node.name }}
               </div>
-              <q-menu
-                transition-show="scale"
-                transition-hide="scale"
-                touch-position
-                context-menu
-              >
+              <q-menu transition-show="scale" transition-hide="scale" touch-position context-menu>
                 <q-list bordered class="rounded-borders text-teal" dense>
-                  <q-item
-                    v-if="!prop.node.parentId"
-                    v-close-popup="2"
-                    clickable
-                    dense
-                    @click="showNewGroupDialog(null)"
-                  >
+                  <q-item v-if="!prop.node.parentId" v-close-popup clickable dense @click="showNewGroupDialog(null)">
                     <q-item-section>添加组</q-item-section>
                   </q-item>
 
-                  <q-item
-                    v-close-popup="2"
-                    clickable
-                    dense
-                    @click="showNewGroupDialog(prop.node)"
-                  >
+                  <q-item v-close-popup clickable dense @click="showNewGroupDialog(prop.node)">
                     <q-item-section>添加子组</q-item-section>
                   </q-item>
 
-                  <q-item
-                    v-close-popup
-                    clickable
-                    dense
-                    @click="showModifyGroupDialog(prop.node)"
-                  >
+                  <q-item v-close-popup clickable dense @click="showModifyGroupDialog(prop.node)">
                     <q-item-section>修改</q-item-section>
                   </q-item>
 
-                  <q-item
-                    v-close-popup
-                    clickable
-                    dense
-                    @click="deleteNode(prop.node)"
-                  >
+                  <q-item v-close-popup clickable dense @click="deleteNode(prop.node)">
                     <q-item-section>删除</q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
             </template>
           </q-tree>
-          <q-menu
-            transition-show="scale"
-            transition-hide="scale"
-            touch-position
-            context-menu
-          >
+          <q-menu transition-show="scale" transition-hide="scale" touch-position context-menu>
             <q-list bordered class="rounded-borders text-primary" dense>
-              <q-item
-                clickable
-                v-if="groupsData.length === 0"
-                v-close-popup
-                @click="showNewGroupDialog(null)"
-                dense
-              >
+              <q-item v-if="groupsData.length === 0" v-close-popup clickable dense @click="showNewGroupDialog(null)">
                 <q-item-section>添加组</q-item-section>
               </q-item>
             </q-list>
@@ -85,19 +41,9 @@
       </template>
 
       <template v-slot:after>
-        <q-tab-panels
-          v-model="selectedNode"
-          animated
-          transition-prev="jump-up"
-          transition-next="jump-up"
-          style="height: 100%"
-        >
-          <q-tab-panel
-            v-for="group in groupsOrigin"
-            :key="group._id"
-            :name="group._id"
-            style="height: 100%"
-          >
+        <q-tab-panels v-model="selectedNode" animated transition-prev="jump-up" transition-next="jump-up"
+          style="height: 100%">
+          <q-tab-panel v-for="group in groupsOrigin" :key="group._id" :name="group._id" style="height: 100%">
             <GroupEmailInfos :group="group" />
           </q-tab-panel>
         </q-tab-panels>
@@ -105,19 +51,11 @@
     </q-splitter>
 
     <q-dialog v-model="isShowNewGroupDialog">
-      <DialogForm
-        type="create"
-        :init-params="initNewGroupParams"
-        @createSuccess="addNewGroup"
-      />
+      <DialogForm type="create" :init-params="initNewGroupParams" @createSuccess="addNewGroup" />
     </q-dialog>
 
     <q-dialog v-model="isShowModifyGroupDialog">
-      <DialogForm
-        type="update"
-        :init-params="initModifyGroupParams"
-        @updateSuccess="modifyGroup"
-      />
+      <DialogForm type="update" :init-params="initModifyGroupParams" @updateSuccess="modifyGroup" />
     </q-dialog>
   </div>
 </template>
@@ -129,7 +67,7 @@ import GroupEmailInfos from './groupEmailInfos.vue'
 import mixinNewGroup from '../mixins/newGroup.vue'
 import mixinModifyGroup from '../mixins/modifyGroup.vue'
 
-import { getGroups, deleteGroups } from '@/api/group'
+import { getGroups, deleteGroup } from '@/api/group'
 
 import LTT from '@/utils/list2tree'
 import { notifySuccess, okCancle } from '@/components/iPrompt'
@@ -140,8 +78,8 @@ export default {
 
   props: {
     groupType: {
-      type: String,
-      default: 'send'
+      type: Number,
+      default: () => 1
     }
   },
   data() {
@@ -194,7 +132,7 @@ export default {
       const targetNodes = this.dataTree.GetCurentAndSub(data._id)
 
       // 开始删除
-      await deleteGroups(targetNodes.map(node => node._id))
+      await deleteGroup(data._id)
 
       // 删除现有的数据
       this.groupsOrigin = this.groupsOrigin.filter(

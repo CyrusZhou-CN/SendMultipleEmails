@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Uamazing.Utils.Models;
+using Uamazing.Utils.Database.LiteDB;
 
 namespace Uamazing.SME.Server.Models
 {

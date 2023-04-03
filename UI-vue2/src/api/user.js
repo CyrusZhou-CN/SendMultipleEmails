@@ -1,18 +1,31 @@
 import request from '@/utils/request'
 
-export function login(data) {
+// 注册用户
+export function signUp(userId, password) {
   return request({
-    url: '/user/login',
+    url: '/user',
     method: 'post',
-    data
+    data: {
+      userId,
+      password
+    }
   })
 }
 
-export function getInfo(token) {
+// 登陆
+export function signIn(userId, password) {
+  return request({
+    url: '/user/sign-in',
+    method: 'post',
+    data: { userId, password }
+  })
+}
+
+// 获取用户信息
+export function getCurrentUserInfo() {
   return request({
     url: '/user/info',
-    method: 'get',
-    params: { token }
+    method: 'get'
   })
 }
 

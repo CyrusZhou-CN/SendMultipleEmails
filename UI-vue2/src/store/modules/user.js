@@ -1,11 +1,11 @@
-import { login, logout, getInfo } from '@/api/user'
+import { logout } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
-    name: '',
+    userId: '',
     avatar: ''
   }
 }
@@ -17,10 +17,11 @@ const mutations = {
     Object.assign(state, getDefaultState())
   },
   SET_TOKEN: (state, token) => {
+    // console.log('setToken:', token)
     state.token = token
   },
-  SET_NAME: (state, name) => {
-    state.name = name
+  SET_USERID: (state, userId) => {
+    state.userId = userId
   },
   SET_AVATAR: (state, avatar) => {
     console.log('setAvatar:', avatar)
@@ -30,44 +31,18 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { userName, password } = userInfo
-    return new Promise((resolve, reject) => {
-      login({ userName: userName.trim(), password: password })
-        .then(response => {
-          const { data } = response
-          commit('SET_TOKEN', data.token)
-          setToken(data.token)
-          resolve()
-        })
-        .catch(error => {
-          reject(error)
-        })
-    })
+  setToken({ commit }, token) {
+    // console.log('setToken:', token)
+    commit('SET_TOKEN', token)
+    setToken(token)
   },
 
-  // get user info
-  getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.token)
-        .then(response => {
-          const { data } = response
-
-          if (!data) {
-            return reject('Verification failed, please Login again.')
-          }
-
-          // 只有名称，没有姓名，所以用 userId 代表
-          const { userId, avatar } = data
-
-          commit('SET_NAME', userId)
-          commit('SET_AVATAR', avatar)
-          resolve(data)
-        })
-        .catch(error => {
-          reject(error)
-        })
-    })
+  // 设置用户信息
+  setUserInfo({ commit }, userInfo) {
+    // 只有名称，没有姓名，所以用 userId 代表
+    const { userId, avatar } = userInfo
+    commit('SET_USERID', userId)
+    commit('SET_AVATAR', avatar)
   },
 
   // user logout

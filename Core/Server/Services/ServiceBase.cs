@@ -22,5 +22,16 @@ namespace Uamazing.SME.Server.Services
         {
             LiteRepository = liteRepository;
         }
+
+        /// <summary>
+        /// 根据集合名称获取集合
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collectionName"></param>
+        /// <returns></returns>
+        public ILiteCollection<T> Collection<T>(string? collectionName = null)
+        {
+           return Database.GetCollection<T>(collectionName);
+        }
     }
 }

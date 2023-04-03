@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using Uamazing.Utils.DotNETCore.Token;
 using Uamazing.Utils.Extensions;
@@ -46,6 +48,23 @@ namespace Uamazing.SME.Server.Controllers
             var token = GetToken();
             var userId = tokenParams.GetTokenPayload(token).ValueOrDefault("userId", "");
             return (userId, token);
+        }
+
+        private  JObject _requestBody;
+        protected JObject RequestBody
+        {
+            get
+            {
+                if (_requestBody == null)
+                {
+                    StreamReader sr = new StreamReader(Request.Body);
+                    var json = sr.ReadToEndAsync().GetAwaiter().GetResult();
+                    // 读取数据
+                    _requestBody = JObject.Parse(json);
+                }
+
+                return _requestBody;
+            }
         }
         #endregion
 

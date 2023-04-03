@@ -10,7 +10,7 @@ namespace Uamazing.SME.Server.Models
     /// <summary>
     /// 邮箱信息
     /// </summary>
-    public class EmailInfo : LinkingUserId
+    public class EmailBox : LinkingUserId
     {
         /// <summary>
         /// 邮箱名称
@@ -27,7 +27,7 @@ namespace Uamazing.SME.Server.Models
         /// <summary>
         /// 邮箱组 id
         /// </summary>
-        public string GroupId { get; set; }
+        public int GroupId { get; set; }
 
 
         public override string GetFilterString()

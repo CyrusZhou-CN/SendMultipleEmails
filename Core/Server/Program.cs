@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Uamazing.SME.Server.Config;
@@ -8,7 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 // Add services to the container.
-services.AddControllers();
+services.AddControllers()
+    .AddNewtonsoftJson();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 
@@ -49,13 +52,34 @@ services.Configure<ApiBehaviorOptions>(o =>
 // ×¢²á liteDB
 builder.AddLiteDB();
 
+// ¿çÓò
+services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://127.0.0.1:9528", "http://localhost:9528")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
+
+
+app.UseDefaultFiles();
+// ÉèÖÃÍøÕ¾µÄ¸ùÄ¿Â¼
+app.UseStaticFiles();
+
+// ¿çÓò
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseAuthentication();

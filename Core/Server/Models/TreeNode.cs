@@ -1,24 +1,22 @@
-﻿using LiteDB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Uamazing.SME.Server.Models
+﻿namespace Uamazing.SME.Server.Models
 {
     /// <summary>
-    /// 所有的组都继承这个表
+    /// 树形数据结构
     /// </summary>
-    public abstract class Group : LinkingUserId
+    public class TreeNode:LinkingUserId
     {
         /// <summary>
-        /// 父组
+        /// 序号
+        /// </summary>
+        public DateTime Order { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// 父级 ID
         /// </summary>
         public int ParentId { get; set; }
 
         /// <summary>
-        /// 组名
+        /// 名称
         /// </summary>
         public string Name { get; set; }
 

@@ -3,35 +3,15 @@
     <div class="text-subtitle1 q-mb-sm">{{ initParams.title }}</div>
 
     <div class="column q-gutter-sm">
-      <q-input
-        v-for="field in fields"
-        :key="field.name"
-        clearable
-        clear-icon="close"
-        outlined
-        v-model="data[field.name]"
-        :type="field.type"
-        :label="field.label"
-        dense
-        :readonly="field.readonly"
-      />
+      <q-input v-for="field in fields" :key="field.name" v-model="data[field.name]" clearable clear-icon="close" outlined
+        :type="field.type" :label="field.label" dense :readonly="field.readonly" />
 
       <div class="row justify-end q-gutter-sm">
-        <q-btn
-          :size="btn_cancel.size"
-          :color="btn_cancel.color"
-          :label="btn_cancel.label"
-          :dense="btn_cancel.dense"
-          v-close-popup
-        />
+        <q-btn :size="btn_cancel.size" :color="btn_cancel.color" :label="btn_cancel.label" :dense="btn_cancel.dense"
+          v-close-popup />
 
-        <q-btn
-          :size="btn_confirm.size"
-          :color="btn_confirm.color"
-          :label="btn_confirm.label"
-          :dense="btn_confirm.dense"
-          @click="confirm"
-        />
+        <q-btn :size="btn_confirm.size" :color="btn_confirm.color" :label="btn_confirm.label" :dense="btn_confirm.dense"
+          @click="confirm" />
       </div>
     </div>
   </q-card>
@@ -53,7 +33,8 @@ export default {
   props: {
     initParams: {
       type: Object,
-      require: true
+      require: true,
+      default: () => false
     },
 
     // 类型，有 create,update 两种
@@ -63,7 +44,8 @@ export default {
     },
 
     initData: {
-      type: Object
+      type: Object,
+      default: () => { }
     }
   },
 
@@ -114,7 +96,7 @@ export default {
     // }
   },
 
-  mounted() {},
+  mounted() { },
 
   methods: {
     async confirm() {
@@ -127,7 +109,7 @@ export default {
       }
 
       if (!this.initParams.interceptApi && !this.initParams.api) {
-        throw `需要传递 api`
+        throw new Error('需要传递 api')
       }
 
       const result = await this[`${this.type}Doc`]()
@@ -149,7 +131,7 @@ export default {
           }
       }
 
-      console.log('createDoc data:', createData)
+      // console.log('createDoc data:', createData, this.data)
 
       // 拦截api响应，直接返回数据
       if (this.initParams.interceptApi) {
@@ -236,5 +218,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>
