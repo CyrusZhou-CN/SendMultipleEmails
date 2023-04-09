@@ -9,7 +9,7 @@ namespace Uamazing.SME.Server.Services
     /// 树形结构的服务
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class TreeLikeService<T> : CurdService<T> where T : TreeNode
+    public class TreeLikeService<T> : CurdService where T : TreeNode
     {
         public TreeLikeService(ILiteRepository liteRepository) : base(liteRepository)
         {
@@ -26,7 +26,7 @@ namespace Uamazing.SME.Server.Services
             // 修改全路径
             node.Path = node.Name;
             // 获取父级路径
-            var parentNode = await GetFirstOrDefault(x => x.Id == node.ParentId);
+            var parentNode = await GetFirstOrDefault<T>(x => x.Id == node.ParentId);
             if (parentNode != null)
             {
                 // 组合路径
@@ -42,22 +42,22 @@ namespace Uamazing.SME.Server.Services
         /// 删除节点
         /// </summary>
         /// <returns></returns>
-        public async Task<List<int>> DeleteNodeById(int nodeId)
+        public async Task<List<string>> DeleteNodeById(string nodeId)
         {
             // 找到 node
-            var targetNode = await GetFirstOrDefault(x => x.Id == nodeId);
-            if (targetNode == null) return new List<int>();
+            var targetNode = await GetFirstOrDefault<T>(x => x.Id == nodeId);
+            if (targetNode == null) return new List<string>();
 
             // 递归找到所有的 node 节点
             var children = await GetChildrenNodes(targetNode);
-            var deletingIds = new HashSet<int>()
+            var deletingIds = new HashSet<string>()
             {
                 targetNode.Id,
             };
             children.ForEach(x=>deletingIds.Add(x.Id));
 
             // 开始删除数据
-            await DeleteAllModels(x=>deletingIds.Contains(x.Id));
+            await DeleteAllModels<T>(x=>deletingIds.Contains(x.Id));
             return deletingIds.ToList();
         }
 
@@ -71,7 +71,7 @@ namespace Uamazing.SME.Server.Services
             var results = new List<T>();
 
             // 递归子节点
-            var children = await GetAllModels(x => x.ParentId == startNode.Id);
+            var children = await GetAllModels<T>(x => x.ParentId == startNode.Id);
             results.AddRange(children);
             if (!children.Any()) return results;
 

@@ -56,6 +56,9 @@ namespace Uamazing.SME.Server.Controllers
 
             // 返回新建用户
             var newUser = await _userService.CreateUser(user.UserId,user.Password.EncryptMD5());
+            // 清空密码
+            newUser.Password = null;
+
             return newUser.ToSuccessResponse();
         }
 

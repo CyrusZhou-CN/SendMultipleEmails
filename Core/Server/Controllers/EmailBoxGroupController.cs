@@ -40,15 +40,16 @@ namespace Uamazing.SME.Server.Controllers
         [HttpGet("all")]
         public async Task<ResponseResult<IEnumerable<EmailBoxGroup>>> GetAllEmailGroupsByType([FromQuery] GroupType groupType)
         {
-            var results = await _emailBoxGroupService.GetAllModels(x => x.GroupType == groupType);
+            var (userId,_) = GetTokenInfo(_tokenParams);
+            var results = await _emailBoxGroupService.GetAllModels<EmailBoxGroup>(x => x.UserId== userId && x.GroupType == groupType);
             return results.ToSuccessResponse();
         }
 
-        ///// <summary>
-        ///// 创建组
-        ///// </summary>
-        ///// <param name="data"></param>
-        ///// <returns></returns>
+        /// <summary>
+        /// 创建组
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public override async Task<ResponseResult<EmailBoxGroup>> Create([FromBody] EmailBoxGroup data)
         {
             var (userId, _) = GetTokenInfo(_tokenParams);
@@ -61,25 +62,11 @@ namespace Uamazing.SME.Server.Controllers
             data.UserId = userId;
 
             // 判断组名是否重复
-            if (await CurdService.GetFirstOrDefault(x => x.GroupType == data.GroupType && x.Name == data.Name && x.ParentId == data.ParentId) != null)
+            if (await CurdService.GetFirstOrDefault<EmailBoxGroup>(x => x.GroupType == data.GroupType && x.Name == data.Name && x.ParentId == data.ParentId) != null)
                 return new ErrorResponse<EmailBoxGroup>($"{data.Name} 已经存在");
 
             var result = await _emailBoxGroupService.AddTreeNode(data);
             return result.ToSuccessResponse();
         }
-
-        /// <summary>
-        /// 删除组
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public override async Task<ResponseResult<bool>> DeleteById(int id)
-        {
-            // 删除发件箱和收件箱中的数据
-            var result = await _emailBoxGroupService.DeleteById(id);
-            return result.ToSuccessResponse();
-        }
-
-        
     }
 }

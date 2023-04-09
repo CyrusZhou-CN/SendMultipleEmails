@@ -17,7 +17,7 @@ namespace Uamazing.SME.Server.Services
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        public async Task<bool> DeleteById(int groupId)
+        public async Task<bool> DeleteById(string groupId)
         {
             var deletedIds =await DeleteNodeById(groupId);
 

@@ -13,7 +13,7 @@
         /// <summary>
         /// 父级 ID
         /// </summary>
-        public int ParentId { get; set; }
+        public string ParentId { get; set; }
 
         /// <summary>
         /// 名称

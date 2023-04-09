@@ -3,8 +3,12 @@
     <div class="text-subtitle1 q-mb-sm">{{ initParams.title }}</div>
 
     <div class="column q-gutter-sm">
-      <q-input v-for="field in fields" :key="field.name" v-model="data[field.name]" clearable clear-icon="close" outlined
-        :type="field.type" :label="field.label" dense :readonly="field.readonly" />
+      <template v-for="field in initParams.fields">
+        <q-input v-if="field.type !== 'boolean'" :key="field.name" v-model="data[field.name]" clearable clear-icon="close"
+          outlined :type="field.type" :label="field.label" dense :readonly="field.readonly" />
+
+        <q-checkbox v-if="field.type === 'boolean'" :key="field.name" v-model="data[field.name]" :label="field.label" />
+      </template>
 
       <div class="row justify-end q-gutter-sm">
         <q-btn :size="btn_cancel.size" :color="btn_cancel.color" :label="btn_cancel.label" :dense="btn_cancel.dense"
@@ -102,7 +106,7 @@ export default {
     async confirm() {
       // 判断数据的必要性
       for (const field of this.fields) {
-        if (field.required && !this.data[field.name]) {
+        if (field.required && (this.data[field.name] === null || this.data[field.name] === undefined || this.data[field.name] === '')) {
           notifyError(`${field.label} 为空`)
           return
         }

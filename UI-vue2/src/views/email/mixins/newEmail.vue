@@ -12,43 +12,49 @@ const emailCommonInfo = [
     hidden: true
   },
   {
-    name: 'userName',
-    type: 'text',
-    label: '姓名',
-    required: true
-  },
-  {
     name: 'email',
     type: 'email',
     label: '邮箱',
+    required: true
+  },
+  {
+    name: 'description',
+    type: 'text',
+    label: '描述',
     required: true
   }
 ]
 
 const emailSender = [
   {
-    name: 'smtp',
+    name: 'smtpAddress',
     type: 'text',
     label: 'smtp服务器',
     required: true
   },
   {
-    name: 'password',
+    name: 'smtpPassword',
     type: 'password',
     label: 'smtp密码',
     required: true
+  },
+  {
+    name: 'smtpProtocol',
+    type: 'text',
+    label: 'smtp协议',
+    required: true,
+    default: 'https'
+  },
+  {
+    name: 'smtpPort',
+    type: 'number',
+    label: 'smtp端口',
+    required: true,
+    default: 465
   }
 ]
 
 export default {
-  computed: {
-    newEmailTitle() {
-      if (this.group.groupType == 'send') {
-        return '新增发件箱'
-      }
-      return '新增收件箱'
-    }
-  },
   data() {
     return {
       isShowNewEmailDialog: false,
@@ -61,11 +67,19 @@ export default {
       }
     }
   },
+  computed: {
+    newEmailTitle() {
+      if (this.group.groupType === 1) {
+        return '新增发件箱'
+      }
+      return '新增收件箱'
+    }
+  },
   methods: {
     openNewEmailDialog() {
       // 添加 fields
       const fields = [...emailCommonInfo]
-      if (this.group.groupType == 'send') {
+      if (this.group.groupType === 1) {
         fields.push(...emailSender)
       }
       fields[0].default = this.group._id
@@ -81,7 +95,7 @@ export default {
       if (index > -1) this.data.splice(index, 1, data)
       else this.data.push(data)
 
-      this.isShowNewEmailDialog=false
+      this.isShowNewEmailDialog = false
       notifySuccess('添加成功')
     }
   }

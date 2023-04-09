@@ -56,8 +56,7 @@ export default {
 
   computed: {
     newGroupTitle() {
-      if (this.groupType === 'send') return '添加发件箱'
-
+      if (this.groupType === 1) return '添加发件箱'
       return '添加收件箱'
     }
   },

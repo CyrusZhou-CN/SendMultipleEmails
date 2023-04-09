@@ -21,7 +21,7 @@ namespace Uamazing.SME.Server.Database
             Filename = liteDbPath,
             Upgrade = true
         }, new SMEBsonMapper())
-        {
+        {           
         }
     }
 }

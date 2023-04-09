@@ -83,7 +83,7 @@ export default {
       type: Object,
       default() {
         return {
-          groupType: 'send'
+          groupType: 1
         }
       }
     }
@@ -99,16 +99,8 @@ export default {
   computed: {
     // 列定义
     columns() {
-      if (this.group.groupType === 'send') {
+      if (this.group.groupType === 1) {
         return [
-          {
-            name: 'userName',
-            required: true,
-            label: '姓名',
-            align: 'left',
-            field: row => row.userName,
-            sortable: true
-          },
           {
             name: 'email',
             required: true,
@@ -118,31 +110,42 @@ export default {
             sortable: true
           },
           {
-            name: 'smtp',
+            name: 'description',
             required: true,
-            label: 'SMTP服务器地址',
+            label: '描述',
             align: 'left',
-            field: row => row.smtp,
+            field: row => row.description,
             sortable: true
           },
           {
-            name: 'password',
+            name: 'smtpProtocol',
+            required: true,
+            label: 'SMTP协议',
+            align: 'left',
+            field: row => row.smtpProtocol,
+            sortable: true
+          },
+          {
+            name: 'smtpAddress',
+            required: true,
+            label: 'SMTP服务器',
+            align: 'left',
+            field: row => row.smtpAddress,
+            sortable: true
+          },
+          {
+            name: 'smtpPassword',
             required: true,
             label: 'SMTP密码',
             align: 'left',
-            field: row => row.password,
+            field: row => row.smtpPassword,
             sortable: true
           },
           {
             name: 'maxEmailsPerDay',
-            label: '单日最大发件',
+            label: '单日最大发件数',
             align: 'left',
-            field: 'settings',
-            format: val => {
-              if (!val) return ''
-
-              return val.maxEmailsPerDay
-            },
+            field: 'maxEmailsPerDay',
             sortable: true
           },
           {
@@ -154,19 +157,19 @@ export default {
       } else {
         return [
           {
-            name: 'userName',
-            required: true,
-            label: '姓名',
-            align: 'left',
-            field: row => row.userName,
-            sortable: true
-          },
-          {
             name: 'email',
             required: true,
             label: '邮箱',
             align: 'left',
             field: row => row.email,
+            sortable: true
+          },
+          {
+            name: 'description',
+            required: true,
+            label: '描述',
+            align: 'left',
+            field: row => row.description,
             sortable: true
           },
           {

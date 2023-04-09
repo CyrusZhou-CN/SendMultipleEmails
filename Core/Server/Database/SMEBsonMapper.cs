@@ -18,6 +18,7 @@ namespace Uamazing.SME.Server.Database
         {
             ResolveCollectionName = ResolveCollectionNameFunc;
             UseCamelCase();
+            EnumAsInteger = true;            
         }
 
         /// <summary>

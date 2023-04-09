@@ -17,49 +17,52 @@ namespace Uamazing.SME.Server.Models
         /// <summary>
         /// smtp 密码
         /// </summary>
-        public string SmtpPassword { get; set; }
+        public string? SmtpPassword { get; set; }
 
         /// <summary>
         /// smtp 地址
         /// </summary>
-        public string SmtpAddress { get; set; }
+        public string? SmtpAddress { get; set; }
 
         /// <summary>
         /// smtp 端口，默认 ssl 端口 465
         /// </summary>
         public int SmtpPort { get; set; } = 465;
 
+        /// <summary>
+        /// smtp 协议
+        /// </summary>
+        public string? SmtpProtocol { get; set; } = "https";
+
+        /// <summary>
+        /// 是否作为发件人  
+        /// </summary>       
+        public bool AsSender { get; set; } = true;
+
+        /// <summary>
+        /// 单日最大发件量
+        /// </summary>
+        public int MaxEmailsPerDay { get; set; } = 40;
+
+        /// <summary>
+        /// 总发件量
+        /// </summary>
+        public double SendCountTotal { get; set; }
+
+        /// <summary>
+        /// 当天发件数
+        /// </summary>
+        public int SentCountToday { get; set; }
+
+        /// <summary>
+        /// 记录单日发件的日期
+        /// 系统自动修改
+        /// </summary>
+        public DateTime LastSendDate { get; set; }
+
         public override string GetFilterString()
         {
             return $"{base.GetFilterString()}{SmtpAddress}";
         }
-    }
-
-    /// <summary>
-    /// 发件箱设置
-    /// </summary>
-    public class SendBoxSetting
-    {
-        // 是否作为发件人
-        [BsonField("asSender")]
-        public bool AsSender { get; set; } = true;
-
-        // 单日最大发件量
-        [BsonField("maxEmailsPerDay")]
-        public int MaxEmailsPerDay { get; set; } = 40;
-
-        // 总发件量
-        // 系统自动增加
-        [BsonField("sendCountTotal")]
-        public double SendCountTotal { get; set; }
-
-        // 当天发件数
-        [BsonField("sentCountToday")]
-        public int SentCountToday { get; set; }
-
-        // 记录单日发件的日期
-        // 系统自动修改
-        [BsonField("recordDate")]
-        public string RecordDate { get; set; }
     }
 }

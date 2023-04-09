@@ -51,11 +51,11 @@
     </q-splitter>
 
     <q-dialog v-model="isShowNewGroupDialog">
-      <DialogForm type="create" :init-params="initNewGroupParams" @createSuccess="addNewGroup" />
+      <DialogForm type="create" :initParams="initNewGroupParams" @createSuccess="addNewGroup" />
     </q-dialog>
 
     <q-dialog v-model="isShowModifyGroupDialog">
-      <DialogForm type="update" :init-params="initModifyGroupParams" @updateSuccess="modifyGroup" />
+      <DialogForm type="update" :initParams="initModifyGroupParams" @updateSuccess="modifyGroup" />
     </q-dialog>
   </div>
 </template>
@@ -79,7 +79,7 @@ export default {
   props: {
     groupType: {
       type: Number,
-      default: () => 1
+      default: () => 1 // 默认为发件箱
     }
   },
   data() {

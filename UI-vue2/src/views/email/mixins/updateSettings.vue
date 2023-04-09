@@ -22,11 +22,44 @@ export default {
             hidden: true
           },
           {
-            name: 'userName',
-            type: 'text',
-            label: '姓名',
+            name: 'email',
+            type: 'email',
+            label: '邮箱',
             required: true,
             readonly: true
+          },
+          {
+            name: 'asSender',
+            type: 'boolean',
+            label: '用于发件',
+            default: true,
+            required: true
+          },
+          {
+            name: 'smtpAddress',
+            type: 'text',
+            label: 'smtp服务器',
+            required: true
+          },
+          {
+            name: 'smtpPassword',
+            type: 'password',
+            label: 'smtp密码',
+            required: true
+          },
+          {
+            name: 'smtpProtocol',
+            type: 'text',
+            label: 'smtp协议',
+            required: true,
+            default: 'https'
+          },
+          {
+            name: 'smtpPort',
+            type: 'number',
+            label: 'smtp端口',
+            required: true,
+            default: 465
           },
           {
             name: 'maxEmailsPerDay',
@@ -42,17 +75,9 @@ export default {
     showUpdateSettings(data) {
       // 修改初始化参数
       if (data) {
-        this.$set(this.initSettingParams.fields[0], 'default', data._id || '')
-        this.$set(
-          this.initSettingParams.fields[1],
-          'default',
-          data.userName || ''
-        )
-        this.$set(
-          this.initSettingParams.fields[2],
-          'default',
-          data.settings ? data.settings.maxEmailsPerDay : 0
-        )
+        for (const field of this.initSettingParams.fields) {
+          field.default = data[field.name] || ''
+        }
       }
 
       this.initSettingParams.title = '设置：' + data.email

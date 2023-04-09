@@ -9,7 +9,7 @@ namespace Uamazing.SME.Server.Services
     /// <summary>
     /// 通用的增删查改组件
     /// </summary>
-    public partial class CurdService<T> : ServiceBase where T :AutoObjectId
+    public partial class CurdService : ServiceBase
     {
         public CurdService(ILiteRepository liteRepository) : base(liteRepository)
         {
@@ -21,7 +21,7 @@ namespace Uamazing.SME.Server.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<T> Create(T model)
+        public async Task<T> Create<T>(T model)
         {
             LiteRepository.Insert(model);
             return model;
@@ -34,7 +34,7 @@ namespace Uamazing.SME.Server.Services
         /// <param name="model"></param>
         /// <param name="updateOptions"></param>
         /// <returns></returns>
-        public async Task<T> UpdateOne(Expression<Func<T, bool>> filter, T model,UpdateOptions updateOptions)
+        public async Task<T> UpdateOne<T>(Expression<Func<T, bool>> filter, T model,UpdateOptions updateOptions)
         {
             var result = LiteRepository.UpdateOne(filter, model, updateOptions);
             return result;
@@ -45,7 +45,7 @@ namespace Uamazing.SME.Server.Services
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public async Task<T> GetFirstOrDefault(Expression<Func<T, bool>> filter)
+        public async Task<T> GetFirstOrDefault<T>(Expression<Func<T, bool>> filter)
         {
             var result = LiteRepository.FirstOrDefault(filter);
             return result;
@@ -57,7 +57,7 @@ namespace Uamazing.SME.Server.Services
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> GetAllModels(Expression<Func<T, bool>> filter)
+        public async Task<IEnumerable<T>> GetAllModels<T>(Expression<Func<T, bool>> filter)
         {
             var results = LiteRepository.Fetch(filter);
             return results;
@@ -69,7 +69,7 @@ namespace Uamazing.SME.Server.Services
         /// <param name="filter"></param>
         /// <param name="paginationModel"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> GetPageModels(Expression<Func<T, bool>> filter,PaginationModel paginationModel)
+        public async Task<IEnumerable<T>> GetPageModels<T>(BsonExpression filter,PaginationModel paginationModel)
         {
             var query = LiteRepository.Query<T>().Where(filter);
             if (paginationModel.Descending)
@@ -89,7 +89,7 @@ namespace Uamazing.SME.Server.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task DeleteModel(int id)
+        public async Task DeleteModel<T>(string id)
         {
             LiteRepository.Delete<T>(id);
         }
@@ -99,7 +99,7 @@ namespace Uamazing.SME.Server.Services
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public async Task DeleteAllModels(Expression<Func<T, bool>> filter)
+        public async Task DeleteAllModels<T>(Expression<Func<T, bool>> filter)
         {
             LiteRepository.DeleteMany(filter);
         }

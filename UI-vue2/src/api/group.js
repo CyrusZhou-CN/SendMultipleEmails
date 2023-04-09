@@ -55,7 +55,7 @@ export function getEmailsCount(groupId, filter) {
 export function getEmails(groupId, filter, pagination) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/email-box-group/${groupId}/email-box/list`,
+    url: `/email-box-group/${groupId}/email-box/datas`,
     method: 'post',
     data: { filter, pagination }
   })
@@ -65,7 +65,7 @@ export function getEmails(groupId, filter, pagination) {
 export function newEmail(data) {
   // console.log("modifyGroup api:", groupId, data);
   return request({
-    url: `/email-box-group/${data.groupId}/email`,
+    url: `/email-box-group/${data.groupId}/email-box`,
     method: 'post',
     data
   })

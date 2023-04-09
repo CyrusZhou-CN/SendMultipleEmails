@@ -9,12 +9,12 @@ namespace Uamazing.SME.Server.Controllers
 {
     public abstract class CurdController<T> : SMEControllerBase where T : AutoObjectId
     {
-        protected CurdService<T> CurdService { get; set; }
+        protected CurdService CurdService { get; set; }
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="liteRepository"></param>
-        public CurdController(CurdService<T> curdService)
+        public CurdController(CurdService curdService)
         {
             CurdService = curdService;
         }
@@ -38,7 +38,7 @@ namespace Uamazing.SME.Server.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public virtual async Task<ResponseResult<T>> UpdateOne(int id, [FromBody] T data)
+        public virtual async Task<ResponseResult<T>> UpdateOne(string id, [FromBody] T data)
         {
             // 修改某个值
             var result = await CurdService.UpdateOne(x => x.Id == id, data, null);
@@ -51,9 +51,9 @@ namespace Uamazing.SME.Server.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public virtual async Task<T> GetById(int id)
+        public virtual async Task<T> GetById<T>(string id) where T: AutoObjectId
         {
-            var result = await CurdService.GetFirstOrDefault(x => x.Id == id);
+            var result = await CurdService.GetFirstOrDefault<T>(x => x.Id == id);
             return result;
         }
 
@@ -63,9 +63,9 @@ namespace Uamazing.SME.Server.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public virtual async Task DeleteById(int id)
+        public virtual async Task DeleteById<T>(string id)
         {
-            await CurdService.DeleteModel(id);
+            await CurdService.DeleteModel<T>(id);
         }
     }
 }

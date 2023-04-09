@@ -12,30 +12,15 @@ const emailCommonInfo = [
     hidden: true
   },
   {
-    name: 'userName',
-    type: 'text',
-    label: '姓名',
-    required: true
-  },
-  {
     name: 'email',
     type: 'email',
     label: '邮箱',
     required: true
-  }
-]
-
-const emailSender = [
-  {
-    name: 'smtp',
-    type: 'text',
-    label: 'smtp服务器',
-    required: true
   },
   {
-    name: 'password',
+    name: 'description',
     type: 'text',
-    label: 'smtp密码',
+    label: '描述',
     required: true
   }
 ]
@@ -56,7 +41,7 @@ export default {
 
   computed: {
     modifyEmailTitle() {
-      if (this.group.groupType == 'send') {
+      if (this.group.groupType === 1) {
         return '修改发件箱'
       }
       return '修改收件箱'
@@ -66,9 +51,6 @@ export default {
   methods: {
     showModifyEmailDialog(data) {
       const fields = [...emailCommonInfo]
-      if (this.group.groupType == 'send') {
-        fields.push(...emailSender)
-      }
       fields[0].default = this.group._id
       this.initModifyEmailParams.fields = fields
       this.initModifyEmailParams.title = this.modifyEmailTitle

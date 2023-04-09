@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+using Uamazing.SME.Server.Database;
 using Uamazing.Utils.DotNETCore.Configure;
 using Uamazing.Utils.DotNETCore.Convention;
 using Uamazing.Utils.DotNETCore.Service;
@@ -161,11 +162,7 @@ namespace Uamazing.Utils.DotNETCore
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
 
             // 初始化 litedb
-            var instance = new LiteRepository(new ConnectionString()
-            {
-                Filename = fullPath,
-                Upgrade = true
-            }, new BsonMapper() { }.UseCamelCase());
+            var instance = new LiteDBManager(fullPath);
             builder.Services.AddSingleton<ILiteRepository>(instance);
             builder.Services.AddSingleton(instance.Database);
 

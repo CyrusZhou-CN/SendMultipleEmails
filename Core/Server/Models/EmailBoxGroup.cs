@@ -23,16 +23,16 @@ namespace Uamazing.SME.Server.Models
         /// <summary>
         /// 默认组
         /// </summary>
-        DefaultGroup,
+        DefaultGroup = 0,
 
         /// <summary>
         /// 发件箱组
         /// </summary>
-        OutboxGroup,
+        OutboxGroup = 1,
 
         /// <summary>
         /// 收件箱组
         /// </summary>
-        InboxGroup
+        InboxGroup = 2
     }
 }
