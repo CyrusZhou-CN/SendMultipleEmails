@@ -154,12 +154,16 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .email-spliter {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+.q-tree__node {
+  padding: 0px 0px 2px 0px;
 }
 </style>

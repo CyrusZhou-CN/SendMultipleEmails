@@ -60,7 +60,7 @@ namespace Uamazing.SME.Server.Controllers
         [HttpPost("datas")]
         public async Task<ResponseResult<IEnumerable<EmailBox>>> GetDatas(string groupId, [FromBody] JObject body)
         {
-            var filter = body.SelectTokenOrDefault("fields", new FilterModel());
+            var filter = body.SelectTokenOrDefault("filter", new FilterModel());
             var pagination = body.SelectTokenOrDefault("pagination", new PaginationModel());
 
             var query = BsonExpression.Create($"$.groupId='{groupId}'");

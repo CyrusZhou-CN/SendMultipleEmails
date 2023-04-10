@@ -30,8 +30,19 @@ export default {
         return
       }
 
+      // 将 excel 数据转换成后台识别的数据
+      const formattedDatas = []
+      for (const row of excelData) {
+        const formattedData = {}
+        for (const col of this.columns) {
+          if (row[col.label] === null || row[col.label] === undefined) continue
+          formattedData[col.name] = row[col.label]
+        }
+        formattedDatas.push(formattedData)
+      }
+
       // 发送到服务上保存
-      const res = await newEmails(this.group._id, excelData)
+      const res = await newEmails(this.group._id, formattedDatas)
 
       // 更新本地
       this.data.push(...res.data)

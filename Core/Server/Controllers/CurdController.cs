@@ -51,10 +51,10 @@ namespace Uamazing.SME.Server.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public virtual async Task<T> GetById<T>(string id) where T: AutoObjectId
+        public virtual async Task<ResponseResult<T>> GetById(string id)
         {
             var result = await CurdService.GetFirstOrDefault<T>(x => x.Id == id);
-            return result;
+            return result.ToSuccessResponse();
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Uamazing.SME.Server.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public virtual async Task DeleteById<T>(string id)
+        public virtual async Task DeleteById(string id)
         {
             await CurdService.DeleteModel<T>(id);
         }

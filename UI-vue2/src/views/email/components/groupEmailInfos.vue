@@ -5,7 +5,12 @@
       <template v-slot:top>
         <div class="row justify-center q-gutter-sm">
           <q-btn label="新增" dense size="sm" color="primary" class="q-pr-xs q-pl-xs" @click="openNewEmailDialog" />
-          <q-btn label="从Excel导入" dense size="sm" color="primary" class="q-pr-xs q-pl-xs" @click="selectExcelFile" />
+          <q-btn label="从Excel导入" dense size="sm" color="primary" class="q-pr-xs q-pl-xs" @click="selectExcelFile">
+            <q-tooltip>
+              <div>第一行为表头,名称与该界面显示名称一致</div>
+              <div>支持导入的文件格式：.xls, .xlsx</div>
+            </q-tooltip>
+          </q-btn>
           <span class="text-subtitle1 text-primary">{{ group.name }}</span>
           <input id="fileInput" type="file" style="display: none"
             accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -226,12 +231,16 @@ export default {
 }
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .emails-table {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+.q-tree__node {
+  padding: 0px 0px 2px 0px;
 }
 </style>

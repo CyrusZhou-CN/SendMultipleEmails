@@ -31,7 +31,7 @@
         :key="temp._id"
         flat
         bordered
-        class="q-pa-xs column"
+        class="q-pa-sm column"
         style="width: 400px; max-height: 300px"
       >
         <div class="text-overline">{{ temp.name }}</div>
