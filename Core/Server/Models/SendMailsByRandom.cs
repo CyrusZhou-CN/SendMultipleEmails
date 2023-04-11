@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 namespace Uamazing.SME.Server.Models
 {
     /// <summary>
-    /// 
+    /// 使用随机模板发件
     /// </summary>
     public class SendMailsByRandom:SendMailTask
     {
+
     }
 }

@@ -41,8 +41,9 @@ namespace Uamazing.SME.Server.Models
 
         /// <summary>
         /// 单日最大发件量
+        /// 0 代表无限制
         /// </summary>
-        public int MaxEmailsPerDay { get; set; } = 40;
+        public int MaxEmailsPerDay { get; set; } = 0;
 
         /// <summary>
         /// 总发件量

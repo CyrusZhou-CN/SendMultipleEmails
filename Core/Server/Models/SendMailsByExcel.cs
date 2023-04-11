@@ -8,6 +8,7 @@ namespace Uamazing.SME.Server.Models
 {
     /// <summary>
     /// 从 Excel 批量发件
+    /// 所有的邮件都是随机的
     /// </summary>
     public class SendMailsByExcel:SendMailTask
     {

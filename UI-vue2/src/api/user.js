@@ -29,9 +29,10 @@ export function getCurrentUserInfo() {
   })
 }
 
+// 登出
 export function logout() {
   return request({
-    url: '/user/logout',
+    url: '/user/sign-out',
     method: 'put'
   })
 }

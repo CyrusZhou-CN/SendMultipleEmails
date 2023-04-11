@@ -14,9 +14,12 @@ namespace Uamazing.SME.Server.Services
     public class UserService : ServiceBase
     {
         private TokenParams _tokenParams;
-        public UserService(ILiteRepository liteRepository, IOptions<TokenParams> tokenParams) : base(liteRepository)
+        private SettingService _settingService;
+
+        public UserService(ILiteRepository liteRepository, IOptions<TokenParams> tokenParams,SettingService settingService) : base(liteRepository)
         {
             _tokenParams = tokenParams.Value;
+            _settingService = settingService;
         }
 
         public async Task<User> GetUser(string userId)
@@ -104,7 +107,12 @@ namespace Uamazing.SME.Server.Services
             _ = await GetUser(userId, passwordMd5) ?? throw new NullReferenceException("用户名或密码错误");
 
             // 生成 token
-            return GenerateTokenString(userId);
+            var token = GenerateTokenString(userId);
+
+            // 判断是否有设置，如果没有设置，则新建
+            await _settingService.CreateUserSetting(userId);
+
+            return token;
         }
 
         /// <summary>

@@ -9,7 +9,8 @@ namespace Uamazing.SME.Server.Models
     /// <summary>
     /// 多个人使用一个模板发件
     /// </summary>
-    public class SendMailsByTemplate
+    public class SendMailsByTemplate:SendMailTask
     {
+
     }
 }

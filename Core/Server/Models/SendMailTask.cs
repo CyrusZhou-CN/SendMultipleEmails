@@ -1,8 +1,11 @@
-﻿namespace Uamazing.SME.Server.Models
+﻿using Uamazing.Utils.Database.Attributes;
+
+namespace Uamazing.SME.Server.Models
 {
     /// <summary>
     /// 发件任务
     /// </summary>
+    [CollectionName("SendMailTask")]
     public class SendMailTask:LinkingUserId
     {      
         /// <summary>

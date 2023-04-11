@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace Uamazing.SME.Server.Models
 {
     /// <summary>
-    /// 附件
+    /// 上传的附件
     /// </summary>
     public class Attachment:LinkingUserId
     {
-       
+        
     }
 }

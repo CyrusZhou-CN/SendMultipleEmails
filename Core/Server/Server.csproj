@@ -10,9 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\新文件夹\**" />
     <Compile Remove="wwwroot\**" />
+    <Content Remove="Services\新文件夹\**" />
     <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Services\新文件夹\**" />
     <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Services\新文件夹\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
 

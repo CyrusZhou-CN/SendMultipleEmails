@@ -10,9 +10,9 @@
         </div>
         <q-range
           v-model="sendInterval"
-          :min="2"
-          :max="20"
-          :step="0.5"
+          :min="5"
+          :max="120"
+          :step="1"
           :left-label-value="sendInterval.min + '秒'"
           :right-label-value="sendInterval.max + '秒'"
           label-always
@@ -46,7 +46,7 @@
         <q-tooltip> 发件失败自动重发，重发最大次数为5。 </q-tooltip>
       </q-checkbox>
 
-      <q-checkbox
+      <!-- <q-checkbox
         v-model="sendWithImageAndHtml"
         label="图文混发"
         color="secondary"
@@ -55,7 +55,7 @@
         <q-tooltip>
           将一半邮件转成图片发送（图片在转换过程中会丢失）
         </q-tooltip>
-      </q-checkbox>
+      </q-checkbox> -->
     </div>
   </div>
 </template>
@@ -73,8 +73,8 @@ export default {
   data() {
     return {
       sendInterval: {
-        min: 3,
-        max: 8
+        min: 5,
+        max: 30
       },
 
       // 每日最大发件量
@@ -109,16 +109,16 @@ export default {
     const res = await getUserSettings()
     if (!res.data) return
     const {
-      sendInterval_max,
-      sendInterval_min,
+      minSendInterval,
+      maxSendInterval,
       isAutoResend,
       sendWithImageAndHtml,
 
       maxEmailsPerDay
     } = res.data
 
-    this.sendInterval.min = sendInterval_min || 3
-    this.sendInterval.max = sendInterval_max || 8
+    this.sendInterval.min = minSendInterval || 5
+    this.sendInterval.max = maxSendInterval || 30
     this.isAutoResend = isAutoResend
     this.sendWithImageAndHtml = sendWithImageAndHtml
     this.maxEmailsPerDay = maxEmailsPerDay || 0
