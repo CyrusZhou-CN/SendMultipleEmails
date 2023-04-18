@@ -25,22 +25,44 @@ namespace Uamazing.SME.Server.Services
         /// <param name="sha256"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ResponseResult<FileObject>> GetFileObject(string sha256)
+        public async Task<FileObject> GetFileObject(string sha256)
         {
             // 判断是否有文件，如果有文件，则返回，否则返回空
             var fileObj = await GetFirstOrDefault<FileObject>(x=>x.SHA256 == sha256);
-            return fileObj.ToSuccessResponse();
+            return fileObj;
         }
 
-        public async Task<ResponseResult<FileObject>> UploadFileObject()
+        /// <summary>
+        /// 创建文件信息
+        /// </summary>
+        /// <param name="sha256"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<FileObject> CreateFileObject(string sha256, string userId)
         {
-            // 生成文件记录
-
-            // 保存文件
-
-            // 返回记录
+            var fileObj = new FileObject()
+            {
+                SHA256 = sha256,
+                UserId = userId
+            };
+            fileObj = await Create(fileObj);
+            return fileObj;
         }
 
-        
+        /// <summary>
+        /// 更新磁盘文件信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<FileObject> UpdatePhysicalFileInfo(string fileId, string objectName,long fileSize)
+        {
+            var diskFile = await GetFirstOrDefault<PhysicalFileObject>(x => x.Id == fileId) ?? throw new NullReferenceException($"文件${objectName}不存在");
+
+            // 更新文件信息
+            diskFile.FileSize = fileSize;
+            diskFile.ObjectName = objectName;
+            LiteRepository.Update(diskFile);
+
+            return diskFile;
+        }
     }
 }

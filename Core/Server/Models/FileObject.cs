@@ -1,10 +1,13 @@
-﻿namespace Uamazing.SME.Server.Models
+﻿using Uamazing.Utils.Database.Attributes;
+
+namespace Uamazing.SME.Server.Models
 {
     /// <summary>
     /// ioFile 类
     /// 用于保存上传的文件
     /// </summary>
-    public class FileObject:LinkingUserId
+    [CollectionName("FileObject")]
+    public class FileObject : LinkingUserId
     {
         /// <summary>
         /// 文件大小
@@ -14,7 +17,7 @@
         /// <summary>
         /// 最后修改日期
         /// </summary>
-        public DateTime LastModifyDate { get; set; }
+        public DateTime LastModifyDate { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 文件哈希码
@@ -23,8 +26,22 @@
         public string SHA256 { get; set; }
 
         /// <summary>
-        /// 文件名称
+        /// 文件状态
+        /// 只有 OK 的文件才是有效的文件
         /// </summary>
-        public string ObjectName { get; set; }
+        public FileStatus FileStatus { get; set; } = FileStatus.PreCreated;
+    }
+
+    public enum FileStatus
+    {
+        /// <summary>
+        /// 预创建
+        /// </summary>
+        PreCreated,
+
+        /// <summary>
+        /// 完成
+        /// </summary>
+        Ok,
     }
 }

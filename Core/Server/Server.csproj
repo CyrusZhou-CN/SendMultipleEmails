@@ -34,13 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\WowIt\WoolToolUtils\UamzingUtils.csproj" />
+    <ProjectReference Include="..\..\..\UamazingUtils\UamazingUtils\UamzingUtils.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="ConfValidation">
-      <HintPath>..\..\..\ConfValidation\ConfValidation\bin\Release\netstandard2.1\ConfValidation.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

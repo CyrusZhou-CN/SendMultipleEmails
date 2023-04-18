@@ -2,9 +2,13 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System.Net;
+using Uamazing.SME.Server.Models;
 using Uamazing.SME.Server.Services;
+using Uamazing.Utils.DotNETCore.Token;
+using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.FileUpload;
 using Uamazing.Utils.Web.ResponseModel;
 
@@ -15,17 +19,39 @@ namespace Uamazing.SME.Server.Controllers
     /// </summary>
     public class FileController : SMEControllerBase
     {
-        CurdService _curService;
-        private static readonly FormOptions _defaultFormOptions = new();
-        public FileController(ILiteRepository liteRepository)
-        {
+        private FileObjectService _fileService;
+        private TokenParams _tokenParams;
 
+        public FileController(ILiteRepository liteRepository,FileObjectService fileService, IOptions<TokenParams> options)
+        {
+            _fileService = fileService;
+            _tokenParams = options.Value;
         }
 
-        [HttpPost]
+        /// <summary>
+        /// 预获取文件
+        /// </summary>
+        /// <param name="sha256"></param>
+        /// <returns></returns>
+        [HttpGet("presigned")]
+        public async Task<ResponseResult<FileObject>> PresignedGetObject(string sha256)
+        {
+            var fileObj =await _fileService.GetFileObject(sha256);
+            if(fileObj == null)
+            {
+                // 新建一个
+                var (userId, _) = GetTokenInfo(_tokenParams);
+                fileObj =await _fileService.CreateFileObject(sha256, userId);
+            }
+
+            return fileObj.ToSuccessResponse();
+        }
+
+
+        [HttpPost("multipart")]
         [DisableFormValueModelBinding]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadPhysical()
+        public async Task<IActionResult> UploadPhysicalFile()
         {
             if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
             {

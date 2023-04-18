@@ -70,6 +70,11 @@ var app = builder.Build();
 app.UseDefaultFiles();
 // 设置网站的根目录
 app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath,"Files")),
+    RequestPath = "/files"
+});
 
 // 跨域
 app.UseCors();
