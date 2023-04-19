@@ -5,8 +5,7 @@ namespace Uamazing.SME.Server.Models
     /// <summary>
     /// ioFile 类
     /// 用于保存上传的文件
-    /// </summary>
-    [CollectionName("FileObject")]
+    /// </summary>    
     public class FileObject : LinkingUserId
     {
         /// <summary>

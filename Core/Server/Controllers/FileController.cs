@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System.Net;
+using Uamazing.SME.Server.Helpers.DotNETCore.Multipart;
 using Uamazing.SME.Server.Models;
 using Uamazing.SME.Server.Services;
 using Uamazing.Utils.DotNETCore.Token;
@@ -34,7 +35,7 @@ namespace Uamazing.SME.Server.Controllers
         /// <param name="sha256"></param>
         /// <returns></returns>
         [HttpGet("presigned")]
-        public async Task<ResponseResult<FileObject>> PresignedGetObject(string sha256)
+        public async Task<ResponseResult<FileObject>> PresignedGetObject([FromQuery] string sha256)
         {
             var fileObj =await _fileService.GetFileObject(sha256);
             if(fileObj == null)
@@ -47,84 +48,27 @@ namespace Uamazing.SME.Server.Controllers
             return fileObj.ToSuccessResponse();
         }
 
-
+        /// <summary>
+        /// 上传文件，仅支持上传一个文件
+        /// 上传文件之前，通过 <see cref="PresignedGetObject"/> 来获取 fileId
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("multipart")]
         [DisableFormValueModelBinding]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadPhysicalFile()
+        public async Task<ResponseResult<FileObject>> UploadPhysicalFile()
         {
-            if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
-            {
-                ModelState.AddModelError("File", $"The request couldn't be processed (Error 1).");
-                return BadRequest(ModelState);
-            }
+            // 获取保存的目录
+            var dir = Path.Combine(PhysicalFileObject.DefaultBucketName, DateTime.Now.ToString("yyyy/MM/dd"));
+            var formValueProvider = await FileStreamingHelper.StreamFiles(Request, dir);
+            // 获取 fileId,用于保存到数据库中
+            var fileId = formValueProvider.GetValue("fileId").FirstValue;
+            var fileName = formValueProvider.GetValue("fileName").FirstValue;
+            var objectName = Path.Combine(DateTime.Now.ToString("yyyy/MM/dd"), fileName);
+            var fileSize = formValueProvider.GetValue("fileSize").FirstValue;
+            // 更新数据库
+            var fileObj = await _fileService.UpdatePhysicalFileInfo(fileId, objectName,long.Parse(fileSize));
 
-            var boundary = MultipartRequestHelper.GetBoundary(
-                MediaTypeHeaderValue.Parse(Request.ContentType),
-                _defaultFormOptions.MultipartBoundaryLengthLimit);
-            var reader = new MultipartReader(boundary, HttpContext.Request.Body);
-            var section = await reader.ReadNextSectionAsync();
-
-            while (section != null)
-            {
-                var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
-
-                if (hasContentDispositionHeader)
-                {
-                    // This check assumes that there's a file
-                    // present without form data. If form data
-                    // is present, this method immediately fails
-                    // and returns the model error.
-                    if (!MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
-                    {
-                        ModelState.AddModelError("File", $"The request couldn't be processed (Error 2).");
-                        // Log error
-
-                        return BadRequest(ModelState);
-                    }
-                    else
-                    {
-                        // Don't trust the file name sent by the client. To display
-                        // the file name, HTML-encode the value.
-                        var trustedFileNameForDisplay = WebUtility.HtmlEncode(contentDisposition.FileName.Value);
-                        var trustedFileNameForFileStorage = Path.GetRandomFileName();
-
-                        // **WARNING!**
-                        // In the following example, the file is saved without
-                        // scanning the file's contents. In most production
-                        // scenarios, an anti-virus/anti-malware scanner API
-                        // is used on the file before making the file available
-                        // for download or for use by other systems. 
-                        // For more information, see the topic that accompanies 
-                        // this sample.
-
-                        var streamedFileContent = await FileHelpers.ProcessStreamedFile(section, contentDisposition, ModelState, _permittedExtensions, _fileSizeLimit);
-
-                        if (!ModelState.IsValid)
-                        {
-                            return BadRequest(ModelState);
-                        }
-
-                        using (var targetStream = System.IO.File.Create(
-                            Path.Combine(_targetFilePath, trustedFileNameForFileStorage)))
-                        {
-                            await targetStream.WriteAsync(streamedFileContent);
-
-                            _logger.LogInformation(
-                                "Uploaded file '{TrustedFileNameForDisplay}' saved to " +
-                                "'{TargetFilePath}' as {TrustedFileNameForFileStorage}",
-                                trustedFileNameForDisplay, _targetFilePath,
-                                trustedFileNameForFileStorage);
-                        }
-                    }
-                }
-
-                // Drain any remaining section body that hasn't been consumed and
-                // read the headers for the next section.
-                section = await reader.ReadNextSectionAsync();
-            }
-
-            return Created(nameof(StreamingController), null);
+            return fileObj.ToSuccessResponse();
         }
     }
 }
