@@ -53,13 +53,15 @@ namespace Uamazing.SME.Server.Services
         /// 更新磁盘文件信息
         /// </summary>
         /// <returns></returns>
-        public async Task<FileObject> UpdatePhysicalFileInfo(string fileId, string objectName,long fileSize)
+        public async Task<FileObject> UpdatePhysicalFileInfo(string fileId, string objectName,string fileName, long fileSize)
         {
-            var diskFile = await GetFirstOrDefault<PhysicalFileObject>(x => x.Id == fileId) ?? throw new NullReferenceException($"文件${objectName}不存在");
+            var diskFile = await GetFirstOrDefault<PhysicalFileObject>(x => x.Id == fileId) ?? throw new NullReferenceException($"文件:{fileName} 不存在");
 
             // 更新文件信息
+            diskFile.FileName = fileName;
             diskFile.FileSize = fileSize;
             diskFile.ObjectName = objectName;
+            diskFile.FileStatus = FileStatus.Ok;
             LiteRepository.Update(diskFile);
 
             return diskFile;

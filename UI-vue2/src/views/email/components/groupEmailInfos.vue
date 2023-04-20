@@ -151,6 +151,7 @@ export default {
             label: '单日最大发件数',
             align: 'left',
             field: 'maxEmailsPerDay',
+            format: v => v ? v : '无限制',
             sortable: true
           },
           {

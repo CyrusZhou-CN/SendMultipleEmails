@@ -3,7 +3,7 @@
     <div class="text-subtitle1 q-mb-sm">{{ initParams.title }}</div>
 
     <div class="column q-gutter-sm">
-      <template v-for="field in initParams.fields">
+      <template v-for="field in fields">
         <q-input v-if="field.type !== 'boolean'" :key="field.name" v-model="data[field.name]" clearable clear-icon="close"
           outlined :type="field.type" :label="field.label" dense :readonly="field.readonly" />
 

@@ -63,10 +63,11 @@ namespace Uamazing.SME.Server.Controllers
             // 获取 fileId,用于保存到数据库中
             var fileId = formValueProvider.GetValue("fileId").FirstValue;
             var fileName = formValueProvider.GetValue("fileName").FirstValue;
-            var objectName = Path.Combine(DateTime.Now.ToString("yyyy/MM/dd"), fileName);
+            var safeFileName = formValueProvider.GetValue("safeFileName").FirstValue;
+            var objectName = Path.Combine(DateTime.Now.ToString("yyyy/MM/dd"), safeFileName);
             var fileSize = formValueProvider.GetValue("fileSize").FirstValue;
             // 更新数据库
-            var fileObj = await _fileService.UpdatePhysicalFileInfo(fileId, objectName,long.Parse(fileSize));
+            var fileObj = await _fileService.UpdatePhysicalFileInfo(fileId, objectName, fileName, long.Parse(fileSize));
 
             return fileObj.ToSuccessResponse();
         }

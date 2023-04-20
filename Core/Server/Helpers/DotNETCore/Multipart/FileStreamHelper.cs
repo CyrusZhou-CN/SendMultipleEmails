@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using Uamazing.Utils.Web.FileUpload;
+using Uamazing.Utils.Extensions;
 
 namespace Uamazing.SME.Server.Helpers.DotNETCore.Multipart
 {
@@ -63,13 +64,14 @@ namespace Uamazing.SME.Server.Helpers.DotNETCore.Multipart
                         }
 
                         var fileName = MultipartRequestHelper.GetFileName(contentDisposition);
-                        // 对 fileName 作特殊处理，防止名称有特殊符号
-                        fileName = WebUtility.HtmlEncode(fileName);
                         // 保存文件名
-                        formAccumulator.Append("fileNames", fileName);
+                        formAccumulator.Append("fileName", fileName);
+                        // 对 fileName 作特殊处理，防止名称有特殊符号
+                        var  safeFileName = WebUtility.HtmlEncode($"{DateTime.Now.ToTimestamp()}_{WebUtility.HtmlEncode(fileName)}");
+                        formAccumulator.Append("safeFileName", safeFileName);
 
                         var loadBufferBytes = 1024;//这个是每一次从Http请求的section中读出文件数据的大小，单位是Byte即字节，这里设置为1024的意思是，每次从Http请求的section数据流中读取出1024字节的数据到服务器内存中，然后写入下面targetFileStream的文件流中，可以根据服务器的内存大小调整这个值。这样就避免了一次加载所有上传文件的数据到服务器内存中，导致服务器崩溃。
-                        using var targetFileStream = File.Create(Path.Combine(targetDirectory, fileName));
+                        using var targetFileStream = File.Create(Path.Combine(targetDirectory, safeFileName));
                         //section.Body是System.IO.Stream类型，表示的是Http请求中一个section的数据流，从该数据流中可以读出每一个section的全部数据，所以我们下面也可以不用section.Body.CopyToAsync方法，而是在一个循环中用section.Body.Read方法自己读出数据，再将数据写入到targetFileStream
                         await section.Body.CopyToAsync(targetFileStream, loadBufferBytes);
                         // 保存文件大小

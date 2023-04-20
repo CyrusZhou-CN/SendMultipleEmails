@@ -51,39 +51,12 @@ export default {
   methods: {
     showModifyEmailDialog(data) {
       const fields = [...emailCommonInfo]
-      fields[0].default = this.group._id
       this.initModifyEmailParams.fields = fields
       this.initModifyEmailParams.title = this.modifyEmailTitle
 
-      // 修改初始化参数
-      if (data) {
-        this.$set(
-          this.initModifyEmailParams.fields[0],
-          'default',
-          data._id || ''
-        )
-        this.$set(
-          this.initModifyEmailParams.fields[1],
-          'default',
-          data.userName || ''
-        )
-        this.$set(
-          this.initModifyEmailParams.fields[2],
-          'default',
-          data.email || ''
-        )
-      }
-      if (this.group.groupType == 'send') {
-        this.$set(
-          this.initModifyEmailParams.fields[3],
-          'default',
-          data.smtp || ''
-        )
-        this.$set(
-          this.initModifyEmailParams.fields[4],
-          'default',
-          data.password || ''
-        )
+      for (const field of fields) {
+        // 设置默认值
+        field.default = data[field.name]
       }
 
       this.isShowModifyEmailDialog = true

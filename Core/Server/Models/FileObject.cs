@@ -6,8 +6,15 @@ namespace Uamazing.SME.Server.Models
     /// ioFile 类
     /// 用于保存上传的文件
     /// </summary>    
+    [CollectionName("FileObject")]
     public class FileObject : LinkingUserId
     {
+        /// <summary>
+        /// 文件名称
+        /// 可阅读的，未经编码过的名称
+        /// </summary>
+        public string FileName { get; set; }
+
         /// <summary>
         /// 文件大小
         /// </summary>

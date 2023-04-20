@@ -1,39 +1,15 @@
 <template>
   <div class="column q-pa-md template-main">
     <div class="row q-gutter-sm">
-      <q-btn
-        dense
-        color="primary"
-        class="q-mb-md self-center q-pl-sm q-pr-sm"
-        @click="jumpToTemplateEditor()"
-        >新增</q-btn
-      >
+      <q-btn dense color="primary" class="q-mb-md self-center q-pl-sm q-pr-sm" @click="jumpToTemplateEditor()">新增</q-btn>
 
-      <q-btn
-        dense
-        color="primary"
-        class="q-mb-md self-center q-pl-sm q-pr-sm"
-        @click="selectFile"
-        >导入</q-btn
-      >
-      <input
-        type="file"
-        id="fileInput"
-        style="display: none"
-        accept="text/html"
-        @change="fileSelected"
-      />
+      <q-btn dense color="primary" class="q-mb-md self-center q-pl-sm q-pr-sm" @click="selectFile">导入</q-btn>
+      <input type="file" id="fileInput" style="display: none" accept="text/html" @change="fileSelected" />
     </div>
 
     <div class="row q-gutter-sm">
-      <q-card
-        v-for="temp in data"
-        :key="temp._id"
-        flat
-        bordered
-        class="q-pa-sm column"
-        style="width: 400px; max-height: 300px"
-      >
+      <q-card v-for="temp in data" :key="temp._id" flat bordered class="q-pa-sm column"
+        style="width: 400px; max-height: 300px">
         <div class="text-overline">{{ temp.name }}</div>
 
         <q-img class="rounded-borders template-image" :src="temp.imageUrl" />
@@ -41,30 +17,9 @@
         <div class="row justify-between q-mt-sm">
           <div>创建时间:{{ temp.createDate | formatDate }}</div>
           <div class="row q-gutter-sm">
-            <q-btn
-              color="primary"
-              class="self-center"
-              size="sm"
-              dense
-              @click="jumpToTemplateEditor(temp._id)"
-              >编辑</q-btn
-            >
-            <q-btn
-              color="primary"
-              class="self-center"
-              size="sm"
-              dense
-              @click="viewTemplate(temp.imageUrl)"
-              >查看</q-btn
-            >
-            <q-btn
-              color="negative"
-              class="self-center"
-              size="sm"
-              dense
-              @click="deleteTemplate(temp._id)"
-              >删除</q-btn
-            >
+            <q-btn color="primary" class="self-center" size="sm" dense @click="jumpToTemplateEditor(temp._id)">编辑</q-btn>
+            <q-btn color="primary" class="self-center" size="sm" dense @click="viewTemplate(temp.imageUrl)">查看</q-btn>
+            <q-btn color="negative" class="self-center" size="sm" dense @click="deleteTemplate(temp._id)">删除</q-btn>
           </div>
         </div>
       </q-card>
@@ -72,12 +27,7 @@
 
     <q-dialog v-model="isShowTemplateDialog" persistent>
       <q-card style="max-width: none">
-        <q-layout
-          view="lHh lpr lFf"
-          container
-          style="height: 400px; width: 600px"
-          class="shadow-2 rounded-borders"
-        >
+        <q-layout view="lHh lpr lFf" container style="height: 400px; width: 600px" class="shadow-2 rounded-borders">
           <q-header elevated class="bg-teal">
             <div class="text-subtitle1 q-pa-sm">{{ selectedFileName }}</div>
           </q-header>
@@ -85,22 +35,12 @@
           <q-footer elevated class="bg-teal">
             <div class="row justify-end q-ma-sm q-gutter-sm">
               <q-btn color="warning" size="sm" v-close-popup>取消</q-btn>
-              <q-btn
-                color="primary"
-                size="sm"
-                @click="confirmTemplate"
-                :loading="isSavingTemplate"
-                >确认</q-btn
-              >
+              <q-btn color="primary" size="sm" @click="confirmTemplate" :loading="isSavingTemplate">确认</q-btn>
             </div>
           </q-footer>
 
           <q-page-container>
-            <div
-              id="capture"
-              v-html="templateHtml"
-              style="background-color: white"
-            ></div>
+            <div id="capture" v-html="templateHtml" style="background-color: white"></div>
           </q-page-container>
         </q-layout>
       </q-card>
@@ -242,6 +182,7 @@ export default {
 
   .template-editor-dialog {
     max-width: none;
+
     .q-dialog__inner {
       max-width: none !important;
     }

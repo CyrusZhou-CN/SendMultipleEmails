@@ -92,8 +92,7 @@ export default {
   },
 
   computed: {
-    groupsData() {
-      // 将所有的组解析成树的结构
+    dataTree() {
       const ltt = new LTT(this.groupsOrigin, {
         key_id: '_id',
         key_parent: 'parentId',
@@ -101,9 +100,12 @@ export default {
         empty_children: true
       })
 
-      this.dataTree = ltt
+      return ltt
+    },
 
-      return ltt.GetTree()
+    groupsData() {
+      // 将所有的组解析成树的结构
+      return this.dataTree.GetTree()
     }
   },
 
@@ -154,16 +156,16 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .email-spliter {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-}
 
-.q-tree__node {
-  padding: 0px 0px 2px 0px;
+  .q-tree__node {
+    padding: 0px 0px 2px 0px;
+  }
 }
 </style>
