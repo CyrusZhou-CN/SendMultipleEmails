@@ -1,28 +1,10 @@
 <template>
-  <q-table
-    row-key="_id"
-    :data="data"
-    :columns="columns"
-    :pagination.sync="pagination"
-    :loading="loading"
-    :filter="filter"
-    dense
-    binary-state-sort
-    virtual-scroll
-    class="full-heigth"
-    selection="multiple"
-    :selected.sync="selected"
-    @request="initQuasarTable_onRequest"
-  >
+  <q-table row-key="_id" :data="data" :columns="columns" :pagination.sync="pagination" :loading="loading" :filter="filter"
+    dense binary-state-sort virtual-scroll class="full-heigth" selection="multiple" :selected.sync="selected"
+    @request="initQuasarTable_onRequest">
     <template v-slot:top>
       <q-space />
-      <q-input
-        v-model="filter"
-        dense
-        debounce="300"
-        placeholder="搜索"
-        color="primary"
-      >
+      <q-input v-model="filter" dense debounce="300" placeholder="搜索" color="primary">
         <template v-slot:append>
           <q-icon name="search" />
         </template>
@@ -43,7 +25,7 @@ export default {
       type: Object,
       default() {
         return {
-          groupType: 'send'
+          groupType: 1
         }
       }
     },
@@ -57,9 +39,7 @@ export default {
   },
   data() {
     return {
-      filter: '',
-      data: [],
-      selected: this.value
+      selected: []
     }
   },
 
@@ -122,11 +102,14 @@ export default {
     // 获取筛选结果
     async initQuasarTable_getFilterList(filterObj, pagination) {
       const res = await getEmails(this.group._id, filterObj, pagination)
-      return res.data || []
+      const emails = res.data || []
+
+      // 将已选择的数据添加到选择集中
+
+      return emails
     }
   }
 }
 </script>
 
-<style>
-</style>
+<style></style>

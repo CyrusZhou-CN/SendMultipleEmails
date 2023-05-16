@@ -8,7 +8,7 @@
         /// <summary>
         /// 序号
         /// </summary>
-        public DateTime Order { get; set; } = DateTime.Now;
+        public long Order { get; set; }
 
         /// <summary>
         /// 父级 ID

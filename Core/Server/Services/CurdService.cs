@@ -36,7 +36,13 @@ namespace Uamazing.SME.Server.Services
         /// <returns></returns>
         public async Task<T> UpdateOne<T>(Expression<Func<T, bool>> filter, T model,UpdateOptions updateOptions)
         {
-            var result = LiteRepository.UpdateOne(filter, model, updateOptions);
+            var defaultUpdateOptions = updateOptions;
+            if (updateOptions == null)
+            {
+                defaultUpdateOptions = UpdateOptions.CreateIgnoreDefaultValue(model);
+            }
+                
+            var result = LiteRepository.UpdateOne(filter, model, defaultUpdateOptions);
             return result;
         }
 

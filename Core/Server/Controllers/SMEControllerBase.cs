@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Uamazing.Utils.DotNETCore.Token;
 using Uamazing.Utils.Extensions;
 using Uamazing.Utils.Token.Extensions;
+using Uamazing.Utils.Json;
 
 namespace Uamazing.SME.Server.Controllers
 {
@@ -46,7 +47,7 @@ namespace Uamazing.SME.Server.Controllers
         protected (string, string) GetTokenInfo(TokenParams tokenParams)
         {
             var token = GetToken();
-            var userId = tokenParams.GetTokenPayload(token).ValueOrDefault("userId", "");
+            var userId = tokenParams.GetTokenPayload(token).SelectTokenOrDefault("userId", "");
             return (userId, token);
         }
 

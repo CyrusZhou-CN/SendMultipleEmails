@@ -1,46 +1,31 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="q-dialog-plugin">
+    <q-card class="q-dialog-plugin q-pa-sm">
       <!--
         ...内容
         ...使用q-card-section展现它?
       -->
+      <div class="text-subtitle1">选择邮箱</div>
+
       <q-splitter v-model="splitterModel" class="email-selector">
         <template v-slot:before>
-          <div class="q-pa-xs">
-            <q-tree
-              :nodes="groupsData"
-              node-key="_id"
-              selected-color="primary"
-              label-key="name"
-              :selected.sync="selectedNode"
-              no-connectors
-              tick-strategy="strict"
-              :ticked.sync="tickedNodes"
-            />
-          </div>
+          <q-tree :nodes="groupsData" node-key="_id" selected-color="primary" label-key="name"
+            :selected.sync="selectedNode" no-connectors>
+            <template v-slot:default-header="prop">
+              <div class="row items-center">
+                <q-checkbox size="sm" v-model="tickedGroupModel[prop.key]" dense />
+                <div class="q-ml-sm text-weight-bold text-primary">{{ prop.node.name }}</div>
+              </div>
+            </template>
+          </q-tree>
         </template>
 
         <template v-slot:after>
-          <q-tab-panels
-            v-model="selectedNode"
-            animated
-            transition-prev="jump-up"
-            transition-next="jump-up"
-            style="height: 100%"
-          >
-            <q-tab-panel
-              v-for="group in groupsOrigin"
-              :key="group._id"
-              :name="group._id"
-              class="q-pa-none column"
-              style="height: 100%"
-            >
-              <EmailTable
-                v-model="tickedUsers"
-                :group="group"
-                style="flex: 1"
-              />
+          <q-tab-panels v-model="selectedNode" animated transition-prev="jump-up" transition-next="jump-up"
+            class="full-height">
+            <q-tab-panel v-for="group in groupsOrigin" :key="group._id" :name="group._id"
+              class="q-pa-none column full-height">
+              <EmailTable class="full-height" :group="group" :value="value" />
             </q-tab-panel>
           </q-tab-panels>
         </template>
@@ -66,10 +51,11 @@ export default {
 
   props: {
     groupType: {
-      type: String,
-      default: 'send'
+      type: Number,
+      default: 1
     },
 
+    // value 是一个数组，里面包含了选中的组和用户
     value: {
       type: Array,
       default() {
@@ -85,14 +71,16 @@ export default {
 
       selectedNode: '',
 
-      tickedNodes: this.value
-        .filter(v => v.type === 'group')
-        .map(item => item._id),
-      tickedUsers: this.value.filter(v => v.type !== 'group')
+      // 包含选中的组和用户
+      tickedResult: [...this.value],
+
+      // 选择组
+      tickedGroupModel: {}
     }
   },
 
   computed: {
+    // 所有的组数据
     groupsData() {
       // 将所有的组解析成树的结构
       const ltt = new LTT(this.groupsOrigin, {
@@ -104,7 +92,8 @@ export default {
 
       // this.dataTree = ltt
 
-      return ltt.GetTree()
+      const result = ltt.GetTree()
+      return result
     },
 
     // 选择的结果数据
@@ -116,7 +105,8 @@ export default {
           return {
             type: 'group',
             _id: g._id,
-            label: g.name
+            label: g.name,
+            ticked: false
           }
         })
 
@@ -127,51 +117,33 @@ export default {
     }
   },
 
-  // 原模块的v-model使用
-  // watch: {
-  //   tickedNodes(val) {
-  //     // 转换数据格式
-  //     const results = this.groupsOrigin
-  //       .filter(g => val.findIndex(t => t === g._id) > -1)
-  //       .map(g => {
-  //         return {
-  //           type: 'group',
-  //           _id: g._id,
-  //           label: g.name
-  //         }
-  //       })
-
-  //     results.push(...this.tickedUsers)
-
-  //     console.log('tickedNodes:', results)
-  //     this.$emit('input', results)
-  //   },
-
-  //   tickedUsers(val) {
-  //     console.log('tickedUsers:', val)
-  //     const results = this.groupsOrigin
-  //       .filter(g => this.tickedNodes.findIndex(t => t === g._id) > -1)
-  //       .map(g => {
-  //         return {
-  //           type: 'group',
-  //           _id: g._id,
-  //           label: g.name
-  //         }
-  //       })
-
-  //     results.push(...val)
-
-  //     this.$emit('input', results)
-  //   }
-  // },
-
   async mounted() {
     console.log('this.value:', this.value)
     // 获取所有的组
     const res = await getGroups(this.groupType)
-
     this.groupsOrigin = res.data
-    // 选择第一个
+
+    for (const group of this.groupsOrigin) {
+      this.$set(this.tickedGroupModel, group._id, null)
+
+      // 判断是否是选项中，如果在，则为 true
+      if (this.value.findIndex(v => v._id === group._id) > -1) {
+        this.$set(this.tickedGroupModel, group._id, true)
+        continue
+      }
+
+      // 判断是否部分选中了
+      if (this.value.some(x => x.groupId === group._id)) {
+        this.$set(this.tickedGroupModel, group._id, null)
+        continue
+      }
+
+      this.$set(this.tickedGroupModel, group._id, false)
+    }
+
+    console.log(this.tickedGroupModel)
+
+    // 默认选择第一个
     if (this.groupsOrigin && this.groupsOrigin.length > 0) {
       this.selectedNode = this.groupsOrigin[0]._id
     }
@@ -223,6 +195,10 @@ export default {
   .email-selector {
     background: white;
     height: 400px;
+  }
+
+  .q-tree__node {
+    padding: 0px;
   }
 }
 </style>

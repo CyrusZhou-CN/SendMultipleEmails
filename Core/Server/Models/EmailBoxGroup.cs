@@ -15,7 +15,7 @@ namespace Uamazing.SME.Server.Models
         /// <summary>
         /// 组类型
         /// </summary>
-        public GroupType GroupType { get; set; } = GroupType.DefaultGroup;
+        public GroupType GroupType { get; set; }
     }
 
     public enum GroupType

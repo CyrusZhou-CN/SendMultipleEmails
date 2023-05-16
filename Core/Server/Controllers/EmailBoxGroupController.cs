@@ -11,6 +11,7 @@ using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.RequestModel;
 using Uamazing.Utils.Web.ResponseModel;
 using Uamazing.Utils.Json;
+using Uamazing.Utils.Extensions;
 
 namespace Uamazing.SME.Server.Controllers
 {
@@ -64,6 +65,9 @@ namespace Uamazing.SME.Server.Controllers
             // 判断组名是否重复
             if (await CurdService.GetFirstOrDefault<EmailBoxGroup>(x => x.GroupType == data.GroupType && x.Name == data.Name && x.ParentId == data.ParentId) != null)
                 return new ErrorResponse<EmailBoxGroup>($"{data.Name} 已经存在");
+
+            // 添加序号
+            if (data.Order < 1) data.Order = DateTime.Now.ToTimestamp();
 
             var result = await _emailBoxGroupService.AddTreeNode(data);
             return result.ToSuccessResponse();
