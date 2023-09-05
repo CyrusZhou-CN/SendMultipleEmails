@@ -4,7 +4,7 @@
       <q-btn flat dense round @click="drawerOpenBtnClicked" aria-label="Menu" icon="menu" class="q-mx-md" />
 
       <q-toolbar-title v-if="$q.screen.gt.sm" shrink class="row items-center no-wrap">
-        <span class="q-ml-sm">SendMutipleEmails</span>
+        <span class="q-ml-sm">SendMultipleEmails</span>
       </q-toolbar-title>
 
       <q-space />
