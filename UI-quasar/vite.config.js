@@ -2,6 +2,10 @@ import { defineConfig } from 'vite'
 import path from 'path'
 import vue from '@vitejs/plugin-vue'
 
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
@@ -17,5 +21,14 @@ export default defineConfig({
       dirs: path.resolve(__dirname, 'src/directives')
     }
   },
-  plugins: [vue()]
+  plugins: [
+    vue(),
+    // 按需导入 element-plus 组件
+    AutoImport({
+      resolvers: [ElementPlusResolver()]
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()]
+    })
+  ]
 })
