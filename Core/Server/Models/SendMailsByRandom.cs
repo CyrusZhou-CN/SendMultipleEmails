@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Uamazing.SME.Server.Models
+namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 使用随机模板发件

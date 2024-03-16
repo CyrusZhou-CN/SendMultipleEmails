@@ -23,6 +23,10 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    vueJsx(),
+    UnoCSS({
+      hmrTopLevelAwait: false
+    }),
     // 按需导入 element-plus 组件
     AutoImport({
       resolvers: [ElementPlusResolver()]

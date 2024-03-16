@@ -1,32 +1,28 @@
 ﻿using LiteDB;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
-using System.Net;
-using Uamazing.SME.Server.Helpers.DotNETCore.Multipart;
-using Uamazing.SME.Server.Models;
-using Uamazing.SME.Server.Services;
-using Uamazing.Utils.DotNETCore.Token;
+using Uamazing.UZonEmail.Server.Models;
+using Uamazing.UZonEmail.Server.Modules.DotNETCore.Multipart;
+using Uamazing.UZonEmail.Server.Services;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.FileUpload;
 using Uamazing.Utils.Web.ResponseModel;
+using Uamazing.UZonEmail.Server.Services.Settings;
 
-namespace Uamazing.SME.Server.Controllers
+namespace Uamazing.UZonEmail.Server.Controllers
 {
     /// <summary>
     /// 文件模块
     /// </summary>
-    public class FileController : SMEControllerBase
+    public class FileController : ControllerBaseV1
     {
         private FileObjectService _fileService;
-        private TokenParams _tokenParams;
+        private TokenService _tokenService;
 
-        public FileController(ILiteRepository liteRepository,FileObjectService fileService, IOptions<TokenParams> options)
+        public FileController(ILiteRepository liteRepository, FileObjectService fileService, TokenService tokenService)
         {
             _fileService = fileService;
-            _tokenParams = options.Value;
+            _tokenService = tokenService;
         }
 
         /// <summary>
@@ -37,12 +33,12 @@ namespace Uamazing.SME.Server.Controllers
         [HttpGet("presigned")]
         public async Task<ResponseResult<FileObject>> PresignedGetObject([FromQuery] string sha256)
         {
-            var fileObj =await _fileService.GetFileObject(sha256);
-            if(fileObj == null)
+            var fileObj = await _fileService.GetFileObject(sha256);
+            if (fileObj == null)
             {
                 // 新建一个
-                var (userId, _) = GetTokenInfo(_tokenParams);
-                fileObj =await _fileService.CreateFileObject(sha256, userId);
+                var (userId, _) = _tokenService.GetTokenInfo();
+                fileObj = await _fileService.CreateFileObject(sha256, userId);
             }
 
             return fileObj.ToSuccessResponse();

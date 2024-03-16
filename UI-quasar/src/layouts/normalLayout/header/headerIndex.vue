@@ -1,10 +1,10 @@
 <template>
-  <q-header bordered class="bg-white text-grey-8" height-hint="64">
-    <q-toolbar class="GPL__toolbar" style="height: 64px">
+  <q-header bordered class="bg-primary text-white" height-hint="50">
+    <q-toolbar class="GPL__toolbar" style="height: 40px">
       <q-btn flat dense round @click="drawerOpenBtnClicked" aria-label="Menu" icon="menu" class="q-mx-md" />
 
       <q-toolbar-title v-if="$q.screen.gt.sm" shrink class="row items-center no-wrap">
-        <span class="q-ml-sm">SendMultipleEmails</span>
+        <span class="q-ml-sm">宇正群邮</span>
       </q-toolbar-title>
 
       <q-space />
@@ -22,14 +22,9 @@
 </template>
 
 <script lang="ts" setup>
-
-const props = defineProps({
-  leftDrawerOpen: { type: Boolean, default: () => false }
-})
-const emit = defineEmits(['update:leftDrawerOpen'])
-
+import { leftDrawerOpen } from '../leftDrawer/useDrawerProp'
 function drawerOpenBtnClicked() {
-  emit('update:leftDrawerOpen', !props.leftDrawerOpen)
+  leftDrawerOpen.value = !leftDrawerOpen.value
 }
 </script>
 

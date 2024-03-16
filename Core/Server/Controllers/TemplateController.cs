@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Uamazing.SME.Server.Models;
-using Uamazing.SME.Server.Services;
+using Uamazing.UZonEmail.Server.Models;
+using Uamazing.UZonEmail.Server.Services;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
 
-namespace Uamazing.SME.Server.Controllers
+namespace Uamazing.UZonEmail.Server.Controllers
 {
     /// <summary>
     /// 模板控制器
     /// </summary>
     public class TemplateController : CurdController<Template>
     {
-        public TemplateController(CurdService curdService) : base(curdService)
+        public TemplateController(CRUDService curdService) : base(curdService)
         {
         }
 
@@ -22,7 +22,7 @@ namespace Uamazing.SME.Server.Controllers
         [HttpGet("all")]
         public async Task<ResponseResult<IEnumerable<Template>>> GetTemplates()
         {
-            var allTemplates =await CurdService.GetAllModels<Template>(x=>true);
+            var allTemplates =await CurdService.FindAll<Template>(x=>true);
             return allTemplates.ToSuccessResponse();
         }
     }

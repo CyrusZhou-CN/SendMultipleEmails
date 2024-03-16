@@ -1,4 +1,4 @@
-﻿namespace Uamazing.SME.Server.Models
+﻿namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 磁盘文件

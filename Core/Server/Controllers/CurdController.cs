@@ -1,23 +1,23 @@
 ﻿using LiteDB;
 using Microsoft.AspNetCore.Mvc;
-using Uamazing.SME.Server.Services;
+using Uamazing.UZonEmail.Server.Services;
 using Uamazing.Utils.Database.LiteDB;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
 
-namespace Uamazing.SME.Server.Controllers
+namespace Uamazing.UZonEmail.Server.Controllers
 {
-    public abstract class CurdController<T> : SMEControllerBase where T : AutoObjectId
+    /// <summary>
+    /// 对单表的增删改查
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <remarks>
+    /// 构造函数
+    /// </remarks>
+    /// <param name="liteRepository"></param>
+    public abstract class CurdController<T>(CRUDService curdService) : ControllerBaseV1 where T : AutoObjectId
     {
-        protected CurdService CurdService { get; set; }
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="liteRepository"></param>
-        public CurdController(CurdService curdService)
-        {
-            CurdService = curdService;
-        }
+        protected CRUDService CurdService { get; set; } = curdService;
 
         /// <summary>
         /// 新建文档
@@ -53,7 +53,7 @@ namespace Uamazing.SME.Server.Controllers
         [HttpGet("{id}")]
         public virtual async Task<ResponseResult<T>> GetById(string id)
         {
-            var result = await CurdService.GetFirstOrDefault<T>(x => x.Id == id);
+            var result = await CurdService.FirstOrDefault<T>(x => x.Id == id);
             return result.ToSuccessResponse();
         }
 
@@ -65,7 +65,7 @@ namespace Uamazing.SME.Server.Controllers
         [HttpDelete("{id}")]
         public virtual async Task DeleteById(string id)
         {
-            await CurdService.DeleteModel<T>(id);
+            await CurdService.DeleteById<T>(id);
         }
     }
 }

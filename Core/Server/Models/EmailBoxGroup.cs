@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Uamazing.SME.Server.Models
+namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 所有的组都继承这个表

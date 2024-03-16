@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Uamazing.SME.Server.Models;
+using Uamazing.UZonEmail.Server.Models;
 
-namespace Uamazing.SME.Server.Models
+namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 用户表

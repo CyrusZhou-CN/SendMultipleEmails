@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Uamazing.Utils.Database.LiteDB;
 
-namespace Uamazing.SME.Server.Models
+namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 邮箱信息

@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNet.SignalR.Hubs;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 
-namespace Uamazing.SME.Server.Hubs
+namespace Uamazing.UZonEmail.Server.Hubs
 {
     /// <summary>
     /// 用户登陆
     /// </summary>
-    [HubName("UserLogin")]
     public class UserLoginHub:Hub
     {
         public UserLoginHub()
         {
-
         }
 
         public override Task OnConnectedAsync()

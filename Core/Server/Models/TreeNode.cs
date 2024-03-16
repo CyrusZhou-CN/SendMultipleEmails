@@ -1,4 +1,4 @@
-﻿namespace Uamazing.SME.Server.Models
+﻿namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 树形数据结构

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Uamazing.SME.Server.Models
+namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 从 Excel 批量发件

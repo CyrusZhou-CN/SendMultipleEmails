@@ -2,9 +2,8 @@
 using Microsoft.Extensions.Options;
 using Uamazing.ConfValidatation.Core.Entrance;
 using Uamazing.ConfValidatation.Core.Validators;
-using Uamazing.SME.Server.Models;
-using Uamazing.SME.Server.Services;
-using Uamazing.Utils.DotNETCore.Token;
+using Uamazing.UZonEmail.Server.Models;
+using Uamazing.UZonEmail.Server.Services;
 using Uamazing.Utils.Web.RequestModel;
 using Uamazing.Utils.Web.ResponseModel;
 using Uamazing.Utils.Json;
@@ -13,28 +12,16 @@ using Uamazing.Utils.Web.Extensions;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using LiteDB;
+using Uamazing.UZonEmail.Server.Services.Settings;
 
-namespace Uamazing.SME.Server.Controllers
+namespace Uamazing.UZonEmail.Server.Controllers
 {
     /// <summary>
     /// 邮箱
     /// </summary>
     [Route("api/v1/email-box-group/{groupId}/email-box")]
-    public class EmailBoxController : SMEControllerBase
+    public class EmailBoxController(CRUDService curdService, TokenService tokenService) : ControllerBaseV1
     {
-        private TokenParams _tokenParams;
-        private CurdService _curdService;
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="curdService"></param>
-        public EmailBoxController(CurdService curdService, IOptions<TokenParams> options)
-        {
-            _tokenParams = options.Value;
-            _curdService = curdService;
-        }
-
         /// <summary>
         /// 获取邮箱数量
         /// </summary>
@@ -43,13 +30,13 @@ namespace Uamazing.SME.Server.Controllers
         public async Task<ResponseResult<int>> GetDatasCount(string groupId, [FromBody] JObject body)
         {
             var filter = body.SelectTokenOrDefault("filter", new FilterModel());
-            var query = BsonExpression.Create($"$.groupId='{groupId}'");              
-            if(!string.IsNullOrEmpty(filter.Filter))
+            var query = BsonExpression.Create($"$.groupId='{groupId}'");
+            if (!string.IsNullOrEmpty(filter.Filter))
             {
-                query = Query.And(query,Query.Or(Query.Contains("email", filter.Filter), Query.Contains("description", filter.Filter)));
+                query = Query.And(query, Query.Or(Query.Contains("email", filter.Filter), Query.Contains("description", filter.Filter)));
             }
 
-            var count = await _curdService.GetPageModelsCount<EmailBox>(query);
+            var count = await curdService.GetCountInCurrentPage<EmailBox>(query);
             return count.ToSuccessResponse();
         }
 
@@ -68,7 +55,7 @@ namespace Uamazing.SME.Server.Controllers
             {
                 query = Query.And(query, Query.Or(Query.Contains("email", filter.Filter), Query.Contains("description", filter.Filter)));
             }
-            var results = await _curdService.GetPageModels<EmailBox>(query, pagination);
+            var results = await curdService.FindAllInPaper<EmailBox>(query, pagination);
             return results.ToSuccessResponse();
         }
 
@@ -81,10 +68,10 @@ namespace Uamazing.SME.Server.Controllers
         [HttpPost]
         public async Task<ResponseResult<EmailBox>> Create(string groupId, [FromBody] JObject data)
         {
-            var (userId, _) = GetTokenInfo(_tokenParams);
+            var (userId, _) =tokenService.GetTokenInfo();
 
             // 获取组
-            var group = _curdService.Collection<EmailBoxGroup>().FindOne(x => x.Id == groupId) ??  throw new ArgumentNullException($"未找到组 {groupId}");
+            var group = curdService.Collection<EmailBoxGroup>().FindOne(x => x.Id == groupId) ?? throw new ArgumentNullException($"未找到组 {groupId}");
 
             // 根据组类型，实例数据
             EmailBox? emailBox;
@@ -95,13 +82,13 @@ namespace Uamazing.SME.Server.Controllers
             emailBox.Validate(new VdObj
             {
                 { ()=>emailBox.Email,new IsString("邮箱不能为空")}
-            });           
+            });
 
             // 判断邮箱是否重复
-            if (await _curdService.GetFirstOrDefault<EmailBox>(x => x.Email == emailBox.Email && x.GroupId==groupId) != null) return new ErrorResponse<EmailBox>($"{emailBox.Email} 已经存在");
+            if (await curdService.FirstOrDefault<EmailBox>(x => x.Email == emailBox.Email && x.GroupId == groupId) != null) return new ErrorResponse<EmailBox>($"{emailBox.Email} 已经存在");
 
             // 创建邮箱
-            var newResult = await _curdService.Create(emailBox);
+            var newResult = await curdService.Create(emailBox);
             return newResult.ToSuccessResponse();
         }
 
@@ -113,7 +100,7 @@ namespace Uamazing.SME.Server.Controllers
         [HttpDelete("/api/v1/email-box/{emailBoxId}")]
         public async Task<ResponseResult<bool>> DeleteById(string emailBoxId)
         {
-            await _curdService.DeleteModel<EmailBox>(emailBoxId);
+            await curdService.DeleteById<EmailBox>(emailBoxId);
             return new SuccessResponse<bool>();
         }
 
@@ -126,10 +113,10 @@ namespace Uamazing.SME.Server.Controllers
         public async Task<ResponseResult<Outbox>> UpdateOutboxSettings(string emailBoxId, [FromBody] JObject data)
         {
             // 找到邮箱
-            var emailBox = _curdService.Collection<Outbox>().FindById(emailBoxId)?? throw new ArgumentNullException($"email box:{emailBoxId} not exist");
+            var emailBox = curdService.Collection<Outbox>().FindById(emailBoxId) ?? throw new ArgumentNullException($"email box:{emailBoxId} not exist");
             // 修改邮箱数据
-            emailBox = JsonHelper.UpdateModelByJObject(emailBox,data);
-            _curdService.Collection<EmailBox>().Update(emailBox);
+            emailBox = JsonHelper.UpdateModelByJObject(emailBox, data);
+            curdService.Collection<EmailBox>().Update(emailBox);
 
             return emailBox.ToSuccessResponse();
         }

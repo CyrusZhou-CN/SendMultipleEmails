@@ -25,4 +25,7 @@
   "[vue]": {
     "editor.defaultFormatter": "Vue.volar"
   },
+  "i18n-ally.localesPaths": [
+    "src/lang"
+  ],
 }

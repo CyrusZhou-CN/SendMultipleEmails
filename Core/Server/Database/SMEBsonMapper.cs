@@ -1,10 +1,10 @@
 ﻿using LiteDB;
-using Uamazing.Utils.AttributeHelpers;
 using Uamazing.Utils.Database.Attributes;
 using Uamazing.Utils.Database.LiteDB;
 using Uamazing.Utils.Extensions;
+using Uamazing.Utils.Helpers;
 
-namespace Uamazing.SME.Server.Database
+namespace Uamazing.UZonEmail.Server.Database
 {
     /// <summary>
     /// 自定义的 BsonMapper
@@ -18,7 +18,7 @@ namespace Uamazing.SME.Server.Database
         {
             ResolveCollectionName = ResolveCollectionNameFunc;
             UseCamelCase();
-            EnumAsInteger = true;            
+            EnumAsInteger = true;
         }
 
         /// <summary>
@@ -30,7 +30,6 @@ namespace Uamazing.SME.Server.Database
         {
             CollectionNameAttribute att = AttributeHelper.GetAttribute<CollectionNameAttribute>(type);
             if (att == null) return type.Name.ToSnakeCase();
-
             return att.Name.ToSnakeCase();
         }
     }

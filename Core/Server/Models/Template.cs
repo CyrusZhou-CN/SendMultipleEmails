@@ -1,6 +1,6 @@
 ﻿using Uamazing.Utils.Database.LiteDB;
 
-namespace Uamazing.SME.Server.Models
+namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 模板集合

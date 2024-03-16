@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Uamazing.Utils.Database.Attributes;
 
-namespace Uamazing.SME.Server.Models
+namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// 发件箱

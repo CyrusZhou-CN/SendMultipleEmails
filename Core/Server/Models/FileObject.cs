@@ -1,6 +1,6 @@
 ﻿using Uamazing.Utils.Database.Attributes;
 
-namespace Uamazing.SME.Server.Models
+namespace Uamazing.UZonEmail.Server.Models
 {
     /// <summary>
     /// ioFile 类

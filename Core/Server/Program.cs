@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using Uamazing.SME.Server.Config;
-using Uamazing.Utils.DotNETCore;
+using Uamazing.UZonEmail.Server.Config;
+using Uamazing.UZonEmail.Server.Database;
+using Uamazing.UZonEmail.Server.Modules.DotNETCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -29,15 +30,18 @@ services.AddSwaggerGen(new OpenApiInfo()
 
 // 添加 signalR
 services.AddSignalR();
-
 // 设置 hyphen-case 路由
 services.SetupSlugifyCaseRoute();
-
 // 绑定配置
-builder.MapConfiguration(new ConfigurationMapper());
-
+services.Configure<AppConfig>(builder.Configuration);
+// 注入数据库
+services.AddDbContext<SQLiteContext>();
+// 注入 liteDB
+services.AddLiteDB();
+// 添加 HttpContextAccessor，以供 service 获取当前请求的用户信息
+services.AddHttpContextAccessor();
 // 批量注册服务
-services.MapServices();
+services.AddServices();
 
 // 配置 jwt 验证
 var secretKey = builder.Configuration["TokenParams:Secret"];
@@ -48,9 +52,6 @@ services.Configure<ApiBehaviorOptions>(o =>
 {
     o.SuppressModelStateInvalidFilter = true;
 });
-
-// 注册 liteDB
-builder.AddLiteDB();
 
 // 跨域
 services.AddCors(options =>
