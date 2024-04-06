@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using Uamazing.Utils.Extensions;
 using Uamazing.Utils.Json;
+using Uamazing.Utils.Web.Token;
 
 namespace UZonMailService.Controllers
 {
@@ -18,7 +19,10 @@ namespace UZonMailService.Controllers
     public abstract class ControllerBaseV1 : ControllerBase
     {
         #region 控制器通用的方法
-        private  JObject _requestBody;
+        private JObject _requestBody;
+        /// <summary>
+        /// 请求数据体
+        /// </summary>
         protected JObject RequestBody
         {
             get
@@ -33,6 +37,22 @@ namespace UZonMailService.Controllers
 
                 return _requestBody;
             }
+        }
+
+        /// <summary>
+        /// 从 token 中获取 userId
+        /// </summary>
+        /// <param name="tokenParams"></param>
+        /// <returns></returns>
+        protected int GetUserIdFromToken(TokenParams tokenParams)
+        {
+            var token = Request.Headers[HeaderNames.Authorization].ToString();
+            if(string.IsNullOrEmpty(token))return 0;
+
+            var tokenPayloads = tokenParams.GetTokenPayloads(token);
+            string userId = tokenPayloads.SelectTokenOrDefault("userId", string.Empty);
+            if (int.TryParse(userId, out int intUserId)) return intUserId;
+            return 0;
         }
         #endregion
     }

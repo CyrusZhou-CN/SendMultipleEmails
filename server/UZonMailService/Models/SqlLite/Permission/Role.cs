@@ -1,5 +1,5 @@
-﻿using UZonMailService.Models.LiteDB;
-using UZonMailService.Models.SqlLite.Base;
+﻿using UZonMailService.Models.SqlLite.Base;
+using UZonMailService.Models.SqlLite.UserInfos;
 
 namespace UZonMailService.Models.SqlLite.Permission
 {
@@ -17,7 +17,7 @@ namespace UZonMailService.Models.SqlLite.Permission
         /// <summary>
         /// 权限码
         /// </summary>
-        public List<PermissionCode> Codes { get; set; }
+        public List<PermissionCode> PermissionCodes { get; set; }
         public List<User> Users { get; set; }
         #endregion
     }

@@ -1,16 +1,23 @@
-﻿using LiteDB;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using System.Security.Claims;
 using Uamazing.ConfValidatation.Core.Entrance;
 using Uamazing.ConfValidatation.Core.Validators;
-using UZonMailService.Services.Litedb;
 using Uamazing.Utils.Extensions;
-using Uamazing.Utils.Validate;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
+using UZonMailService.Models.SqlLite.UserInfos;
 using UZonMailService.Services.Settings;
-using UZonMailService.Models.LiteDB;
+using UZonMailService.Services.UserInfos;
+using UZonMailService.Utils.ASPNETCore.PagingQuery;
+using UZonMailService.Utils.DotNETCore.Exceptions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using UZonMailService.Services.Files;
+using UZonMailService.Models.SqlLite;
+using Microsoft.EntityFrameworkCore;
+using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Controllers.Users
 {
@@ -21,19 +28,32 @@ namespace UZonMailService.Controllers.Users
     /// 构造函数
     /// </remarks>
     /// <param name="userService"></param>
-    public class UserController(UserService userService, TokenService tokenService) : ControllerBaseV1
+    public class UserController(SqlContext db, UserService userService, TokenService tokenService, FileStoreService fileStoreService) : ControllerBaseV1
     {
+        /// <summary>
+        /// UserId 是否已经被使用
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("check-user-id")]
+        public async Task<ResponseResult<bool>> IsUserIdInUse([FromQuery] string userId)
+        {
+            if (string.IsNullOrEmpty(userId)) throw new KnownException("用户 ID 不能为空");
+            var existUser = await userService.ExistUser(userId);
+            if (existUser) throw new KnownException($"用户 ID: {userId} 已经存在");
+
+            return true.ToSuccessResponse();
+        }
+
         /// <summary>
         /// 新建用户
         /// </summary>
         /// <returns></returns>
-        [AllowAnonymous]
-        [HttpPost]
+        [HttpPost("sign-up")]
         public async Task<ResponseResult<User>> SignUp([FromBody] User user)
         {
             // 用户名重复检查
-            var existUser = await userService.GetUser(user.UserId);
-            if (existUser != null) return new ErrorResponse<User>($"用户 {existUser.UserId} 已经存在");
+            var existUser = await userService.ExistUser(user.UserId);
+            if (existUser) throw new KnownException($"用户 {user.UserId} 已经存在");
 
             // 验证用户
             user.Validate(new VdObj
@@ -42,37 +62,11 @@ namespace UZonMailService.Controllers.Users
                 { ()=>user.Password,new IsString("密码最小长度不小于6个字符"){ MinLength=6} }
             }, ValidateOption.ThrowError);
 
-            // 密码校验
-            if (string.IsNullOrEmpty(user.Password)) return new ErrorResponse<User>("请输入密码");
-
             // 返回新建用户
-            var newUser = await userService.CreateUser(user.UserId, user.Password.EncryptMD5());
+            var newUser = await userService.CreateUser(user.UserId, user.Password);
             // 清空密码
-            newUser.Password = null;
-
+            newUser.Password = string.Empty;
             return newUser.ToSuccessResponse();
-        }
-
-        /// <summary>
-        /// 获取 token
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpGet("token")]
-        public async Task<ResponseResult<string>> GetToken([FromQuery] string userId, [FromQuery] string password)
-        {
-            // 验证用户名密码是否正确
-            if (string.IsNullOrEmpty(userId)) return new ErrorResponse<string>("请输入用户名");
-            if (string.IsNullOrEmpty(password)) return new ErrorResponse<string>("请输入密码");
-
-            // 生成加密密码
-            var passwordMd5 = password.EncryptMD5();
-
-            // 生成 token            
-            var token = await userService.GenerateToken(userId, passwordMd5);
-            return token.ToSuccessResponse();
         }
 
         /// <summary>
@@ -80,7 +74,7 @@ namespace UZonMailService.Controllers.Users
         /// </summary>
         /// <returns></returns>
         [HttpPost("sign-in"), AllowAnonymous]
-        public async Task<ResponseResult<string>> SignIn([FromBody] User user)
+        public async Task<ResponseResult<UserSignInResult>> SignIn([FromBody] User user)
         {
             // 验证用户
             user.Validate(new VdObj
@@ -89,22 +83,20 @@ namespace UZonMailService.Controllers.Users
                 { ()=>user.Password,new NotNullOrEmpty(),"密码为空" }
             }, ValidateOption.ThrowError);
 
-            var token = await userService.SignIn(user.UserId, user.Password.EncryptMD5());
-            return token.ToSuccessResponse();
+            var loginResult = await userService.UserSignIn(user.UserId, user.Password);
+
+            return loginResult.ToSuccessResponse();
         }
 
         /// <summary>
-        /// 获取当前用户的信息
+        /// 获取用户信息
         /// </summary>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        [HttpGet("info")]
-        public async Task<ResponseResult<User>> GetCurrentUserInfo()
+        [HttpGet("user-info")]
+        public async Task<ResponseResult<User>> GetUserInfo(string userId)
         {
-            var (userId, _) = tokenService.GetTokenInfo();
-            var user = await userService.GetUser(userId);
-
-            // 去掉密码
-            user.Password = string.Empty;
+            var user = await userService.GetUserInfo(userId);
             return user.ToSuccessResponse();
         }
 
@@ -116,13 +108,113 @@ namespace UZonMailService.Controllers.Users
         public async Task<ResponseResult<bool>> SignOut()
         {
             // 从 token 中获取当前用户信息
-            var (userId, _) = tokenService.GetTokenInfo();
+
 
             // 清除用户的 signR 连接
 
 
             // 返回退出成功消息
             return true.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 获取用户的数量
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("filtered-count")]
+        public async Task<ResponseResult<int>> GetUsersCount([FromQuery] string filter)
+        {
+            var count = await userService.GetFilteredUsersCount(filter);
+            return count.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 获取过滤后的数据
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
+        [HttpPost("filtered-data")]
+        public async Task<ResponseResult<List<User>>> GetUsersData([FromQuery] string filter, [FromBody] PageDataPick<User> pagination)
+        {
+            var users = await userService.GetFilteredUsersData(filter, pagination);
+            return users.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 获取默认的用户密码
+        /// 只有超管才可以操作
+        /// </summary>
+        /// <returns></returns>
+        [Authorize("RequireAdmin")]
+        [HttpGet("default-password")]
+        public async Task<ResponseResult<string>> GetDefaultPassword()
+        {
+            string pwd = userService.GetUserDefaultPassword();
+            return pwd.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 重置用户密码
+        /// 只有超管才可以操作
+        /// </summary>
+        /// <returns></returns>
+        [Authorize("RequireAdmin")]
+        [HttpPut("reset-password")]
+        public async Task<ResponseResult<bool>> ResetUserPassword([FromBody] User user)
+        {
+            // 查找用户
+            bool result = await userService.ResetUserPassword(user.UserId);
+            return result.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("password")]
+        public async Task<ResponseResult<bool>> ChangeUserPassword(string oldPassword, string newPassword)
+        {
+            // 获取当前用户
+            int userId = tokenService.GetIntUserId();
+            // 验证原密码是否正确
+            bool result = await userService.ChangeUserPassword(userId, oldPassword, newPassword);
+            return result.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 更新用户头像
+        /// </summary>
+        /// <param name="formFile"></param>
+        /// <returns></returns>
+        [HttpPut("avatar")]
+        public async Task<ResponseResult<string>> UpdateUserAvatar(IFormFile file)
+        {
+            if (file == null) throw new KnownException("文件不能为空");
+
+            int userId = tokenService.GetIntUserId();
+            var (fullPath, relativePath) = fileStoreService.GenerateStaticFilePath(userId.ToString(), "avatar", DateTime.Now.ToTimestamp() + "_" + file.FileName);
+
+            // 清除原来的头像文件
+            string baseDir = Path.GetDirectoryName(fullPath) ?? throw new KnownException("文件路径错误");
+            // 删除 baseDir 下的所有文件
+            foreach (var filePath in Directory.GetFiles(baseDir))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            // 保存文件
+            using Stream saveFile = new FileStream(fullPath, FileMode.Create);
+            file.CopyTo(saveFile);
+
+            // 将头像更新到用户信息中
+            await db.Users.UpdateOneAscyn(x => x.Id == userId, user =>
+            {
+                user.Avatar = relativePath;
+            });
+            await db.SaveChangesAsync();
+
+            return relativePath.ToSuccessResponse();
         }
     }
 }

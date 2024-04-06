@@ -13,7 +13,7 @@ namespace UZonMailService.Services.Settings
     /// </summary>
     /// <param name="httpContextAccessor"></param>
     /// <param name="appConfig"></param>
-    public class TokenService(IHttpContextAccessor httpContextAccessor, IOptions<AppConfig> appConfig) : ITransientService
+    public class TokenService(IHttpContextAccessor httpContextAccessor, IOptions<AppConfig> appConfig) : IScopedService
     {
         private HttpRequest Request => httpContextAccessor.HttpContext.Request;
         /// <summary>
@@ -40,14 +40,15 @@ namespace UZonMailService.Services.Settings
         }
 
         /// <summary>
-        /// 获取 token 中的信息，第一个值是 userId,第二个值目前空缺
+        /// 获取 token 中的 userId
         /// </summary>
         /// <returns></returns>
-        public (string, string) GetTokenInfo()
+        public int GetIntUserId()
         {
             var token = GetToken();
             var userId = appConfig.Value.TokenParams.GetTokenPayloads(token).SelectTokenOrDefault("userId", "");
-            return (userId, token);
+            if(int.TryParse(userId, out int intUserId)) return intUserId;
+            return 0;
         }
     }
 }

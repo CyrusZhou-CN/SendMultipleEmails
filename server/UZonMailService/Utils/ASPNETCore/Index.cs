@@ -10,7 +10,6 @@ using System.Text;
 using UZonMailService.Config.SubConfigs;
 using UZonMailService.Utils.DotNETCore;
 using UZonMailService.Utils.DotNETCore.Convention;
-using UZonMailService.Utils.DotNETCore.Service;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Utils.Database;
 
@@ -62,7 +61,7 @@ namespace UZonMailService.Utils.DotNETCore
             // 单例
             var singletonServiceType = typeof(ISingletonService);
             // 分多种情况，注册不同的生命周期
-            var singletonServiceTypes = serviceTypes.Where(x => !x.IsAbstract && scopedServiceType.IsAssignableFrom(x))
+            var singletonServiceTypes = serviceTypes.Where(x => !x.IsAbstract && singletonServiceType.IsAssignableFrom(x))
                 .ToList();
             singletonServiceTypes.ForEach(type => services.AddSingleton(type));
 

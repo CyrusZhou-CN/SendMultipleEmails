@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UZonMailService.Config.SubConfigs;
-using UZonMailService.Database;
 
 namespace UZonMailService.Utils.Database
 {

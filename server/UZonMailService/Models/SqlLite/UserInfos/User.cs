@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using UZonMailService.Models.LiteDB;
-using UZonMailService.Models.SqlLite.Base;
+﻿using UZonMailService.Models.SqlLite.Base;
 using UZonMailService.Models.SqlLite.Permission;
 
 namespace UZonMailService.Models.SqlLite.UserInfos
@@ -8,8 +6,18 @@ namespace UZonMailService.Models.SqlLite.UserInfos
     /// <summary>
     /// 用户上下文
     /// </summary>
-    public class User: SqlId
+    public class User : SqlId
     {
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string UserId { get; set; }
+
+        /// <summary>
+        /// 用户姓名
+        /// </summary>
+        public string? UserName { get; set; }
+
         /// <summary>
         /// 密码
         /// </summary>
@@ -18,47 +26,37 @@ namespace UZonMailService.Models.SqlLite.UserInfos
         /// <summary>
         /// 头像
         /// </summary>
-        public string Avatar { get; set; }
+        public string? Avatar { get; set; }
 
         /// <summary>
         /// signalR 连接 id
         /// </summary>
-        public string ConnectionId { get; set; }
+        public string? ConnectionId { get; set; }
 
         /// <summary>
-        /// 是否是管理员
+        /// 是否被删除
         /// </summary>
-        public bool IsAdmin { get; set; } = false;
+        public bool Deleted { get; set; }
 
         /// <summary>
-        /// 账户状态
+        /// 禁止登录
         /// </summary>
-        public UserStatus Status { get; set; } = UserStatus.Normal;
+        public bool ForbiddenToLogin { get; set; }
+
+        /// <summary>
+        /// 隐藏
+        /// </summary>
+        public bool Hidden { get; set; }
+
+        /// <summary>
+        /// 是否是超级管理员
+        /// </summary>
+        public bool IsSuperAdmin { get; set; }
 
         /// <summary>
         /// 用户角色
         /// 导航属性
         /// </summary>
         public List<UserRole> UserRoles { get; set; }
-    }
-
-    /// <summary>
-    /// 用户状态
-    /// </summary>
-    public enum UserStatus
-    {
-        /// <summary>
-        /// 被删除
-        /// </summary>
-        Deleted,
-
-        /// <summary>
-        /// </summary>
-        Normal,
-
-        /// <summary>
-        /// 不允许登陆
-        /// </summary>
-        NotAllowedToLogin
     }
 }
