@@ -41,7 +41,8 @@ namespace UZonMailService.Models.SqlLite.Init
                 adminUser = new UserInfos.User
                 {
                     UserName = "admin",
-                    Password = "admin1234".EncryptMD5(),
+                    // 密码是进行了 Sha256 二次加密的
+                    Password = "admin1234".Sha256(1),
                     IsSuperAdmin = true
                 };
 
@@ -50,7 +51,7 @@ namespace UZonMailService.Models.SqlLite.Init
                 {
                     var adminUserConfig = _appConfig.User.AdminUser;
                     if(!string.IsNullOrEmpty(adminUserConfig.UserId))adminUser.UserId = adminUserConfig.UserId;
-                    if (!string.IsNullOrEmpty(adminUserConfig.Password)) adminUser.Password = adminUserConfig.Password.EncryptMD5();
+                    if (!string.IsNullOrEmpty(adminUserConfig.Password)) adminUser.Password = adminUserConfig.Password.Sha256(1);
                     if (!string.IsNullOrEmpty(adminUserConfig.Avatar)) adminUser.Avatar = adminUserConfig.Avatar;
                 }
 

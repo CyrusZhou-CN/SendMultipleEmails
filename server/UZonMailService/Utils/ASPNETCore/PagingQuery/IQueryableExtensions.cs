@@ -37,9 +37,9 @@ namespace UZonMailService.Utils.ASPNETCore.PagingQuery
         /// <param name="values"></param>
         /// <param name="pick"></param>
         /// <returns></returns>
-        public static IQueryable<T> Page<T>(this IQueryable<T> values, PageDataPick<T> pick) where T : Models.SqlLite.Base.SqlId
+        public static IQueryable<T> Page<T>(this IQueryable<T> values, PageDataPick pick) where T : Models.SqlLite.Base.SqlId
         {
-            return pick.Run(values);
+            return pick.Run<T>(values);
         }
     }
 }

@@ -1,35 +1,24 @@
-﻿namespace UZonMailService.Utils.ASPNETCore.PagingQuery
+﻿using Uamazing.Utils.Web.RequestModel;
+
+namespace UZonMailService.Utils.ASPNETCore.PagingQuery
 {
     /// <summary>
     /// 获取分页数据
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class PageDataPick<T>
+    public class PageDataPick : PaginationModel
     {
-        /// <summary>
-        /// 排序字段
-        /// </summary>
-        public string? SortBy { get; set; }
-        /// <summary>
-        /// 是否降序
-        /// </summary>
-        public bool Descending { get; set; } = false;
-        /// <summary>
-        /// 跳过的数量
-        /// </summary>
-        public int Skip { get; set; }
-        /// <summary>
-        /// 返回的数量
-        /// 若为0,则返回全部
-        /// </summary>
-        public int Limit { get; set; }
+        public PageDataPick()
+        {
+            // 修改默认值
+            SortBy = "id";
+        }
 
         /// <summary>
         /// 执行分页数据
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        public IQueryable<T> Run(IQueryable<T> values)
+        public IQueryable<T> Run<T>(IQueryable<T> values)
         {
             if (!string.IsNullOrEmpty(SortBy))
             {
@@ -39,7 +28,7 @@
             {
                 values = values.Skip(Skip);
             }
-            if(Limit > 0)
+            if (Limit > 0)
             {
                 values = values.Take(Limit);
             }

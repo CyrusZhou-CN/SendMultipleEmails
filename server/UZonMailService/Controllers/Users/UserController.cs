@@ -82,7 +82,6 @@ namespace UZonMailService.Controllers.Users
                 { ()=>user.UserId,new NotNullOrEmpty(),"用户名为空"},
                 { ()=>user.Password,new NotNullOrEmpty(),"密码为空" }
             }, ValidateOption.ThrowError);
-
             var loginResult = await userService.UserSignIn(user.UserId, user.Password);
 
             return loginResult.ToSuccessResponse();
@@ -135,7 +134,7 @@ namespace UZonMailService.Controllers.Users
         /// <param name="pagination"></param>
         /// <returns></returns>
         [HttpPost("filtered-data")]
-        public async Task<ResponseResult<List<User>>> GetUsersData([FromQuery] string filter, [FromBody] PageDataPick<User> pagination)
+        public async Task<ResponseResult<List<User>>> GetUsersData([FromQuery] string filter, [FromBody] PageDataPick pagination)
         {
             var users = await userService.GetFilteredUsersData(filter, pagination);
             return users.ToSuccessResponse();
@@ -208,10 +207,7 @@ namespace UZonMailService.Controllers.Users
             file.CopyTo(saveFile);
 
             // 将头像更新到用户信息中
-            await db.Users.UpdateOneAscyn(x => x.Id == userId, user =>
-            {
-                user.Avatar = relativePath;
-            });
+            await db.Users.UpdateAscyn(x => x.Id == userId, x => x.SetProperty(y => y.Avatar, relativePath));
             await db.SaveChangesAsync();
 
             return relativePath.ToSuccessResponse();

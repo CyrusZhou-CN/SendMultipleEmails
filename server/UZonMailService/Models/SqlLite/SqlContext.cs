@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
+using System.Reflection.Metadata;
+using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SqlLite.EntityTypeConfigs;
 
 namespace UZonMailService.Models.SqlLite
 {
@@ -7,7 +10,18 @@ namespace UZonMailService.Models.SqlLite
     /// Sql 上下文
     /// </summary>
     public class SqlContext : DbContext
-    {
+    {        
+        #region 初始化
+        /// <summary>
+        /// 配置数据库
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            new EmailTypeConfig().Configure(modelBuilder);
+        }
+        #endregion
+
         #region 构造函数
         private readonly string _dbPath;
         public SqlContext()
@@ -37,6 +51,15 @@ namespace UZonMailService.Models.SqlLite
         public DbSet<Files.FileBucket> FileBuckets { get; set; }
         public DbSet<Files.FileObject> FileObjects { get; set; }
         public DbSet<Files.FileUsage> FileUsages { get; set; }
+
+        public DbSet<EmailGroup> EmailGroups { get; set; }
+        public DbSet<EmailTemplate> EmailTemplates { get; set; }
+        public DbSet<Inbox> Inboxes { get; set; }
+        /// <summary>
+        /// 可以通过 Inbox 进行查找
+        /// </summary>
+        public DbSet<Outbox> Outboxes { get; set; } 
+
         #endregion
 
         #region 通用方法

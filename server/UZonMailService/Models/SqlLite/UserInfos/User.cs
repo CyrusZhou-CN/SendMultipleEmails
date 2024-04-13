@@ -31,22 +31,12 @@ namespace UZonMailService.Models.SqlLite.UserInfos
         /// <summary>
         /// signalR 连接 id
         /// </summary>
-        public string? ConnectionId { get; set; }
-
-        /// <summary>
-        /// 是否被删除
-        /// </summary>
-        public bool Deleted { get; set; }
+        public string? ConnectionId { get; set; }       
 
         /// <summary>
         /// 禁止登录
         /// </summary>
         public bool ForbiddenToLogin { get; set; }
-
-        /// <summary>
-        /// 隐藏
-        /// </summary>
-        public bool Hidden { get; set; }
 
         /// <summary>
         /// 是否是超级管理员

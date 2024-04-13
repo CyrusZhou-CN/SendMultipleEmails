@@ -17,5 +17,15 @@ namespace UZonMailService.Models.SqlLite.Base
         /// 创建日期
         /// </summary>
         public DateTime CreateDate { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// 是否被删除了
+        /// </summary>
+        public bool IsDeleted { get; set; }
+
+        /// <summary>
+        /// 是否隐藏
+        /// </summary>
+        public bool IsHidden { get; set; }
     }
 }

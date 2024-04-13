@@ -43,7 +43,7 @@ namespace UZonMailService.Services.UserInfos
             var user = new User()
             {
                 UserId = userId,
-                Password = password.EncryptMD5()
+                Password = password.Sha256()
             };
             db.Add(user);
             await db.SaveChangesAsync();
@@ -86,7 +86,8 @@ namespace UZonMailService.Services.UserInfos
         /// <exception cref="KnownException"></exception>
         public async Task<UserSignInResult> UserSignIn(string userId, string password)
         {
-            User user = await db.Users.FirstOrDefaultAsync(x => x.UserId == userId && x.Password == password.EncryptMD5())
+            password = password.Sha256();
+            User user = await db.Users.FirstOrDefaultAsync(x => x.UserId == userId && x.Password == password)
                 ?? throw new KnownException("用户名或密码错误");
             var userInfo = new User()
             {
@@ -147,7 +148,7 @@ namespace UZonMailService.Services.UserInfos
         }
         private IQueryable<User> FilterUser(string filter)
         {
-            return db.Users.Where(x => !x.Hidden && !x.IsSuperAdmin)
+            return db.Users.Where(x => !x.IsDeleted && !x.IsHidden && !x.IsSuperAdmin)
                 .Where(x => string.IsNullOrEmpty(filter) || x.UserId.Contains(filter));
         }
 
@@ -157,7 +158,7 @@ namespace UZonMailService.Services.UserInfos
         /// 调用接口对数据进行再处理
         /// </summary>
         /// <returns></returns>
-        public async Task<List<User>> GetFilteredUsersData(string filter, PageDataPick<User> pagination)
+        public async Task<List<User>> GetFilteredUsersData(string filter, PageDataPick pagination)
         {
             return await FilterUser(filter).Page(pagination).ToListAsync();
         }
@@ -173,6 +174,7 @@ namespace UZonMailService.Services.UserInfos
 
         /// <summary>
         /// 重置用户密码
+        /// 由于无法知道用户的原始密码，因此重置后，发件箱的 smtp 密码将无法被解密
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
@@ -184,7 +186,7 @@ namespace UZonMailService.Services.UserInfos
             {
                 throw new KnownException("用户不存在");
             }
-            user.Password = appConfig.Value.User.DefaultPassword.EncryptMD5();
+            user.Password = appConfig.Value.User.DefaultPassword.MD5(1);
             await db.SaveChangesAsync();
             return true;
         }
@@ -193,26 +195,65 @@ namespace UZonMailService.Services.UserInfos
         /// 修改密码
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="oldPassword"></param>
-        /// <param name="newPassword"></param>
+        /// <param name="oldPassword">这个值在前端通过 Sha256 加密过</param>
+        /// <param name="newPassword">这个值在前端通过 Sha256 加密过</param>
         /// <returns></returns>
         public async Task<bool> ChangeUserPassword(int userId, string oldPassword, string newPassword)
         {
             if (userId <= 0 || string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))
             {
-                throw new KnownException("修改密码失败");
+                throw new KnownException("新旧密码不能为空");
             }
 
             // 查找用户
-            string encryptOldPassword = oldPassword.EncryptMD5();
-            var user = await db.Users.FirstOrDefaultAsync(x => x.Id == userId && x.Password == encryptOldPassword);
-            if (user==null)
+            string encryptOldPassword = oldPassword.Sha256();
+            var user = await db.Users.FirstOrDefaultAsync(x => x.Id == userId && x.Password == encryptOldPassword) ?? throw new KnownException("原密码错误");
+            string encryptNewPassword = newPassword.Sha256();
+
+            // 在事务中修改密码
+            await db.RunTransaction(async ctx =>
             {
-                throw new KnownException("原密码错误");
-            }
-            user.Password = newPassword.EncryptMD5();
-            await db.SaveChangesAsync();
+                 user.Password = encryptNewPassword;
+
+                 // 对 smtp 的密码先使用原密码解密，然后再用新密码加密
+                 var outboxes = await db.Outboxes.Where(x => x.UserId == userId).ToListAsync();
+                 foreach (var outbox in outboxes)
+                 {
+                    // 原密钥
+                    var smtpPassword = DecryptSmtpPassword(outbox.Password, oldPassword);
+                     // 计算新的密码
+                    outbox.Password = EncryptSmtpPassword(smtpPassword, newPassword);
+                 }
+
+                 await db.SaveChangesAsync();
+                 return true;
+             });
+
             return true;
+        }
+
+        /// <summary>
+        /// 加密 smtp 密码
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string EncryptSmtpPassword(string password,string key)
+        {
+            string iv = key[..16];
+            return password.AES(key,iv);
+        }
+
+        /// <summary>
+        /// 解密 smtp 密码
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string DecryptSmtpPassword(string password, string key)
+        {
+            string iv = key[..16];
+            return password.DeAES(key, iv);
         }
     }
 }
