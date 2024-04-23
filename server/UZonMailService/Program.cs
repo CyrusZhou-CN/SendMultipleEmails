@@ -136,7 +136,7 @@ using (var scope = app.Services.CreateScope())
     var context = serviceProvider.GetRequiredService<SqlContext>();
 
     // 应用迁移
-    context.Database.Migrate();
+    //context.Database.Migrate();
 
     var appConfig = serviceProvider.GetRequiredService<IOptions<AppConfig>>();
     // 初始数据

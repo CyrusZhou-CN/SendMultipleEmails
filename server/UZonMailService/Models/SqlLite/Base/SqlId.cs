@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UZonMailService.Models.SqlLite.Base
 {
@@ -27,5 +28,14 @@ namespace UZonMailService.Models.SqlLite.Base
         /// 是否隐藏
         /// </summary>
         public bool IsHidden { get; set; }
+
+        /// <summary>
+        /// 设置状态为正常
+        /// </summary>
+        public void SetStatusNormal()
+        {
+            IsDeleted = false;
+            IsHidden = false;
+        }
     }
 }

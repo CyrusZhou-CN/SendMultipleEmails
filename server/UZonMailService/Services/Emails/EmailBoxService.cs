@@ -21,7 +21,7 @@ namespace UZonMailService.Services.Emails
 
             if (inbox.LinkCount > 0)
             {
-                inbox.Status = EmailBoxStatus.Deleted;
+                inbox.IsDeleted = true;
             }
             else
             {

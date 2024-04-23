@@ -1,4 +1,6 @@
-﻿namespace UZonMailService.Controllers.Files
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UZonMailService.Controllers.Files
 {
     public class StaticFileUploaderBody
     {
@@ -6,6 +8,8 @@
         /// 子路径
         /// </summary>
         public string SubPath { get; set; } = "default-upload";
-        public IFormFile FormFile { get; set; }
+
+        [Display(Name = "File")]
+        public IFormFile File { get; set; }
     }
 }

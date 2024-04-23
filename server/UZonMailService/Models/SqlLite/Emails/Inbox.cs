@@ -9,15 +9,18 @@ namespace UZonMailService.Models.SqlLite.Emails
     /// </summary>
     public class Inbox: SqlId
     {
+        public Inbox()
+        {
+            BoxType = EmailBoxType.Inbox;
+        }
+
         /// <summary>
         /// 邮件组 id
         /// </summary>
         public int EmailGroupId { get; set; }
-        public EmailGroup EmailGroup { get; set; }
 
         // 冗余用户信息
         public int UserId { get; set; }
-        public User User { get; set; }
 
         /// <summary>
         /// 收件箱
@@ -38,11 +41,6 @@ namespace UZonMailService.Models.SqlLite.Emails
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
-
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public EmailBoxStatus Status { get; set; } = EmailBoxStatus.Normal;
 
         /// <summary>
         /// 类型

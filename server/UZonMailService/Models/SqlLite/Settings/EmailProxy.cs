@@ -40,7 +40,7 @@ namespace UZonMailService.Models.SqlLite.Settings
         public int Port { get; set; }
 
         /// <summary>
-        /// 密码
+        /// 密码，此处密码需要加密
         /// </summary>
         public string? Password { get; set; }
     }

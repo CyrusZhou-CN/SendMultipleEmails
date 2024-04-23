@@ -37,7 +37,7 @@ namespace UZonMailService.Services.Emails
         public override async Task<EmailGroup> Create(EmailGroup emailGroup)
         {
             // 判断组名是否重复
-            if (await db.EmailGroups.AnyAsync(x => x.UserId == emailGroup.UserId && x.Name == emailGroup.Name))
+            if (await db.EmailGroups.AnyAsync(x => x.UserId == emailGroup.UserId && x.Type == emailGroup.Type && x.Name == emailGroup.Name))
             {
                 throw new KnownException("组名重复");
             }
@@ -92,10 +92,10 @@ namespace UZonMailService.Services.Emails
 
                  // 将其它邮件标记为删除
                  List<Inbox> boxes = [];
-                 if(group.Inboxes != null)
+                 if (group.Inboxes != null)
                  {
                      boxes.AddRange(group.Inboxes);
-                 }                
+                 }
                  bool shouldKeepGroup = boxes.Any(x => x.LinkCount > 0);
 
                  if (shouldKeepGroup)

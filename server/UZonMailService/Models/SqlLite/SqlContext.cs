@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using System.Reflection.Metadata;
 using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SqlLite.EmailSending;
 using UZonMailService.Models.SqlLite.EntityTypeConfigs;
+using UZonMailService.Models.SqlLite.Templates;
 
 namespace UZonMailService.Models.SqlLite
 {
@@ -60,6 +62,8 @@ namespace UZonMailService.Models.SqlLite
         /// </summary>
         public DbSet<Outbox> Outboxes { get; set; } 
 
+        public DbSet<SendingTask> SendingTasks { get; set; }
+        public DbSet<SendingItem> SendingItems { get; set; }
         #endregion
 
         #region 通用方法

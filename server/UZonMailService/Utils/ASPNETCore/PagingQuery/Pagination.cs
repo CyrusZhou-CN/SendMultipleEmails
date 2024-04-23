@@ -5,9 +5,9 @@ namespace UZonMailService.Utils.ASPNETCore.PagingQuery
     /// <summary>
     /// 获取分页数据
     /// </summary>
-    public class PageDataPick : PaginationModel
+    public class Pagination : PaginationModel
     {
-        public PageDataPick()
+        public Pagination()
         {
             // 修改默认值
             SortBy = "id";

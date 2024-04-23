@@ -40,6 +40,7 @@ namespace UZonMailService.Controllers.Files
         public async Task<ResponseResult<int>> UploadFileObject(ObjectFileUploaderBody fileParams)
         {
             int userId = tokenService.GetIntUserId();
+            fileParams.File ??= Request.Form.Files.FirstOrDefault();
             FileUsage fileUsage = await fileStoreService.UploadFileObject(userId, fileParams);
             return fileUsage.Id.ToSuccessResponse();
         }
@@ -90,10 +91,10 @@ namespace UZonMailService.Controllers.Files
         public ResponseResult<string> UploadToStaticFile(StaticFileUploaderBody fileParams)
         {
             int userId = tokenService.GetIntUserId();
-            var (fullPath, relativePath) = fileStoreService.GenerateStaticFilePath(userId.ToString(), fileParams.SubPath, fileParams.FormFile.FileName);
+            var (fullPath, relativePath) = fileStoreService.GenerateStaticFilePath(userId.ToString(), fileParams.SubPath, fileParams.File.FileName);
 
             using var stream = new FileStream(fullPath, FileMode.Create);
-            fileParams.FormFile.CopyTo(stream);
+            fileParams.File.CopyTo(stream);
             return relativePath.ToSuccessResponse();
         }
     }

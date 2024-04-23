@@ -3,7 +3,7 @@
     /// <summary>
     /// 邮件状态
     /// </summary>
-    public enum EmailItemStatus
+    public enum SendingItemStatus
     {
         /// <summary>
         /// 初始状态

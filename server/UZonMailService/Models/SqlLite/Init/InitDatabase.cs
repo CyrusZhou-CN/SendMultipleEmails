@@ -2,24 +2,24 @@
 using UZonMailService.Config;
 using UZonMailService.Config.SubConfigs;
 using Uamazing.Utils.Extensions;
+using UZonMailService.Models.SqlLite.Files;
 
 namespace UZonMailService.Models.SqlLite.Init
 {
     /// <summary>
     /// 初始化数据库
     /// </summary>
-    public class InitDatabase
+    /// <remarks>
+    /// 
+    /// </remarks>
+    /// <param name="hostEnvironment"></param>
+    /// <param name="sqlContext"></param>
+    /// <param name="config"></param>
+    public class InitDatabase(IWebHostEnvironment hostEnvironment, SqlContext sqlContext, AppConfig config)
     {
-        private readonly SqlContext _db;
-        private IWebHostEnvironment _hostEnvironment;
-        private AppConfig _appConfig;
-
-        public InitDatabase(IWebHostEnvironment hostEnvironment, SqlContext sqlContext, AppConfig config)
-        {
-            _db = sqlContext;
-            _hostEnvironment = hostEnvironment;
-            _appConfig = config;
-        }
+        private readonly SqlContext _db = sqlContext;
+        private IWebHostEnvironment _hostEnvironment = hostEnvironment;
+        private AppConfig _appConfig = config;
 
         /// <summary>
         /// 开始执行初始化
@@ -28,6 +28,8 @@ namespace UZonMailService.Models.SqlLite.Init
         {
             InitUser();
             InitPermission();
+            InitFileStorage();
+
 
             _db.SaveChanges();
         }
@@ -75,6 +77,28 @@ namespace UZonMailService.Models.SqlLite.Init
 
             // 添加初始数据
             _db.Users.AddRange();
+        }
+
+        /// <summary>
+        /// 初始化存储库
+        /// </summary>
+        private void InitFileStorage()
+        {
+            bool existDefaultFileBucket = _db.FileBuckets.Any(x => x.IsDefault);
+            if (existDefaultFileBucket) return;
+
+            // 新建
+            var defaultBucket = new FileBucket
+            {
+                BucketName = "default",
+                Description = "默认存储桶",
+                RootDir = _appConfig.FileStorage.DefaultRootDir,
+                IsDefault = true
+            };
+
+            // 创建目录
+            Directory.CreateDirectory(defaultBucket.RootDir);
+            _db.FileBuckets.Add(defaultBucket);
         }
     }
 }

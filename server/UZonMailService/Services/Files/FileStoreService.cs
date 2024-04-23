@@ -36,12 +36,16 @@ namespace UZonMailService.Services.Files
         /// <param name="sha256"></param>
         /// <param name="extension"></param>
         /// <returns></returns>
-        private Tuple<string, string> GetStorePath(FileBucket fileBucket, string sha256, string extension)
+        private (string, string) GetStorePath(FileBucket fileBucket, string sha256, string extension)
         {
             // 年/月/日/文件名
             string relativePath = DateTime.Now.ToString("yyyy/MM/dd") + $"/{sha256}{extension}";
             string fullPath = Path.Combine(fileBucket.RootDir, relativePath);
-            return new Tuple<string, string>(relativePath, fullPath);
+
+            // 创建父目录
+            string baseDir = Path.GetDirectoryName(fullPath);
+            Directory.CreateDirectory(baseDir);
+            return (relativePath, fullPath);
         }
 
         /// <summary>
@@ -66,33 +70,39 @@ namespace UZonMailService.Services.Files
                 FileObject? fileObject = await GetExistFileObject(fileParams.Sha256);
                 if (fileObject == null)
                 {
-                    // 保存文件
+                    // 获取存储位置
                     var defaultBucket = await GetDefaultBucket();
-
                     // 计算保存位置
-                    var pathResult = GetStorePath(defaultBucket, fileParams.Sha256, Path.GetExtension(fileParams.FormFile.FileName));
+                    var (relativePath, fullPath) = GetStorePath(defaultBucket, fileParams.Sha256, Path.GetExtension(fileParams.File.FileName));
+                    // 保存文件
+                    using var stream = new FileStream(fullPath, FileMode.Create);
+                    fileParams.File.CopyTo(stream);
 
                     // 说明文件不存在
                     fileObject = new FileObject()
                     {
+                        FileBucketId = defaultBucket.Id,
                         Sha256 = fileParams.Sha256,
-                        Path = pathResult.Item1,
-                        Size = fileParams.FormFile.Length,
+                        Path = relativePath,
+                        Size = fileParams.File.Length,
                         LastModifyDate = fileParams.LastModifyDate,
                     };
                     db.FileObjects.Add(fileObject);
+                    await db.SaveChangesAsync();
                 }
 
                 // 先保存使用
-                FileUsage fileUsage = new FileUsage()
+                FileUsage fileUsage = new()
                 {
                     OwnerUserId = userId,
                     FileObjectId = fileObject.Id,
                     IsPublic = fileParams.IsPublic,
-                    FileName = fileParams.FormFile.FileName,
+                    FileName = fileParams.File.FileName,
                 };
                 db.FileUsages.Add(fileUsage);
-                fileObject.LinkCount += 1;
+
+                // 引用只有在用户提交时，才增加
+                // fileObject.LinkCount += 1;
 
                 await db.SaveChangesAsync();
 
@@ -174,7 +184,8 @@ namespace UZonMailService.Services.Files
                 ctx.FileUsages.Add(fileUsageTemp);
 
                 // 更新文件引用次数
-                fileObject.LinkCount += 1;
+                // 只有在使用真实使用时，才增加索引
+                // fileObject.LinkCount += 1;
                 return fileUsageTemp;
             });
             return result;
@@ -184,7 +195,7 @@ namespace UZonMailService.Services.Files
         /// 获取静态根目录
         /// </summary>
         /// <returns></returns>
-        public (string,string) GetStaticFileDirectory()
+        public (string, string) GetStaticFileDirectory()
         {
             return (Path.Combine(env.ContentRootPath, "public"), "public");
         }
@@ -196,7 +207,7 @@ namespace UZonMailService.Services.Files
         /// </summary>
         /// <param name="paths"></param>
         /// <returns></returns>
-        public (string,string) GenerateStaticFilePath(params string[] paths)
+        public (string, string) GenerateStaticFilePath(params string[] paths)
         {
             var root = GetStaticFileDirectory();
             var relativePath = Path.Combine(paths);

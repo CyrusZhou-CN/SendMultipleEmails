@@ -134,7 +134,7 @@ namespace UZonMailService.Controllers.Users
         /// <param name="pagination"></param>
         /// <returns></returns>
         [HttpPost("filtered-data")]
-        public async Task<ResponseResult<List<User>>> GetUsersData([FromQuery] string filter, [FromBody] PageDataPick pagination)
+        public async Task<ResponseResult<List<User>>> GetUsersData([FromQuery] string filter, [FromBody] Pagination pagination)
         {
             var users = await userService.GetFilteredUsersData(filter, pagination);
             return users.ToSuccessResponse();

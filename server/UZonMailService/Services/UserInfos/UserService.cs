@@ -158,7 +158,7 @@ namespace UZonMailService.Services.UserInfos
         /// 调用接口对数据进行再处理
         /// </summary>
         /// <returns></returns>
-        public async Task<List<User>> GetFilteredUsersData(string filter, PageDataPick pagination)
+        public async Task<List<User>> GetFilteredUsersData(string filter, Pagination pagination)
         {
             return await FilterUser(filter).Page(pagination).ToListAsync();
         }

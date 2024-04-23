@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Controllers.Common;
@@ -24,7 +25,9 @@ namespace UZonMailService.Controllers.Emails
         {
             int userId = tokenService.GetIntUserId();
             entity.UserId = userId;
-            return await base.Create(entity);
+           
+            EmailGroup emailGroup = await groupService.Create(entity);
+            return emailGroup.ToSuccessResponse();
         }
 
         /// <summary>

@@ -16,5 +16,6 @@ namespace UZonMailService.Config
         public UserConfig User { get; set; }
         public WebsocketConfig Websocket { get; set; }
         public TokenParams TokenParams { get; set; }
+        public FileStorageConfig FileStorage { get; set; } = new FileStorageConfig();
     }
 }
