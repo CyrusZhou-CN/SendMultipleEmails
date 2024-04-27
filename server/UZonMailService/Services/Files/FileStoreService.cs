@@ -4,6 +4,7 @@ using UZonMailService.Models.SqlLite;
 using UZonMailService.Models.SqlLite.Files;
 using UZonMailService.Services.UserInfos;
 using UZonMailService.Utils.DotNETCore.Exceptions;
+using Uamazing.Utils.Extensions;
 
 namespace UZonMailService.Services.Files
 {
@@ -33,13 +34,13 @@ namespace UZonMailService.Services.Files
         /// 第一个是相对路径，第二个是绝对路径
         /// </summary>
         /// <param name="fileBucket"></param>
-        /// <param name="sha256"></param>
-        /// <param name="extension"></param>
+        /// <param name="prefix"></param>
+        /// <param name="fileName"></param>
         /// <returns></returns>
-        private (string, string) GetStorePath(FileBucket fileBucket, string sha256, string extension)
+        private (string, string) GetObjectStorePath(FileBucket fileBucket,string fileName)
         {
             // 年/月/日/文件名
-            string relativePath = DateTime.Now.ToString("yyyy/MM/dd") + $"/{sha256}{extension}";
+            string relativePath = DateTime.Now.ToString("yyyy/MM/dd") + $"/{DateTime.Now.ToTimestamp()}_{fileName}";
             string fullPath = Path.Combine(fileBucket.RootDir, relativePath);
 
             // 创建父目录
@@ -73,7 +74,7 @@ namespace UZonMailService.Services.Files
                     // 获取存储位置
                     var defaultBucket = await GetDefaultBucket();
                     // 计算保存位置
-                    var (relativePath, fullPath) = GetStorePath(defaultBucket, fileParams.Sha256, Path.GetExtension(fileParams.File.FileName));
+                    var (relativePath, fullPath) = GetObjectStorePath(defaultBucket,fileParams.File.FileName);
                     // 保存文件
                     using var stream = new FileStream(fullPath, FileMode.Create);
                     fileParams.File.CopyTo(stream);

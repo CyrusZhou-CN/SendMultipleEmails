@@ -1,51 +1,39 @@
 ﻿using System.Timers;
+using Uamazing.Utils.Web.Service;
 using UZonMailService.Services.EmailSending.WaitList;
 using Timer = System.Timers.Timer;
 
-namespace UZonMailService.Services.EmailSending.SendCore
+namespace UZonMailService.Services.EmailSending.Sender
 {
     /// <summary>
     /// 系统级发件调度中心
     /// </summary>
-    public class SystemTasksManager
+    public class SystemTasksService : ISingletonService
     {
-        #region 单例
-        // 保证线程安全
-        private static readonly Lazy<SystemTasksManager> _instance = new(() => new SystemTasksManager());
-        /// <summary>
-        /// 任务管理中心的单例
-        /// </summary>
-        public static SystemTasksManager Instance => _instance.Value;
-        #endregion
-
-        private CancellationTokenSource? _tokenSource = new CancellationTokenSource();
+        private CancellationTokenSource? _tokenSource = new();
         /// <summary>
         /// 发件任务
         /// </summary>
         private readonly List<EmailSendingTask> _sendingTasks = [];
 
-        private SystemTasksManager()
-        {
-            DynamicExendTasks();
-        }
-
         #region 外部调用的方法
-        private IWaitList _waitList;
+        private ISendingWaitList _waitList;
 
         /// <summary>
         /// 外部调用该方法开始发件
+        /// 为了简化逻辑，每次调用会打开所有的线程
         /// </summary>
-        public void StartSending()
+        public void StartSending(int activeCount = 0)
         {
-            // 获取需要的发件数，根据发件数，智能创建任务
-            int emailTypesCount = _waitList.GetEmailTypesCount();
+            // 获取需要的发件数，根据发件数，智能增加任务
+            int emailTypesCount = _waitList.GetOutboxesCount();
             // 获取核心数
             int coreCount = Environment.ProcessorCount;
 
-            int taskCount = Math.Min(emailTypesCount, coreCount);
-            if (taskCount == 0)
+            int tasksCount = Math.Min(emailTypesCount, coreCount);
+            if (tasksCount == 0)
             {
-                // 没有发件时，清理任务
+                // 没有发件箱时，清理任务
                 ClearTasks();
                 return;
             }
@@ -55,21 +43,50 @@ namespace UZonMailService.Services.EmailSending.SendCore
 
             // 有可能任务已经存在，则只需要增量新建
             // 创建任务
-            for (int i = _sendingTasks.Count; i < taskCount; i++)
+            for (int i = _sendingTasks.Count; i < tasksCount; i++)
             {
                 // 单个线程的信号
-                var autoResetEvent = new AutoResetEvent(false);
+                var autoResetEvent = new AutoResetEventWrapper(false);
                 EmailSendingTask task = new(async () =>
                 {
                     // 任务开始
                     await DoWork(_tokenSource, autoResetEvent);
                 }, _tokenSource)
                 {
-                    AutoResetEvent = autoResetEvent
+                    AutoResetEventWrapper = autoResetEvent
                 };
 
                 _sendingTasks.Add(task);
                 task.Start();
+            }
+
+            if (activeCount <= 0)
+            {
+                // 全部激活
+                // 激活特定数量的线程,使其工作
+                for (int i = 0; i < tasksCount; i++)
+                {
+                    _sendingTasks[i].AutoResetEventWrapper.Set();
+                }
+            }
+            else
+            {
+                // 只激活指定数量的线程
+                for (int i = 0; i < tasksCount; i++)
+                {
+                    var task = _sendingTasks[i];
+                    if (task.AutoResetEventWrapper.IsWaiting)
+                    {
+                        task.AutoResetEventWrapper.Reset();
+                        activeCount--;
+
+                        // 激活达到指定数量后，退出
+                        if (activeCount == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -102,6 +119,7 @@ namespace UZonMailService.Services.EmailSending.SendCore
         }
         private void Timer_Elapsed(object? sender, ElapsedEventArgs? e)
         {
+            // 每隔 1 分钟激活一次线程，防止线程一直处于等待状态
             StartSending();
         }
 
@@ -110,14 +128,11 @@ namespace UZonMailService.Services.EmailSending.SendCore
         /// </summary>
         /// <param name="tokenSource"></param>
         /// <returns></returns>
-        private async Task DoWork(CancellationTokenSource tokenSource, AutoResetEvent autoResetEvent)
+        private async Task DoWork(CancellationTokenSource tokenSource, AutoResetEventWrapper autoResetEvent)
         {
             // 当线程没有取消时
             while (!tokenSource.IsCancellationRequested)
             {
-                // 等待被激活                
-                autoResetEvent.WaitOne();
-
                 // 激活后，从队列中取出任务
                 var sendItem = _waitList.GetSendItem();
                 if (sendItem == null)
@@ -129,11 +144,11 @@ namespace UZonMailService.Services.EmailSending.SendCore
 
                 // 发送邮件
                 var sendMethod = SendMethodFactory.BuildSendMethod(sendItem);
-                bool isSuccess = await sendMethod.Send();
-                if (!isSuccess)
+                var status = await sendMethod.Send();
+                if (status == SentStatus.Retry)
                 {
                     // 发送失败，重新加入队列，可能会分配到其它线程去执行
-                    _waitList.QueueSendItem(sendItem);
+                    sendItem.Enqueue();
                     continue;
                 }
             }

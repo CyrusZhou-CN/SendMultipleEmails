@@ -1,6 +1,9 @@
 ﻿namespace UZonMailService.Models.SqlLite.EmailSending
 {
-    public enum SendingTaskStatus
+    /// <summary>
+    /// 发件组的状态
+    /// </summary>
+    public enum SendingGroupStatus
     {
         /// <summary>
         /// 新建

@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.Services.EmailSending.SendCore
+﻿namespace UZonMailService.Services.EmailSending.Sender
 {
     /// <summary>
     /// 发件方法的工厂
@@ -15,7 +15,11 @@
         /// <returns></returns>
         public static SendMethod BuildSendMethod(SendItem sendItem)
         {
-            return new SendLocal(sendItem);
+            if (sendItem.SendItemType == SendItemType.Local)
+                return new LocalSender(sendItem);
+            
+            // 其它情况
+            return new LocalSender(sendItem);
         }
     }
 }

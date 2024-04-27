@@ -8,11 +8,11 @@ using UZonMailService.Models.SqlLite.UserInfos;
 namespace UZonMailService.Models.SqlLite.EmailSending
 {
     /// <summary>
-    /// 发送任务
+    /// 发件组
     /// 此处只记录统计数据
     /// 具体的数据由 EmailItem 记录
     /// </summary>
-    public class SendingTask:SqlId
+    public class SendingGroup:SqlId
     {
         /// <summary>
         /// 用户名
@@ -79,7 +79,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// <summary>
         /// 状态
         /// </summary>
-        public SendingTaskStatus Status { get; set; }
+        public SendingGroupStatus Status { get; set; }
 
         /// <summary>
         /// 发送开始时间
@@ -90,5 +90,31 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// 发送结束时间
         /// </summary>
         public DateTime SendEndDate { get; set; }
+
+        private List<string>? _subjects;
+        private static readonly string[] separator = ["\r\n", "\n", ";","；"];
+
+        /// <summary>
+        /// 若有多个主题，则获取随机主题
+        /// </summary>
+        /// <returns></returns>
+        public string GetSubject()
+        {
+            if (_subjects == null)
+            {
+                // 说明没有初始化
+                if (string.IsNullOrEmpty(Subjects))
+                {
+                    _subjects = [string.Empty];
+                    return string.Empty;
+                }
+
+                // 分割主题
+                _subjects = [.. Subjects.Split(separator, StringSplitOptions.RemoveEmptyEntries)];
+            }
+
+            // 返回随机主题
+            return _subjects[new Random().Next(_subjects.Count)];
+        }
     }
 }

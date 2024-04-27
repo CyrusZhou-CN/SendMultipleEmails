@@ -1,5 +1,5 @@
 ﻿
-namespace UZonMailService.Services.EmailSending.SendCore
+namespace UZonMailService.Services.EmailSending.Sender
 {
     /// <summary>
     /// 自定义的 Task
@@ -14,7 +14,12 @@ namespace UZonMailService.Services.EmailSending.SendCore
         /// <summary>
         /// 线程信号
         /// </summary>
-        public AutoResetEvent AutoResetEvent { get; set; }
+        public AutoResetEventWrapper AutoResetEventWrapper { get; set; }
+
+        /// <summary>
+        /// 是否处于等待状态
+        /// </summary>
+        public bool IsPending { get; set; }
 
         public EmailSendingTask(Action action, CancellationTokenSource tokenSource) : base(action, tokenSource.Token)
         {

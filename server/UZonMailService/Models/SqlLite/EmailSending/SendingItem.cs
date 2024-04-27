@@ -3,6 +3,7 @@ using UZonMailService.Models.SqlLite.Emails;
 using UZonMailService.Models.SqlLite.Files;
 using UZonMailService.Models.SqlLite.Templates;
 using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Services.EmailSending.Sender;
 
 namespace UZonMailService.Models.SqlLite.EmailSending
 {
@@ -15,7 +16,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// 所属发送任务
         /// </summary>
         public int SendingTaskId { get; set; }
-        public SendingTask SendingTask { get; set; }
+        public SendingGroup SendingTask { get; set; }
 
         /// <summary>
         /// 所属用户
@@ -35,16 +36,29 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         public string? FromEmail { get; set; }
 
         /// <summary>
-        /// 实际收件人
-        /// 直接记录邮箱，因为可能是用户手动输入的邮箱号
+        /// 收件人
         /// </summary>
-        public string ToEmail { get; set; }
+        public List<EmailAddress> Inboxes { get; set; }
+        /// <summary>
+        /// 抄送人
+        /// </summary>
+        public List<EmailAddress> CC { get; set; }
+        /// <summary>
+        /// 密送人
+        /// </summary>
+        public List<EmailAddress> BCC { get; set; }
 
         /// <summary>
         /// 邮件模板 Id
         /// 可以为 0，表示不使用模板
         /// </summary>
         public int EmailTemplateId { get; set; }
+
+        /// <summary>
+        /// 发送主题
+        /// 由于可能是随机主题，因此要记录
+        /// </summary>
+        public string? Subject { get; set; }
 
         /// <summary>
         /// 实际发送内容

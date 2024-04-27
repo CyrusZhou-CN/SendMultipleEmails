@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.Services.EmailSending.SendCore
+﻿namespace UZonMailService.Services.EmailSending.Sender
 {
     /// <summary>
     /// 发件基类
@@ -9,6 +9,6 @@
         /// 发送邮件
         /// </summary>
         /// <returns></returns>
-        public abstract Task<bool> Send();
+        public abstract Task<SentStatus> Send();
     }
 }

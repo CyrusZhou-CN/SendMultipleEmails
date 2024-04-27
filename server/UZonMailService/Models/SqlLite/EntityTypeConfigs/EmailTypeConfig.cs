@@ -21,7 +21,7 @@ namespace UZonMailService.Models.SqlLite.EntityTypeConfigs
             }
 
             // 对 SendingTask 进行配置
-            builder.Entity<SendingTask>()
+            builder.Entity<SendingGroup>()
                 .Property(x => x.Data)
                 .HasConversion(
                 v => JsonConvert.SerializeObject(v),

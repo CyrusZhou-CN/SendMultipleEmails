@@ -133,7 +133,12 @@ namespace UZonMailService.Services.UserInfos
             }, new Dictionary<string, string>()
             {
                 { "userId",userInfo.Id.ToString()},
-                { ClaimTypes.Role,userInfo.IsSuperAdmin?"admin":"user"}
+                {"userName",userInfo.UserId },
+                { ClaimTypes.Role,userInfo.IsSuperAdmin?"admin":"user"},
+                // signalR 需要使用此处的 Name
+                { ClaimTypes.Name,userInfo.Id.ToString() },
+                // 参考:https://learn.microsoft.com/zh-cn/aspnet/core/signalr/groups?view=aspnetcore-8.0
+                { ClaimTypes.NameIdentifier,userInfo.Id.ToString() }
             });
             return token;
         }
@@ -213,21 +218,21 @@ namespace UZonMailService.Services.UserInfos
             // 在事务中修改密码
             await db.RunTransaction(async ctx =>
             {
-                 user.Password = encryptNewPassword;
+                user.Password = encryptNewPassword;
 
-                 // 对 smtp 的密码先使用原密码解密，然后再用新密码加密
-                 var outboxes = await db.Outboxes.Where(x => x.UserId == userId).ToListAsync();
-                 foreach (var outbox in outboxes)
-                 {
+                // 对 smtp 的密码先使用原密码解密，然后再用新密码加密
+                var outboxes = await db.Outboxes.Where(x => x.UserId == userId).ToListAsync();
+                foreach (var outbox in outboxes)
+                {
                     // 原密钥
                     var smtpPassword = DecryptSmtpPassword(outbox.Password, oldPassword);
-                     // 计算新的密码
+                    // 计算新的密码
                     outbox.Password = EncryptSmtpPassword(smtpPassword, newPassword);
-                 }
+                }
 
-                 await db.SaveChangesAsync();
-                 return true;
-             });
+                await db.SaveChangesAsync();
+                return true;
+            });
 
             return true;
         }
@@ -238,10 +243,10 @@ namespace UZonMailService.Services.UserInfos
         /// <param name="password"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string EncryptSmtpPassword(string password,string key)
+        public string EncryptSmtpPassword(string password, string key)
         {
             string iv = key[..16];
-            return password.AES(key,iv);
+            return password.AES(key, iv);
         }
 
         /// <summary>

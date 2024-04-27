@@ -11,6 +11,9 @@ using UZonMailService.Utils.DotNETCore.Filters;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.SignalR;
+using UZonMailService.SignalRHubs;
+using Uamazing.Utils.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -37,8 +40,18 @@ services.AddSwaggerGen(new OpenApiInfo()
     }
 }, "Server.xml");
 
-// 添加 signalR
+// 验证在 jwt 中实现
+// 添加 signalR，还需要在 app 中使用 MapHub
+// 参考: https://learn.microsoft.com/en-us/aspnet/core/tutorials/signalr?view=aspnetcore-8.0&tabs=visual-studio
 services.AddSignalR();
+// Change to use Name as the user identifier for SignalR
+// WARNING: This requires that the source of your JWT token 
+// ensures that the Name claim is unique!
+// If the Name claim isn't unique, users could receive messages 
+// intended for a different user!
+// 不使用自定义的 IUserIdProvider，使用默认的，保证 token 的 claim 中包含 ClaimTypes.Name,
+//builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+
 // 设置 hyphen-case 路由
 services.SetupSlugifyCaseRoute();
 // 绑定配置
@@ -77,7 +90,7 @@ services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins(cors.ToArray())
+            policy.WithOrigins([.. cors])
             .AllowAnyMethod()
             .AllowAnyHeader();
         });
@@ -122,7 +135,11 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+// http 路由
 app.MapControllers();
+
+// SignalR 配置
+app.MapHub<UzonMailHub>($"/hubs/{nameof(UzonMailHub).ToCamelCase()}");
 
 // 初始数据库
 //if (app.Environment.IsDevelopment())
@@ -143,6 +160,5 @@ using (var scope = app.Services.CreateScope())
     var initDb = new InitDatabase(app.Environment, context, appConfig.Value);
     initDb.Init();
 }
-
 
 app.Run();

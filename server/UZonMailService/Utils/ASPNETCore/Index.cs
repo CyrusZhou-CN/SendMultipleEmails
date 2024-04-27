@@ -12,6 +12,7 @@ using UZonMailService.Utils.DotNETCore;
 using UZonMailService.Utils.DotNETCore.Convention;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Utils.Database;
+using Microsoft.Extensions.Options;
 
 namespace UZonMailService.Utils.DotNETCore
 {
@@ -49,6 +50,7 @@ namespace UZonMailService.Utils.DotNETCore
             // 分多种情况，注册不同的生命周期
             var transientTypes = serviceTypes.Where(x => !x.IsAbstract && transientType.IsAssignableFrom(x))
                 .ToList();
+
             transientTypes.ForEach(type => services.AddTransient(type));
 
             // 请求周期
@@ -62,7 +64,7 @@ namespace UZonMailService.Utils.DotNETCore
             var singletonServiceType = typeof(ISingletonService);
             // 分多种情况，注册不同的生命周期
             var singletonServiceTypes = serviceTypes.Where(x => !x.IsAbstract && singletonServiceType.IsAssignableFrom(x))
-                .ToList();
+               .ToList();
             singletonServiceTypes.ForEach(type => services.AddSingleton(type));
 
             return services;
@@ -125,6 +127,7 @@ namespace UZonMailService.Utils.DotNETCore
 
         /// <summary>
         /// 配置 jwt 验证
+        /// 参考：https://learn.microsoft.com/zh-cn/aspnet/core/signalr/authn-and-authz?view=aspnetcore-8.0
         /// </summary>
         /// <param name="services"></param>
         /// <param name="secretKey"></param>
@@ -137,10 +140,10 @@ namespace UZonMailService.Utils.DotNETCore
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x =>
+            .AddJwtBearer(options =>
             {
-                x.RequireHttpsMetadata = false;
-                x.TokenValidationParameters = new TokenValidationParameters
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
@@ -150,6 +153,35 @@ namespace UZonMailService.Utils.DotNETCore
                     ValidateLifetime = true,
                     // 每次颁发令牌，令牌有效时间
                     ClockSkew = TimeSpan.FromMinutes(1440)
+                };
+
+                // We have to hook the OnMessageReceived event in order to
+                // allow the JWT authentication handler to read the access
+                // token from the query string when a WebSocket or 
+                // Server-Sent Events request comes in.
+
+                // Sending the access token in the query string is required when using WebSockets or ServerSentEvents
+                // due to a limitation in Browser APIs. We restrict it to only calls to the
+                // SignalR hub in this code.
+                // See https://docs.microsoft.com/aspnet/core/signalr/security#access-token-logging
+                // for more information about security considerations when using
+                // the query string to transmit the access token.
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/hubs")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
             return services;

@@ -62,8 +62,8 @@ namespace UZonMailService.Models.SqlLite
         /// </summary>
         public DbSet<Outbox> Outboxes { get; set; } 
 
-        public DbSet<SendingTask> SendingTasks { get; set; }
-        public DbSet<SendingItem> SendingItems { get; set; }
+        //public DbSet<SendingGroup> SendingTasks { get; set; }
+        //public DbSet<SendingItem> SendingItems { get; set; }
         #endregion
 
         #region 通用方法
