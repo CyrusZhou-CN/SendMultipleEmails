@@ -16,12 +16,11 @@ namespace UZonMailService.Services.EmailSending.Sender
     /// </summary>
     public class SendItem
     {
-        private SqlContext _db;
+        private static SqlContext Db => EmailSendingService.Instance.Db;
         private int _sendItemId;
 
-        public SendItem(SqlContext db, int sendItemId)
+        public SendItem(int sendItemId)
         {
-            _db = db;
             _sendItemId = sendItemId;
         }
 
@@ -47,7 +46,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <summary>
         /// 主题
         /// </summary>
-        public string Subject { get; set; }
+        public string Subject { private get; set; }
 
         /// <summary>
         /// HTML 内容
@@ -57,12 +56,17 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <summary>
         /// 正文变量数据
         /// </summary>
-        public JObject BodyData { private get; set; }
+        public SendingItemExcelData? BodyData { get; set; }
 
         /// <summary>
-        /// 附件 FileUsageId 列表
+        /// 附件 FileObjectId 列表
         /// </summary>
         public List<int> AttachmentIds { get; set; }
+
+        /// <summary>
+        /// 批量发送
+        /// </summary>
+        public bool IsSendingBatch { get; set; }
 
         /// <summary>
         /// 验证数据是否满足要求
@@ -92,10 +96,8 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
 
             // 查找文件
-            _attachments = await _db.FileUsages.Where(f => AttachmentIds.Contains(f.Id))
-                .Include(x => x.FileObject)
-                .ThenInclude(x => x.FileBucket)
-                .Select(x => x.FileObject)
+            _attachments = await Db.FileObjects.Where(f => AttachmentIds.Contains(f.Id))
+                .Include(x => x.FileBucket)
                 .Select(x => $"{x.FileBucket.RootDir}/{x.Path}")
                 .ToListAsync();
             return _attachments;
@@ -110,16 +112,34 @@ namespace UZonMailService.Services.EmailSending.Sender
         {
             if (!string.IsNullOrEmpty(_body)) return _body;
             // 替换正文变量
-            if (BodyData == null) return HtmlBody;
+            _body = ComputedVariables(HtmlBody);
+            return _body;
+        }
+
+        private string ComputedVariables(string originText)
+        {
+            if (!string.IsNullOrEmpty(originText)) return originText;
+            // 替换正文变量
+            if (BodyData == null) return originText;
 
             foreach (var item in BodyData)
             {
                 if (item.Value == null) continue;
                 // 使用正则进行替换
                 var regex = new Regex(@"\{\{\s*" + item.Key + @"\s*\}\}", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-                _body = regex.Replace(_body, item.Value.ToString());
+                originText = regex.Replace(originText, item.Value.ToString());
             }
-            return _body;
+            return originText;
+        }
+
+        /// <summary>
+        /// 获取主题
+        /// </summary>
+        /// <returns></returns>
+        public string GetSubject()
+        {
+            // 主题中可能有变量
+            return ComputedVariables(Subject);
         }
 
         #region 重发逻辑，该部分仅在主服务器上使用，后期考虑抽象出来
@@ -166,7 +186,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             {
                 Id = _sendItemId
             };
-            _db.Attach(data);
+            Db.Attach(data);
 
             // 更新数据
             data.FromEmail = Outbox.Email;
@@ -176,7 +196,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             data.CC = CC;
             data.BCC = BCC;
 
-            await _db.SaveChangesAsync();
+            await Db.SaveChangesAsync();
         }
 
         private SendGroupTask _sendGroupTask;
@@ -198,8 +218,8 @@ namespace UZonMailService.Services.EmailSending.Sender
                 // 设置冷却
                 var _timer = new Timer(_cooldownMilliseconds)
                 {
-                    AutoReset=false,
-                    Enabled=true
+                    AutoReset = false,
+                    Enabled = true
                 };
                 _timer.Elapsed += (object? sender, ElapsedEventArgs e) =>
                 {
@@ -214,6 +234,17 @@ namespace UZonMailService.Services.EmailSending.Sender
             {
                 _sendGroupTask.Enqueue(this);
             }
+        }
+        #endregion
+
+        #region 发送状态变更
+        /// <summary>
+        /// 设置状态
+        /// </summary>
+        public void SetStatus()
+        {
+            // 设置状态为正在发送
+
         }
         #endregion
     }

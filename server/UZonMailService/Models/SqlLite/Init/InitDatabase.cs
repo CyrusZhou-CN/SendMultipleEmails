@@ -36,23 +36,43 @@ namespace UZonMailService.Models.SqlLite.Init
 
         private void InitUser()
         {
+            // 设置系统用户，用于挂载系统相关的数据
+            var systemUser = _db.Users.FirstOrDefault(x => x.IsSystemUser);
+            if (systemUser == null)
+            {
+                systemUser = new UserInfos.User
+                {
+                    UserId = "system_uzon",
+                    UserName = "系统用户",
+                    // 系统用户无法登陆
+                    Password = "system1234",
+                    IsSystemUser = true,
+                    IsHidden = true
+                };
+
+                _db.Add(systemUser);
+            }
+
+
             // 设置超管,防止其它账号权限被撤销
             var adminUser = _db.Users.FirstOrDefault(x => x.IsSuperAdmin);
             if (adminUser == null)
             {
                 adminUser = new UserInfos.User
                 {
+                    UserId = "admin",
                     UserName = "admin",
                     // 密码是进行了 Sha256 二次加密的
                     Password = "admin1234".Sha256(1),
-                    IsSuperAdmin = true
+                    IsSuperAdmin = true,
+                    IsHidden = true,
                 };
 
                 // 从配置中读取超管的信息
-                if(_appConfig?.User?.AdminUser != null)
+                if (_appConfig?.User?.AdminUser != null)
                 {
                     var adminUserConfig = _appConfig.User.AdminUser;
-                    if(!string.IsNullOrEmpty(adminUserConfig.UserId))adminUser.UserId = adminUserConfig.UserId;
+                    if (!string.IsNullOrEmpty(adminUserConfig.UserId)) adminUser.UserId = adminUserConfig.UserId;
                     if (!string.IsNullOrEmpty(adminUserConfig.Password)) adminUser.Password = adminUserConfig.Password.Sha256(1);
                     if (!string.IsNullOrEmpty(adminUserConfig.Avatar)) adminUser.Avatar = adminUserConfig.Avatar;
                 }

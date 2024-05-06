@@ -3,16 +3,19 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 using System.Reflection.Metadata;
 using UZonMailService.Models.SqlLite.Emails;
 using UZonMailService.Models.SqlLite.EmailSending;
-using UZonMailService.Models.SqlLite.EntityTypeConfigs;
+using UZonMailService.Models.SqlLite.EntityConfigs;
+using UZonMailService.Models.SqlLite.Settings;
 using UZonMailService.Models.SqlLite.Templates;
+using UZonMailService.Models.SqlLite.Tests;
 
 namespace UZonMailService.Models.SqlLite
 {
     /// <summary>
     /// Sql 上下文
+    /// 参考：https://learn.microsoft.com/zh-cn/ef/core/modeling/relationships/conventions
     /// </summary>
     public class SqlContext : DbContext
-    {        
+    {
         #region 初始化
         /// <summary>
         /// 配置数据库
@@ -20,7 +23,7 @@ namespace UZonMailService.Models.SqlLite
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            new EmailTypeConfig().Configure(modelBuilder);
+            new EntityTypeConfig().Configure(modelBuilder);
         }
         #endregion
 
@@ -32,7 +35,9 @@ namespace UZonMailService.Models.SqlLite
             _dbPath = Path.Join(path, "UZonMail\\uzon-mail.db");
             Directory.CreateDirectory(Path.GetDirectoryName(_dbPath));
 
-            Database.EnsureCreated();
+            // 开启时，会自动创建表，会导致无法升级数据库
+            // 可以开启用于调试
+            //Database.EnsureCreated();
         }
         /// <summary>
         /// The following configures EF to create a Sqlite database file in the
@@ -60,10 +65,18 @@ namespace UZonMailService.Models.SqlLite
         /// <summary>
         /// 可以通过 Inbox 进行查找
         /// </summary>
-        public DbSet<Outbox> Outboxes { get; set; } 
+        public DbSet<Outbox> Outboxes { get; set; }
 
-        //public DbSet<SendingGroup> SendingTasks { get; set; }
-        //public DbSet<SendingItem> SendingItems { get; set; }
+        public DbSet<SendingGroup> SendingGroups { get; set; }
+        public DbSet<SendingItem> SendingItems { get; set; }
+
+        public DbSet<UserProxy> UserProxies { get; set; }
+        public DbSet<GlobalUserSetting> GlobalUserSettings { get; set; }
+        #endregion
+
+        #region 测试
+        //public DbSet<Post> Posts { get; set; }
+        //public DbSet<Tag> Tags { get; set; }
         #endregion
 
         #region 通用方法

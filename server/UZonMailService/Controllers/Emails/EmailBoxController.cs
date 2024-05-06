@@ -49,7 +49,7 @@ namespace UZonMailService.Controllers.Emails
                 existOne.SmtpPort = entity.SmtpPort;
                 existOne.Password = entity.Password;
                 existOne.Description = entity.Description;
-                existOne.Proxy = entity.Proxy;
+                existOne.SystemProxy = entity.SystemProxy;
                 existOne.SetStatusNormal();
             }
             else
@@ -109,8 +109,10 @@ namespace UZonMailService.Controllers.Emails
                     entity.EmailGroupId = newEntity.EmailGroupId;
                     entity.SmtpPort = newEntity.SmtpPort;
                     entity.Password = newEntity.Password;
+                    entity.EnableSSL = newEntity.EnableSSL;
                     entity.Description = newEntity.Description;
-                    entity.Proxy = newEntity.Proxy;
+                    entity.SystemProxy = newEntity.SystemProxy;
+                    entity.Name = newEntity.Name;
                     entity.SetStatusNormal();
                 }
             }
@@ -138,6 +140,7 @@ namespace UZonMailService.Controllers.Emails
             if (existOne != null)
             {
                 existOne.EmailGroupId = entity.EmailGroupId;
+                existOne.Name = entity.Name;
                 existOne.Description = entity.Description;
                 existOne.SetStatusNormal();
             }
@@ -187,6 +190,7 @@ namespace UZonMailService.Controllers.Emails
                 if (newEntity != null)
                 {
                     entity.EmailGroupId = newEntity.EmailGroupId;
+                    entity.Name = newEntity.Name;
                     entity.Description = newEntity.Description;
                     entity.SetStatusNormal();
                 }
@@ -207,13 +211,14 @@ namespace UZonMailService.Controllers.Emails
         [HttpPut("outbox/{outboxId:int}")]
         public async Task<ResponseResult<bool>> UpdateOutbox(int outboxId, [FromBody] Outbox entity)
         {
-            await db.Outboxes.UpdateAscyn(x => x.Id == outboxId,
+            await db.Outboxes.UpdateAsync(x => x.Id == outboxId,
                  x => x.SetProperty(y => y.Email, entity.Email)
                  .SetProperty(y => y.SmtpHost, entity.SmtpHost)
                  .SetProperty(y => y.SmtpPort, entity.SmtpPort)
                  .SetProperty(y => y.Password, entity.Password)
+                 .SetProperty(y => y.EnableSSL, entity.EnableSSL)
                  .SetProperty(y => y.Description, entity.Description)
-                 .SetProperty(y => y.Proxy, entity.Proxy)
+                 .SetProperty(y => y.SystemProxy, entity.SystemProxy)
                  );
             return true.ToSuccessResponse();
         }
@@ -227,7 +232,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpPut("inbox/{inboxId:int}")]
         public async Task<ResponseResult<bool>> UpdateInbox(int inboxId, [FromBody] Inbox entity)
         {
-            await db.Outboxes.UpdateAscyn(x => x.Id == inboxId,
+            await db.Outboxes.UpdateAsync(x => x.Id == inboxId,
                  x => x.SetProperty(y => y.Email, entity.Email)
                  .SetProperty(y => y.Description, entity.Description)
                  );

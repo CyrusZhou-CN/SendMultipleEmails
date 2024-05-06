@@ -1,5 +1,6 @@
 ﻿using UZonMailService.Models.SqlLite.Base;
 using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SqlLite.EntityConfigs.Attributes;
 using UZonMailService.Models.SqlLite.Files;
 using UZonMailService.Models.SqlLite.Templates;
 using UZonMailService.Models.SqlLite.UserInfos;
@@ -15,8 +16,8 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// <summary>
         /// 所属发送任务
         /// </summary>
-        public int SendingTaskId { get; set; }
-        public SendingGroup SendingTask { get; set; }
+        public int SendingGroupId { get; set; }
+        public SendingGroup SendingGroup { get; set; }
 
         /// <summary>
         /// 所属用户
@@ -25,9 +26,9 @@ namespace UZonMailService.Models.SqlLite.EmailSending
 
         /// <summary>
         /// 发件人
+        /// 由于是多线程发件，这个值只有发送后才能确定
         /// </summary>
         public int OutBoxId { get; set; }
-        public Outbox OutBox { get; set; }
 
         /// <summary>
         /// 实际发件人
@@ -37,20 +38,27 @@ namespace UZonMailService.Models.SqlLite.EmailSending
 
         /// <summary>
         /// 收件人
+        /// 可能有多个收件人
         /// </summary>
+        [JsonMap]
         public List<EmailAddress> Inboxes { get; set; }
+
         /// <summary>
         /// 抄送人
         /// </summary>
-        public List<EmailAddress> CC { get; set; }
+        [JsonMap]
+        public List<EmailAddress>? CC { get; set; }
+
         /// <summary>
         /// 密送人
         /// </summary>
-        public List<EmailAddress> BCC { get; set; }
+        [JsonMap]
+        public List<EmailAddress>? BCC { get; set; }
 
         /// <summary>
         /// 邮件模板 Id
         /// 可以为 0，表示不使用模板
+        /// 模板是发送时，指定的
         /// </summary>
         public int EmailTemplateId { get; set; }
 
@@ -64,12 +72,17 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// 实际发送内容
         /// 将模板与数据进行合并后的内容
         /// </summary>
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         /// <summary>
         /// 附件列表
         /// </summary>
-        public List<FileUsage> Attachments { get; set; }
+        public List<FileUsage>? Attachments { get; set; }
+
+        /// <summary>
+        /// 批量发送
+        /// </summary>
+        public bool IsSendingBatch { get; set; }
 
         #region 发送结果
         /// <summary>
@@ -87,5 +100,24 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// </summary>
         public int TriedCount { get; set; }
         #endregion
+
+        /// <summary>
+        /// 转换成 SendItem
+        /// </summary>
+        /// <returns></returns>
+        public SendItem ToSendItem()
+        {
+            var sendItem = new SendItem(Id)
+            {
+                BCC = BCC,
+                CC = CC,
+                Inboxes = Inboxes,
+                IsSendingBatch = IsSendingBatch
+            };
+
+            if (Attachments != null)
+                sendItem.AttachmentIds = Attachments.Select(x => x.Id).ToList();
+            return sendItem;
+        }
     }
 }

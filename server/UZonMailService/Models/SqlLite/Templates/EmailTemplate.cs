@@ -1,4 +1,5 @@
 ﻿using UZonMailService.Models.SqlLite.Base;
+using UZonMailService.Models.SqlLite.EmailSending;
 
 namespace UZonMailService.Models.SqlLite.Templates
 {
@@ -31,5 +32,10 @@ namespace UZonMailService.Models.SqlLite.Templates
         /// 缩略图
         /// </summary>
         public string? Thumbnail { get; set; }
+
+        /// <summary>
+        /// 使用的组
+        /// </summary>
+        public List<SendingGroup>? SendingGroups { get; set; }
     }
 }

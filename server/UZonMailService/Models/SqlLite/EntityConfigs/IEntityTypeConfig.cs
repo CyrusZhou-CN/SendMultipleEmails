@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UZonMailService.Models.SqlLite.Emails;
 
-namespace UZonMailService.Models.SqlLite.EntityTypeConfigs
+namespace UZonMailService.Models.SqlLite.EntityConfigs
 {
     /// <summary>
     /// 配置实体类型

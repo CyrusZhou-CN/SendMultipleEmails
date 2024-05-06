@@ -1,16 +1,16 @@
 ﻿namespace UZonMailService.SignalRHubs.SendEmail
 {
-    public class EmailTotalProgress
+    public class SendingGroupTotalProgressArg
     {
         /// <summary>
         /// 总数
         /// </summary>
-        public int Total { get; set; }
+        public double Total { get; set; }
 
         /// <summary>
         /// 当前数量
         /// </summary>
-        public int Current { get; set; }
+        public double Current { get; set; }
 
         /// <summary>
         /// 消息

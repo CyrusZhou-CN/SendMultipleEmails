@@ -1,6 +1,6 @@
 ﻿namespace UZonMailService.SignalRHubs.SendEmail
 {
-    public class EmailGroupSendingProgress
+    public class SendingGroupProgressArg : SendingGroupTotalProgressArg
     {
         /// <summary>
         /// 开始时间

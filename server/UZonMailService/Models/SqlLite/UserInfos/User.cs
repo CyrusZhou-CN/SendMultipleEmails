@@ -44,6 +44,11 @@ namespace UZonMailService.Models.SqlLite.UserInfos
         public bool IsSuperAdmin { get; set; }
 
         /// <summary>
+        /// 是否是系统用户
+        /// </summary>
+        public bool IsSystemUser { get; set; }
+
+        /// <summary>
         /// 用户角色
         /// 导航属性
         /// </summary>

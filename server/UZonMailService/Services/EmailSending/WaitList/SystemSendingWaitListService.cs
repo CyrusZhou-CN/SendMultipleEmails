@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
+using UZonMailService.Models.SqlLite.EmailSending;
 using UZonMailService.Services.EmailSending.Sender;
 
 namespace UZonMailService.Services.EmailSending.WaitList
@@ -10,9 +11,33 @@ namespace UZonMailService.Services.EmailSending.WaitList
     /// 每位用户的资源都是公平的
     /// 今后可以考虑加入权重
     /// </summary>
-    public class SystemSendingWaitListService : ISendingWaitList,ISingletonService
+    public class SystemSendingWaitListService : ISendingWaitList, ISingletonService
     {
         private readonly ConcurrentQueue<UserSendingTaskManager> _userTasks = new();
+
+        /// <summary>
+        /// 将发件组添加到待发件队列
+        /// 内部会自动向前端发送消息通知
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        public async Task<bool> AddSendingGroup(SendingGroup group)
+        {
+            if (group == null)
+                return false;
+
+            // 判断是否有用户发件管理器
+            var taskManager = _userTasks.FirstOrDefault(x => x.UserId == group.UserId);
+            if (taskManager == null)
+            {
+                // 新建用户发件管理器
+                taskManager = new UserSendingTaskManager(group.UserId);
+                _userTasks.Enqueue(taskManager);
+            }
+
+            // 向发件管理器添加发件组
+            return await taskManager.AddSendingGroup(group);
+        }
 
         /// <summary>
         /// 邮件类型总数

@@ -4,14 +4,51 @@ using UZonMailService.Models.SqlLite.EmailSending;
 using UZonMailService.Services.EmailSending.Models;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Sender;
+using UZonMailService.SignalRHubs.SendEmail;
 
 namespace UZonMailService.Services.EmailSending.WaitList
 {
     /// <summary>
     /// 用户发件任务管理
     /// </summary>
-    public class UserSendingTaskManager : List<SendGroupTask>, ISendingWaitList, IMSendingManagerStatus
+    public class UserSendingTaskManager(int userId) : List<SendGroupTask>, ISendingWaitList, IMSendingManagerStatus
     {
+        public int UserId { get; private set; } = userId;
+
+        /// <summary>
+        /// 添加发件组任务
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        public async Task<bool> AddSendingGroup(SendingGroup group)
+        {
+            if (group.UserId != UserId)
+                return false;
+
+            // 检查是否已经存在
+            if (this.Any(t => t.GroupId == group.Id))
+                return false;
+
+            // 添加到列表
+            var newTask = new SendGroupTask(group);
+            var success = await newTask.Init();
+            if (!success) return false;
+
+            this.Add(newTask);
+
+            // 向前端推送总进度
+            var client = EmailSendingService.GetSignalRClient(UserId);
+            if (client != null)
+            {
+                await client.SendingGroupTotalProgressChanged(new SendingGroupTotalProgressArg()
+                {
+                    Current = 0,
+                    Total = this.Count
+                });
+            }
+            return true;
+        }
+
         // 完整的发件池
         // 每个发件组也有一个子发件池
         public int GetOutboxesCount()
@@ -25,10 +62,10 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <returns></returns>
         public SendItem? GetSendItem()
         {
-            if(EmailSendingService.Instance.OutboxPool.Count == 0)
+            if (EmailSendingService.Instance.OutboxPool.Count == 0)
 
                 return null;
-            if(this.Count==0)return null;
+            if (this.Count == 0) return null;
 
             // 依次获取发件项
             SendItem? sendItem = null;
@@ -36,7 +73,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             {
                 sendItem = groupTask.GetSendItem();
                 if (sendItem != null)
-                {                  
+                {
                     break;
                 }
             }

@@ -207,7 +207,7 @@ namespace UZonMailService.Controllers.Users
             file.CopyTo(saveFile);
 
             // 将头像更新到用户信息中
-            await db.Users.UpdateAscyn(x => x.Id == userId, x => x.SetProperty(y => y.Avatar, relativePath));
+            await db.Users.UpdateAsync(x => x.Id == userId, x => x.SetProperty(y => y.Avatar, relativePath));
             await db.SaveChangesAsync();
 
             return relativePath.ToSuccessResponse();

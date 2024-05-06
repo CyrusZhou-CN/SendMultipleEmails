@@ -9,25 +9,30 @@
         /// 新建
         /// </summary>
         Created,
+
         /// <summary>
         /// 计划发件
         /// </summary>
         Scheduled,
+
         /// <summary>
         /// 发送中
         /// </summary>
         Sending,
+
         /// <summary>
         /// 暂停
         /// </summary>
         Pause,
+
         /// <summary>
         /// 停止
         /// </summary>
-        Stop,
+        Cancel,
+
         /// <summary>
         /// 发送完成
         /// </summary>
-        Complete,
+        Finish,
     }
 }

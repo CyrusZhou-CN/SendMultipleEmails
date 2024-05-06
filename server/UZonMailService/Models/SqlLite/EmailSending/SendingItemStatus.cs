@@ -8,7 +8,7 @@
         /// <summary>
         /// 初始状态
         /// </summary>
-        None,
+        Created,
 
         /// <summary>
         /// 发送状态

@@ -1,6 +1,6 @@
 ﻿using System.Timers;
 using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Services.EmailSending.Sender;
+using UZonMailService.Models.SqlLite.EmailSending;
 using Timer = System.Timers.Timer;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
@@ -14,11 +14,11 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 所属的发件箱组 id
         /// </summary>
-        public List<int> SendingGroupIds = [];
+        public HashSet<int> SendingGroupIds = [];
         #endregion
 
         #region 构造
-        private int _cooldownMilliseconds = 0;
+        private long _cooldownMilliseconds = 0;
         private int _maxPerDay = 0;
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         /// <param name="cooldownMilliseconds">时间间距,单位 ms, 为 0 时表示不限制</param>
         /// <param name="maxPerDay">每天最大发件量，超过这个值，不能发件, 为 0 时表示不限制</param>
-        public OutboxEmailAddress(int cooldownMilliseconds, int maxPerDay)
+        public OutboxEmailAddress(long cooldownMilliseconds, int maxPerDay)
         {
             _cooldownMilliseconds = cooldownMilliseconds;
             _maxPerDay = maxPerDay;

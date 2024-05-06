@@ -7,27 +7,27 @@
         /// </summary>
         /// <param name="progress"></param>
         /// <returns></returns>
-        Task EmailSendingTotalProgressChanged(EmailTotalProgress progress);
+        Task SendingGroupTotalProgressChanged(SendingGroupTotalProgressArg progress);
 
         /// <summary>
         /// 单个邮件组发送进度
         /// </summary>
         /// <param name="progress"></param>
         /// <returns></returns>
-        Task EmailGroupSendingProgressChanged(EmailGroupSendingProgress progress);
+        Task SendingGroupProgressChanged(SendingGroupProgressArg progress);
 
         /// <summary>
         /// 单个邮件组发送进度
         /// </summary>
         /// <param name="progress"></param>
         /// <returns></returns>
-        Task EmailStatusChanged(EmailGroupSendingProgress progress);
+        Task SendingItemProgressChanged(SendingGroupProgressArg progress);
 
         /// <summary>
         /// 邮件发送错误
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task EmailSendingError(string message);
+        Task SendError(string message);
     }
 }
