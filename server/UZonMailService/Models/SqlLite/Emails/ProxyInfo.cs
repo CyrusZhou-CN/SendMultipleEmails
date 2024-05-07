@@ -7,7 +7,7 @@ namespace UZonMailService.Models.SqlLite.Emails
     /// 格式为：username:password@host:port
     /// </summary>
     [Keyless]
-    public class EmailProxy
+    public class ProxyInfo
     {
         /// <summary>
         /// 地址
@@ -29,8 +29,7 @@ namespace UZonMailService.Models.SqlLite.Emails
         /// </summary>
         public string? Password { get; set; }
 
-        public EmailProxy() { }
-        public EmailProxy(string proxyString)
+        public ProxyInfo(string proxyString)
         {
             // 将字符串转换为代理
             Uri uri = new(proxyString);
@@ -39,7 +38,7 @@ namespace UZonMailService.Models.SqlLite.Emails
             var userInfos = uri.UserInfo.Split(':');
             if (userInfos.Length > 0)
             {
-                Username = userInfos[0];                
+                Username = userInfos[0];
             }
             if (userInfos.Length > 1)
             {
@@ -54,6 +53,17 @@ namespace UZonMailService.Models.SqlLite.Emails
         public override string ToString()
         {
             return $"{Username}:{Password}@{Host}:{Port}";
+        }
+
+        /// <summary>
+        /// 尝试解析代理字符串
+        /// </summary>
+        /// <param name="proxyString"></param>
+        /// <param name="proxyInfo"></param>
+        /// <returns></returns>
+        public static bool CanParse(string proxyString)
+        {
+            return Uri.TryCreate(proxyString, UriKind.RelativeOrAbsolute, out _);
         }
     }
 }

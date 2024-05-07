@@ -11,7 +11,7 @@ using UZonMailService.Models.SqlLite;
 namespace UZonMailService.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    [Migration("20240505070003_init")]
+    [Migration("20240507001740_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -255,24 +255,6 @@ namespace UZonMailService.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("EmailGroups");
-                });
-
-            modelBuilder.Entity("UZonMailService.Models.SqlLite.Emails.EmailProxy", b =>
-                {
-                    b.Property<string>("Host")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Port")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("TEXT");
-
-                    b.ToTable("EmailProxy");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Emails.Inbox", b =>
@@ -608,9 +590,6 @@ namespace UZonMailService.Migrations
                         .HasMaxLength(13)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("EmailMatch")
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
@@ -620,8 +599,12 @@ namespace UZonMailService.Migrations
                     b.Property<bool>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsUserProxy")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("MatchRegex")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Priority")
                         .HasColumnType("INTEGER");
@@ -751,7 +734,7 @@ namespace UZonMailService.Migrations
                     b.Property<int>("SmtpPort")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("SystemProxyId")
+                    b.Property<int?>("SystemProxyId")
                         .HasColumnType("INTEGER");
 
                     b.HasIndex("SystemProxyId");
@@ -767,9 +750,6 @@ namespace UZonMailService.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsShared")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsSystemProxy")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MachedUserIds")
@@ -914,8 +894,7 @@ namespace UZonMailService.Migrations
                     b.HasOne("UZonMailService.Models.SqlLite.Settings.SystemProxy", "SystemProxy")
                         .WithMany()
                         .HasForeignKey("SystemProxyId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientNoAction);
 
                     b.Navigation("SystemProxy");
                 });

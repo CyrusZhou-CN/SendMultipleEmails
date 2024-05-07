@@ -39,9 +39,13 @@ namespace UZonMailService.Models.SqlLite.Emails
         public bool EnableSSL { get; set; } = true;
 
         /// <summary>
+        /// 代理 Id
+        /// </summary>
+        public int ProxyId { get; set; }
+        /// <summary>
         /// 指定代理
         /// </summary>
-        public SystemProxy? SystemProxy { get; set; }
+        public UserProxy? Proxy { get; set; }
 
         /// <summary>
         /// 单日最大发送数量

@@ -48,5 +48,10 @@ namespace UZonMailService.Models.SqlLite.Settings
         /// 代理设置
         /// </summary>
         public string Proxy { get; set; }
+
+        /// <summary>
+        /// 是否共享
+        /// </summary>
+        public bool IsShared { get; set; }
     }
 }

@@ -29,19 +29,6 @@ namespace UZonMailService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmailProxy",
-                columns: table => new
-                {
-                    Host = table.Column<string>(type: "TEXT", nullable: false),
-                    Port = table.Column<int>(type: "INTEGER", nullable: false),
-                    Username = table.Column<string>(type: "TEXT", nullable: true),
-                    Password = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
                 name: "EmailTemplates",
                 columns: table => new
                 {
@@ -168,17 +155,16 @@ namespace UZonMailService.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Priority = table.Column<int>(type: "INTEGER", nullable: false),
-                    EmailMatch = table.Column<string>(type: "TEXT", nullable: true),
+                    MatchRegex = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     Proxy = table.Column<string>(type: "TEXT", nullable: false),
-                    IsUserProxy = table.Column<bool>(type: "INTEGER", nullable: false),
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 13, nullable: false),
                     IgnoreUserIds = table.Column<string>(type: "TEXT", nullable: true),
                     MachedUserIds = table.Column<string>(type: "TEXT", nullable: true),
                     IsShared = table.Column<bool>(type: "INTEGER", nullable: true),
-                    IsSystemProxy = table.Column<bool>(type: "INTEGER", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -550,9 +536,6 @@ namespace UZonMailService.Migrations
         {
             migrationBuilder.DropTable(
                 name: "EmailAddress");
-
-            migrationBuilder.DropTable(
-                name: "EmailProxy");
 
             migrationBuilder.DropTable(
                 name: "EmailTemplateSendingGroup");

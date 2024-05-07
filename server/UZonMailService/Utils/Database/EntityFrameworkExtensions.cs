@@ -10,7 +10,8 @@ namespace UZonMailService.Utils.Database
     {
         /// <summary>
         /// 更新匹配到的实体
-        /// 该方法效率还需要优化，可能会请求数据库两次，不高效(未测试)
+        /// 该方法只会请求数据库 1 次
+        /// 不需要调用 SaveChangesAsync 方法
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
