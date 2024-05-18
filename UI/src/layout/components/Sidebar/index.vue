@@ -1,6 +1,6 @@
 <template>
-  <div :class="{'has-logo':showLogo}">
-    <logo v-if="showLogo" :collapse="isCollapse" />
+  <div :class="{ 'has-logo': showLogo }">
+    <Logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
@@ -12,45 +12,29 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
+        <SidebarItem v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
+<script setup>
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
 
-export default {
-  components: { SidebarItem, Logo },
-  computed: {
-    ...mapGetters([
-      'sidebar'
-    ]),
-    routes() {
-      return this.$router.options.routes
-    },
-    activeMenu() {
-      const route = this.$route
-      const { meta, path } = route
-      // if set path, the sidebar will highlight the path you set
-      if (meta.activeMenu) {
-        return meta.activeMenu
-      }
-      return path
-    },
-    showLogo() {
-      return this.$store.state.settings.sidebarLogo
-    },
-    variables() {
-      return variables
-    },
-    isCollapse() {
-      return !this.sidebar.opened
-    }
-  }
-}
+const store = useStore()
+const route = useRoute()
+const router = useRouter()
+
+const routes = computed(() => router.options.routes)
+const activeMenu = computed(() => {
+  const { meta, path } = route.value
+  return meta.activeMenu || path
+})
+const showLogo = computed(() => store.state.settings.sidebarLogo)
+const isCollapse = computed(() => !store.state.sidebar.opened)
 </script>

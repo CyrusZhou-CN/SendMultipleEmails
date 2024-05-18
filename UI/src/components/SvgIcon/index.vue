@@ -1,15 +1,15 @@
 <template>
-  <div v-if="isExternal" :style="styleExternalIcon" class="svg-external-icon svg-icon" v-on="$listeners" />
-  <svg v-else :class="svgClass" aria-hidden="true" v-on="$listeners">
-    <use :xlink:href="iconName" />
+  <div v-if="isExternal" :style="styleExternalIcon" class="svg-external-icon svg-icon" v-on="$attrs"></div>
+  <svg v-else :class="svgClass" aria-hidden="true" v-on="$attrs">
+    <use :xlink:href="iconName"></use>
   </svg>
 </template>
 
 <script>
-// doc: https://panjiachen.github.io/vue-element-admin-site/feature/component/svg-icon.html#usage
-import { isExternal } from '@/utils/validate'
+import { defineComponent, computed } from 'vue'; // 引入Vue 3的defineComponent和computed函数
+import { isExternal } from '@/utils/validate';
 
-export default {
+export default defineComponent({
   name: 'SvgIcon',
   props: {
     iconClass: {
@@ -21,28 +21,23 @@ export default {
       default: ''
     }
   },
-  computed: {
-    isExternal() {
-      return isExternal(this.iconClass)
-    },
-    iconName() {
-      return `#icon-${this.iconClass}`
-    },
-    svgClass() {
-      if (this.className) {
-        return 'svg-icon ' + this.className
-      } else {
-        return 'svg-icon'
-      }
-    },
-    styleExternalIcon() {
-      return {
-        mask: `url(${this.iconClass}) no-repeat 50% 50%`,
-        '-webkit-mask': `url(${this.iconClass}) no-repeat 50% 50%`
-      }
-    }
+  setup(props) {
+    const isExternalIcon = computed(() => isExternal(props.iconClass));
+    const iconName = computed(() => `#icon-${props.iconClass}`);
+    const svgClass = computed(() => props.className ? `svg-icon ${props.className}` : 'svg-icon');
+    const styleExternalIcon = computed(() => ({
+      mask: `url(${props.iconClass}) no-repeat 50% 50%`,
+      '-webkit-mask': `url(${props.iconClass}) no-repeat 50% 50%`
+    }));
+
+    return {
+      isExternal: isExternalIcon,
+      iconName,
+      svgClass,
+      styleExternalIcon
+    };
   }
-}
+});
 </script>
 
 <style scoped>

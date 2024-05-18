@@ -1,6 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -15,7 +16,7 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 // port = 9528 npm run dev OR npm run dev --port = 9528
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 
-// All configuration item explanations can be find in https://cli.vuejs.org/config/
+// All configuration item explanations can be found in https://cli.vuejs.org/config/
 module.exports = {
   /**
    * You will need to set publicPath if you plan to deploy your site under a sub path,
@@ -34,10 +35,6 @@ module.exports = {
   devServer: {
     port: port,
     open: true,
-    overlay: {
-      warnings: false,
-      errors: true
-    },
     // before: require('./mock/mock-server.js')
   },
 
@@ -46,14 +43,33 @@ module.exports = {
     // it can be accessed in index.html to inject the correct title.
     name: name,
     resolve: {
+      fallback: {
+        "path": require.resolve("path-browserify"),
+        "crypto": require.resolve("crypto-browserify"),
+        "stream": require.resolve("stream-browserify"),
+        "vm": require.resolve("vm-browserify")
+      },
       alias: {
+        fs: false,
         '@': resolve('src')
       }
     }
   },
-  chainWebpack(config) {
+
+  chainWebpack: config => {
     config.plugins.delete('preload') // TODO: need test
     config.plugins.delete('prefetch') // TODO: need test
+    config.resolve.alias.set('vue', '@vue/compat')
+
+    config.plugin('html')
+      .use(HtmlWebpackPlugin, [{
+        template: 'public/index.html',
+        inject: true,
+        filename: 'index.html',
+        templateParameters: {
+          BASE_URL: '/'
+        }
+      }]);
 
     // set svg-sprite-loader
     config.module
@@ -71,20 +87,22 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
       .end()
-
     // set preserveWhitespace
     config.module
       .rule('vue')
       .use('vue-loader')
       .loader('vue-loader')
       .tap(options => {
-        options.compilerOptions.preserveWhitespace = true
+        options.compilerOptions = {
+          ...options.compilerOptions,
+          preserveWhitespace: true
+        }
         return options
       })
       .end()
 
     config
-    // https://webpack.js.org/configuration/devtool/#development
+      // https://webpack.js.org/configuration/devtool/#development
       .when(process.env.NODE_ENV === 'development',
         config => config.devtool('cheap-source-map')
       )
@@ -93,13 +111,11 @@ module.exports = {
       .when(process.env.NODE_ENV !== 'development',
         config => {
           config
-            .plugin('ScriptExtHtmlWebpackPlugin')
-            .after('html')
-            .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
-              inline: /runtime\..*\.js$/
-            }])
-            .end()
+            .plugin('html')
+            .tap(args => {
+              args[0].inlineSource = '.(js|css)$'  // 将所有的 JavaScript 和 CSS 内联
+              return args
+            })
           config
             .optimization.splitChunks({
               chunks: 'all',
@@ -110,10 +126,10 @@ module.exports = {
                   priority: 10,
                   chunks: 'initial' // only package third parties that are initially dependent
                 },
-                elementUI: {
-                  name: 'chunk-elementUI', // split elementUI into a single package
-                  priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
-                  test: /[\\/]node_modules[\\/]_?element-ui(.*)/ // in order to adapt to cnpm
+                elementPlus: {
+                  name: 'chunk-elementPlus', // split elementPlus into a single package
+                  priority: 20, // the weight needs to be larger than libs and app, otherwise it will be packaged into libs or app
+                  test: /[\\/]node_modules[\\/]_?element-plus(.*)/ // in order to adapt to cnpm
                 },
                 commons: {
                   name: 'chunk-commons',

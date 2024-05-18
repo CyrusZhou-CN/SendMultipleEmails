@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 import './styles/quasar.scss'
-import lang from 'quasar/lang/zh-hans.js'
+import lang from 'quasar/lang/zh-CN.js'
 import '@quasar/extras/material-icons/material-icons.css'
 import { Quasar, Notify, Dialog } from 'quasar'
 

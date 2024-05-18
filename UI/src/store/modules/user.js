@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import { ref } from 'vue';
 
 const getDefaultState = () => {
   return {
@@ -10,38 +11,38 @@ const getDefaultState = () => {
   }
 }
 
-const state = getDefaultState()
+const state = ref(getDefaultState());
 
 const mutations = {
-  RESET_STATE: state => {
-    Object.assign(state, getDefaultState())
+  RESET_STATE: () => {
+    state.value = getDefaultState();
   },
-  SET_TOKEN: (state, token) => {
-    state.token = token
+  SET_TOKEN: (token) => {
+    state.value.token = token;
   },
-  SET_NAME: (state, name) => {
-    state.name = name
+  SET_NAME: (name) => {
+    state.value.name = name;
   },
-  SET_AVATAR: (state, avatar) => {
-    console.log('setAvatar:', avatar)
-    state.avatar = avatar
+  SET_AVATAR: (avatar) => {
+    console.log('setAvatar:', avatar);
+    state.value.avatar = avatar;
   }
 }
 
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { userName, password } = userInfo
+    const { userName, password } = userInfo;
     return new Promise((resolve, reject) => {
       login({ userName: userName.trim(), password: password })
         .then(response => {
-          const { data } = response
-          commit('SET_TOKEN', data.token)
-          setToken(data.token)
-          resolve()
+          const { data } = response;
+          commit('SET_TOKEN', data.token);
+          setToken(data.token);
+          resolve();
         })
         .catch(error => {
-          reject(error)
+          reject(error);
         })
     })
   },
@@ -49,23 +50,23 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token)
+      getInfo(state.value.token)
         .then(response => {
-          const { data } = response
+          const { data } = response;
 
           if (!data) {
-            return reject('Verification failed, please Login again.')
+            return reject('Verification failed, please Login again.');
           }
 
           // 只有名称，没有姓名，所以用 userId 代表
-          const { userId, avatar } = data
+          const { userId, avatar } = data;
 
-          commit('SET_NAME', userId)
-          commit('SET_AVATAR', avatar)
-          resolve(data)
+          commit('SET_NAME', userId);
+          commit('SET_AVATAR', avatar);
+          resolve(data);
         })
         .catch(error => {
-          reject(error)
+          reject(error);
         })
     })
   },
@@ -73,15 +74,15 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token)
+      logout(state.value.token)
         .then(() => {
-          removeToken() // must remove  token  first
-          resetRouter()
-          commit('RESET_STATE')
-          resolve()
+          removeToken(); // must remove  token  first
+          resetRouter();
+          commit('RESET_STATE');
+          resolve();
         })
         .catch(error => {
-          reject(error)
+          reject(error);
         })
     })
   },
@@ -89,16 +90,16 @@ const actions = {
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
-      removeToken() // must remove  token  first
-      commit('RESET_STATE')
-      resolve()
+      removeToken(); // must remove  token  first
+      commit('RESET_STATE');
+      resolve();
     })
   },
 
   // 设置头像
-  setAvatar({ commit, state }, avatar) {
-    console.log('setAvatar:', avatar)
-    commit('SET_AVATAR', avatar)
+  setAvatar({ commit }, avatar) {
+    console.log('setAvatar:', avatar);
+    commit('SET_AVATAR', avatar);
   }
 }
 

@@ -232,7 +232,7 @@ export default {
   }
 }
 .tinymce-container {
-  ::v-deep .mce-fullscreen {
+  :deep(.mce-container) {
   z-index: 10000;
 }
 }
