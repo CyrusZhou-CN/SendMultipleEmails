@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Server.Database.Extensions;
+using SqlSugar;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +22,7 @@ namespace Server.Database.Models
         /// 递增发件量
         /// </summary>
         /// <returns>true:可以继续发件；false:发件已达到最大数量</returns>
-        public bool IncreaseSentCount(LiteDBManager liteDb, Setting globalSetting)
+        public bool IncreaseSentCount(ISqlSugarClient sqlDb, Setting globalSetting)
         {
             // 判断日期是否是今天，如果不是，则将当天发件数置 0
             string date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -34,7 +36,7 @@ namespace Server.Database.Models
             settings.sendCountTotal++;
 
             // 保存到数据库
-            liteDb.Update(this);
+            sqlDb.Update(this);
 
             int maxEmails = settings.maxEmailsPerDay > 0 ? settings.maxEmailsPerDay : globalSetting.maxEmailsPerDay;
 

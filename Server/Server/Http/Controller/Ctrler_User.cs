@@ -49,11 +49,11 @@ namespace Server.Http.Controller
             }
 
             // 获取数据库
-            var user = LiteDb.Query<User>().Where(u => u.userId == userId).FirstOrDefault();
+            var user = SqlDb.FirstOrDefault<User>(u => u.userId == userId);
             if (user == null)
             {
                 // 新建用户
-                LiteDb.Insert(new User()
+                SqlDb.Insert(new User()
                 {
                     userId = userId,
                     password = password,
@@ -61,7 +61,7 @@ namespace Server.Http.Controller
                 });
 
                 // 新建用户后，同时给用户建立默认配置
-                LiteDb.Insert(Setting.DefaultSetting(userId));
+                SqlDb.Insert(Setting.DefaultSetting(userId));
             }
             else
             {
@@ -98,7 +98,7 @@ namespace Server.Http.Controller
 
 
             // 返回用户信息
-            var user = LiteDb.Query<User>().Where(u => u.userId == jwtToken.UserId).FirstOrDefault();
+            var user = SqlDb.FirstOrDefault<User>(u => u.userId == jwtToken.UserId);
             if (user == null)
             {
                 await ResponseErrorAsync("未找到用户！");
@@ -144,7 +144,7 @@ namespace Server.Http.Controller
                 return;
             }
 
-            var user = LiteDb.Fetch<User>(u => u.userId == userId).FirstOrDefault();
+            var user = SqlDb.FirstOrDefault<User>(u => u.userId == userId);
             if (user == null)
             {
                 await ResponseErrorAsync("用户不存在");
@@ -152,7 +152,7 @@ namespace Server.Http.Controller
             }
 
             // 更新头像
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new User()
+            SqlDb.Upsert2(s => s.userId == Token.UserId, new User()
             {
                 avatar = avatarUrl,
             }, new UpdateOptions() { Fields.avatar });

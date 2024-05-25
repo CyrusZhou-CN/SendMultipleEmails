@@ -26,10 +26,7 @@ namespace Server.Config
             // 读取配置文件，如果有的话，会覆盖原来的配置
 
             // 检查磁盘目录是否存在，不存在要新建
-            string dirPath = Path.GetDirectoryName(LiteDbPath);
-            Directory.CreateDirectory(dirPath);
-
-            dirPath = Path.GetDirectoryName(HttpLogPath);
+            var dirPath = Path.GetDirectoryName(HttpLogPath);
             Directory.CreateDirectory(dirPath);
         }
 
@@ -63,7 +60,6 @@ namespace Server.Config
 
         public string BaseRoute { get; private set; } = "/api/v1";
 
-        public string LiteDbPath { get; private set; } = "datas/litedb.db";
         public string HttpLogPath { get; set; } = "Log\\httpLog.txt";
 
         public string TokenSecret { get; set; } = "helloworld001";

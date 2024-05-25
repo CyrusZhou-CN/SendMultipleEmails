@@ -13,7 +13,7 @@
                 <q-list bordered class="rounded-borders text-teal" dense>
                   <q-item v-if="!prop.node.parentId" v-close-popup="2" clickable dense
                     @click="showNewGroupDialog(null)">
-                    <q-item-section>{{ $t('addGroup') }}</q-item-section>
+                    <q-item-section>{{ $t('addNode') }}</q-item-section>
                   </q-item>
 
                   <q-item v-close-popup="2" clickable dense @click="showNewGroupDialog(prop.node)">
@@ -34,7 +34,7 @@
           <q-menu transition-show="scale" transition-hide="scale" touch-position context-menu>
             <q-list bordered class="rounded-borders text-primary" dense>
               <q-item v-if="groupsData.length === 0" v-close-popup clickable dense @click="showNewGroupDialog(null)">
-                <q-item-section>{{ $t('addGroup') }}</q-item-section>
+                <q-item-section>{{ $t('addNode') }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>

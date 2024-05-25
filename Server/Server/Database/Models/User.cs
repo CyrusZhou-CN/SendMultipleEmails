@@ -1,5 +1,4 @@
-﻿using LiteDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,10 +10,10 @@ namespace Server.Database.Models
     {
         public string userId { get; set; }
         public string password { get; set; }
-        public DateTime createDate { get; set; }
+        public DateTime createDate { get; set; }=DateTime.Now;
         /// <summary>
         /// 头像
         /// </summary>
-        public string avatar { get; set; }
+        public string avatar { get; set; } = "";
     }
 }

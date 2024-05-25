@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using Server.Database;
+using Server.Database.Extensions;
 using Server.Database.Models;
 using Server.Protocol;
 using Server.Websocket.Temp;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,7 +34,7 @@ namespace Server.Http.Modules.SendEmail
         #region 私有属性
         private string _userId;
         private SendBox _sendBox;
-        private LiteDBManager _liteDb;
+        private ISqlSugarClient _sqlDb;
         private Setting _setting;
 
         private CancellationTokenSource _cancellationTokenSource;
@@ -46,15 +48,15 @@ namespace Server.Http.Modules.SendEmail
         #region 事件
         public event Action<SendResult> SendCompleted;
         #endregion
-        public SendThread(string userId, SendBox sendBox, LiteDBManager liteDb)
+        public SendThread(string userId, SendBox sendBox, ISqlSugarClient sqlDb)
         {
             _userId = userId;
             _sendBox = sendBox;
-            _liteDb = liteDb;
+            _sqlDb = sqlDb;
 
             // 获取设置
             // 获取设置
-            _setting = _liteDb.SingleOrDefault<Setting>(s => s.userId == userId);
+            _setting = _sqlDb.SingleOrDefault<Setting>(s => s.userId == userId);
 
             _cancellationTokenSource = new CancellationTokenSource();
         }
@@ -107,7 +109,7 @@ namespace Server.Http.Modules.SendEmail
                         sendItem.isSent = true;
                         sendItem.sendMessage = "mail_sent_successfully";
                         sendItem.sendDate = DateTime.Now;
-                        _liteDb.Upsert(sendItem);
+                        _sqlDb.Upsert(sendItem);
 
                         // 更新到当前进度中
                         SendCompleted?.Invoke(new SendResult()
@@ -118,7 +120,7 @@ namespace Server.Http.Modules.SendEmail
                         });
 
                         // 保存成功的发件量
-                        if (!_sendBox.IncreaseSentCount(_liteDb, _setting))
+                        if (!_sendBox.IncreaseSentCount(_sqlDb, _setting))
                         {
                             // 直接退出
                             return;
@@ -150,7 +152,7 @@ namespace Server.Http.Modules.SendEmail
                         // 添加失败原因
                         if (ex.InnerException == null) sendItem.sendMessage = ex.Message;
                         else sendItem.sendMessage = ex.InnerException.Message;
-                        _liteDb.Upsert(sendItem);
+                        _sqlDb.Upsert(sendItem);
 
                         // 标记当前邮件失败次数
                         // 要等数据处理保存后，再更新
@@ -200,7 +202,7 @@ namespace Server.Http.Modules.SendEmail
                 sendItem.dataUrl = $"<img src=\"{dataUrl}\">";
 
                 // 更新保存的数据
-                _liteDb.Update(sendItem);
+                _sqlDb.Update(sendItem);
             }
 
             return true;

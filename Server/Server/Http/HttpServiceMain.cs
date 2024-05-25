@@ -11,7 +11,6 @@ using System.Linq;
 using System.Reflection;
 using StyletIoC;
 using Server.Http.Extensions;
-using LiteDB;
 
 namespace Server.Http
 {

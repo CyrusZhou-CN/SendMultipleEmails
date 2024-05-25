@@ -2,11 +2,14 @@
 using EmbedIO.Routing;
 using EmbedIO.WebApi;
 using HttpMultipartParser;
-using LiteDB;
 using Server.Config;
+using Server.Database.Extensions;
+using Server.Database.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,17 +47,30 @@ namespace Server.Http.Controller
             string subPath = "files";
             if (subPaths.Count() > 0) subPath = subPaths.First().Data;
 
-            var fs = LiteDb.Database.FileStorage;
-
             List<string> fileIds = new List<string>();
 
             // 可能会同时上传多个文件
             foreach (var file in parser.Files)
             {
+                byte[] fileData;
+                using (var ms = new MemoryStream())
+                {
+                    file.Data.CopyTo(ms);
+                    fileData = ms.ToArray();
+                }
                 // 获取文件名
                 var fileId = $"_{userId}/{subPath}/{file.FileName}";
+                // 构建文件信息对象
+                var fileInfo = new FileAttachment
+                {
+                    FileId = fileId,
+                    UserId = userId,
+                    SubPath = subPath,
+                    FileName = file.FileName,
+                    FileData = fileData
+                };
                 // 保存到数据库中
-                fs.Upload(fileId, file.FileName, file.Data);
+                SqlDb.Insert(fileInfo);
                 fileIds.Add(fileId);
             }
 
@@ -71,16 +87,57 @@ namespace Server.Http.Controller
                 return;
             }
 
-            var fs = LiteDb.Database.FileStorage;
-            var file = fs.FindById(fileId);
-
-            using (var stream = HttpContext.OpenResponseStream())
+            var file = SqlDb.FindById<FileAttachment>(fileId);
+            if (file != null)
             {
-                // https://blog.csdn.net/yudldl/article/details/83095523
-                HttpContext.Response.ContentType = "arraybuffer";
-                file.CopyTo(stream);
+                using (var stream = HttpContext.OpenResponseStream())
+                {
+                    HttpContext.Response.ContentType = GetContentType(file.FileName);
+                    stream.Write(file.FileData, 0, file.FileData.Length);
+                }
             }
+            else
+            {
+                HttpContext.Response.StatusCode = 404;
+                await ResponseErrorAsync("File not found");
+            }
+        }
+        // 获取文件的ContentType
+        private string GetContentType(string fileName)
+        {
+            // 根据文件扩展名或MIME类型返回相应的ContentType
+            // 这里可以根据实际情况进行更改
+            string contentType = "application/octet-stream"; // 默认为二进制流
+            string extension = Path.GetExtension(fileName)?.ToLowerInvariant();
 
+            switch (extension)
+            {
+                case ".pdf":
+                    contentType = "application/pdf";
+                    break;
+                case ".doc":
+                case ".docx":
+                    contentType = "application/msword";
+                    break;
+                case ".jpg":
+                case ".jpeg":
+                    contentType = "image/jpeg";
+                    break;
+                case ".png":
+                    contentType = "image/png";
+                    break;
+                case ".gif":
+                    contentType = "image/gif";
+                    break;
+                case ".bmp":
+                    contentType = "image/bmp";
+                    break;
+                case ".webp":
+                    contentType = "image/webp";
+                    break;
+                    // 其他图片文件类型可以继续添加
+            }
+            return contentType;
         }
     }
 }

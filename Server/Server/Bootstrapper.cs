@@ -8,6 +8,7 @@ using Server.Database;
 using Server.Config;
 using Server.Http;
 using Server.Websocket.Temp;
+using SqlSugar;
 
 namespace Server
 {
@@ -20,16 +21,9 @@ namespace Server
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
-            // Configure the IoC container in here
-
-            // 注册 IoC
-            var userConfig = new UserConfig();
-            builder.Bind<UserConfig>().ToInstance(userConfig);
-            var liteDb = new LiteDBManager(userConfig);
-            builder.Bind<LiteDBManager>().ToInstance(liteDb);
-
-            // 进行系统层面的初始化
-            // 暂无
+            // 获取数据库配置
+            var userConfig = ConfigHelper.GetDatabaseConfig();
+            builder.Bind<DatabaseConfig>().ToInstance(userConfig);
 
             base.ConfigureIoC(builder);
         }

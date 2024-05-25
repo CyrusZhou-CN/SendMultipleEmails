@@ -1,6 +1,5 @@
 ﻿using EmbedIO;
 using EmbedIO.Routing;
-using LiteDB;
 using Newtonsoft.Json.Linq;
 using Server.Database.Definitions;
 using Server.Database.Extensions;
@@ -19,7 +18,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/setting")]
         public async Task GetUserSettings()
         {
-            Setting setting = LiteDb.SingleOrDefault<Setting>(s => s.userId == Token.UserId);
+            Setting setting = SqlDb.SingleOrDefault<Setting>(s => s.userId == Token.UserId);
             await ResponseSuccessAsync(setting);
         }
 
@@ -33,15 +32,13 @@ namespace Server.Http.Controller
 
             double max = body.SelectToken("sendInterval.max").ValueOrDefault(8d);
             double min = body.SelectToken("sendInterval.min").ValueOrDefault(3d);
-
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            SqlDb.Upsert2(s => s.userId == Token.UserId, new Setting()
             {
                 userId = Token.UserId,
                 sendInterval_max = max,
                 sendInterval_min = min,
             }, new UpdateOptions() { "sendInterval_max", "sendInterval_min" });
-
             // 返回成功
             await ResponseSuccessAsync("success");
         }
@@ -58,7 +55,7 @@ namespace Server.Http.Controller
             bool isAutoResend = body.SelectToken("isAutoResend").ValueOrDefault(true);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            SqlDb.Upsert2(s => s.userId == Token.UserId, new Setting()
             {
                 userId = Token.UserId,
                 isAutoResend = isAutoResend,
@@ -80,7 +77,7 @@ namespace Server.Http.Controller
             bool sendWithImageAndHtml = body.SelectToken("sendWithImageAndHtml").ValueOrDefault(false);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            SqlDb.Upsert2(s => s.userId == Token.UserId, new Setting()
             {
                 userId = Token.UserId,
                 sendWithImageAndHtml = sendWithImageAndHtml,
@@ -102,7 +99,7 @@ namespace Server.Http.Controller
             var value = body.SelectToken("maxCount").ValueOrDefault(0);
 
             // 判断是否存在设置项
-            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            SqlDb.Upsert2(s => s.userId == Token.UserId, new Setting()
             {
                 userId = Token.UserId,
                 maxEmailsPerDay = value,

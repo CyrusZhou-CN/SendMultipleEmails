@@ -6,21 +6,23 @@ using Server.Config;
 using Server.Database;
 using Server.Http.Extensions;
 using Server.Http.Headers;
+using SqlSugar;
 using StyletIoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Server.Http.Controller
 {
-    public abstract class BaseController : WebApiController
+    public abstract class BaseController : WebApiController,IDisposable
     {
         protected IContainer IoC { get; private set; }
-
-        protected LiteDBManager LiteDb { get; private set; }
+        protected ISqlSugarClient SqlDb { get; private set; }
+        protected string FileStorage => "";
 
         protected JwtToken Token { get; private set; }
 
@@ -40,7 +42,9 @@ namespace Server.Http.Controller
         protected override void OnBeforeHandler()
         {
             IoC = HttpContext.GetIoCScope();
-            LiteDb = IoC.Get<LiteDBManager>();
+
+            var databaseConfig=  IoC.Get<DatabaseConfig>();
+            SqlDb = new SqlSugarDatabaseManager(databaseConfig).Db;
 
             UserConfig userConfig = IoC.Get<UserConfig>();
             string token = HttpContext.Request.Headers["X-Token"];
@@ -95,6 +99,11 @@ namespace Server.Http.Controller
             {
                 writer.Write(JsonConvert.SerializeObject(obj));
             }
+        }
+
+        public void Dispose()
+        {
+            this.SqlDb?.Dispose();
         }
     }
 

@@ -2,8 +2,10 @@
 using Newtonsoft.Json.Linq;
 using Server.Config;
 using Server.Database;
+using Server.Database.Extensions;
 using Server.Database.Models;
 using Server.Http.Definitions;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +15,8 @@ using System.Threading.Tasks;
 namespace Server.Http.Modules.SendEmail
 {
     class EmailReady : EmailPreview
-    {
-        public static bool CreateEmailReady(string userId, JToken data, LiteDBManager liteDb, out string message)
+    {        
+        public static bool CreateEmailReady(string userId, JToken data, ISqlSugarClient sqlDb, out string message)
         {
             // 判断是否有发送任务正在进行
             if (InstanceCenter.SendTasks[userId] != null && !InstanceCenter.SendTasks[userId].SendStatus.HasFlag(SendStatus.SendFinish))
@@ -23,20 +25,18 @@ namespace Server.Http.Modules.SendEmail
                 return false;
             }
 
-            EmailReady temp = new EmailReady(userId, data, liteDb);
+            EmailReady temp = new EmailReady(userId, data, sqlDb);
 
             InstanceCenter.EmailReady.Upsert(userId, temp);
 
             message = "success";
             return true;
         }
-
         private string _userId;
-        public EmailReady(string userId, JToken data, LiteDBManager liteDb) : base(data, liteDb)
+        public EmailReady(string userId, JToken data, ISqlSugarClient sqlDb) : base(data, sqlDb)
         {
             _userId = userId;
         }
-
         private GenerateInfo _info;
 
         public override GenerateInfo Generate()
@@ -72,7 +72,7 @@ namespace Server.Http.Modules.SendEmail
                 sendStatus = SendStatus.Sending,
             };
 
-            LiteDb.Database.GetCollection<HistoryGroup>().Insert(historyGroup);
+            SqlDb.Insert(historyGroup);
 
             // 反回发件信息
             _info.historyId = historyGroup._id;
@@ -88,7 +88,7 @@ namespace Server.Http.Modules.SendEmail
 
             // 将所有的待发信息添加到数据库
             sendItems.ForEach(item => item.historyId = historyGroup._id);
-            LiteDb.Database.GetCollection<SendItem>().InsertBulk(sendItems);
+            SqlDb.InsertBulk(sendItems);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Server.Http.Modules.SendEmail
                 if (type == Fields.group)
                 {
                     // 找到group下所有的用户
-                    var boxes = LiteDb.Fetch<SendBox>(r => r.groupId == id);
+                    var boxes = SqlDb.Fetch<SendBox>(r => r.groupId == id).ToList();
 
                     // 如果没有，才添加
                     foreach (var box in boxes)
@@ -119,7 +119,7 @@ namespace Server.Http.Modules.SendEmail
                 else
                 {
                     // 选择了单个用户
-                    var box = LiteDb.SingleOrDefault<SendBox>(r => r._id == id);
+                    var box = SqlDb.SingleOrDefault<SendBox>(r => r._id == id);
                     if (box != null && sendBoxes.Find(item => item._id == box._id) == null) sendBoxes.Add(box);
                 }
             }

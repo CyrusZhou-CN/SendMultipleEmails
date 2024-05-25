@@ -12,6 +12,6 @@ namespace Server.Database.Models
         public string html { get; set; }
         public string name { get; set; }
         public string userId { get; set; }
-        public DateTime createDate { get; set; }
+        public DateTime createDate { get; set; }= DateTime.Now;
     }
 }

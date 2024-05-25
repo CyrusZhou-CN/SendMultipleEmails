@@ -144,25 +144,25 @@ reinitTinymce() {
           })
 
           editor.ui.registry.addMenuItem('newTemplate', {
-            text: `${this.$t('template.new')}`,
+            text: _this.$t('template_new'),
             icon: 'new-document',
             onAction: _this.newTemplate.bind(_this)
           })
 
           editor.ui.registry.addMenuItem('saveTemplate', {
-            text: this.$t('template.save'),
+            text: _this.$t('template_save'),
             icon: 'save',
             onAction: _this.saveTemplate.bind(_this)
           })
 
           editor.ui.registry.addMenuItem('saveAsTemplate', {
-            text: this.$t('template.saveAs'),
+            text: _this.$t('template_saveAs'),
             icon: 'save',
             onAction: _this.saveAsTemplate.bind(_this)
           })
 
           editor.ui.registry.addMenuItem('exitEditor', {
-            text: this.$t('template.close'),
+            text: _this.$t('template_close'),
             icon: 'close',
             onAction: _this.exitEditor.bind(_this)
           })

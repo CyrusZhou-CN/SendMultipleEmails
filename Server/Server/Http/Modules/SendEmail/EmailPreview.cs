@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
 using Server.Config;
 using Server.Database;
+using Server.Database.Extensions;
 using Server.Database.Models;
 using Server.Http.Definitions;
 using Server.SDK.Extension;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,12 +30,12 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="receivers"></param>
         /// <param name="data"></param>
         /// <param name="templateId"></param>
-        /// <param name="liteDb"></param>
+        /// <param name="sqlDB"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static bool CreateEmailPreview(string userId, JToken data, LiteDBManager liteDb, out string message)
+        public static bool CreateEmailPreview(string userId, JToken data, ISqlSugarClient sqlDB, out string message)
         {
-            EmailPreview temp = new EmailPreview(data, liteDb);
+            EmailPreview temp = new EmailPreview(data, sqlDB);
 
             // 保存到全局
             InstanceCenter.EmailPreview.Upsert(userId, temp);
@@ -41,7 +43,6 @@ namespace Server.Http.Modules.SendEmail
             message = "success";
             return true;
         }
-
         // 发件人
         public JArray Senders { get; set; }
 
@@ -63,9 +64,8 @@ namespace Server.Http.Modules.SendEmail
         // 附件，选择的
         protected List<EmailAttachment> Attachments { get; private set; }
 
-        protected LiteDBManager LiteDb { get; private set; }
-
-        private List<SendItem> _sendItems;
+        protected ISqlSugarClient SqlDb { get; private set; }
+        private List<SendItem> _sendItems;        
 
         /// <summary>
         /// 构造函数
@@ -74,24 +74,23 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="receivers"></param>
         /// <param name="data"></param>
         /// <param name="templateId"></param>
-        /// <param name="liteDb"></param>
-        protected EmailPreview(JToken data, LiteDBManager liteDb)
+        /// <param name="sqlDb"></param>
+        protected EmailPreview(JToken data, ISqlSugarClient sqlDb)
         {
-            LiteDb = liteDb;
+            SqlDb = sqlDb;
 
             // 生成
             Senders = data.SelectToken(Fields.senders).ValueOrDefault(new JArray());
             Subject = data.SelectToken(Fields.subject).ValueOrDefault(Fields.default_);
             Receivers = data.SelectToken(Fields.receivers).ValueOrDefault(new JArray());
-            Data = data.SelectToken(Fields.data).ValueOrDefault(new JArray());            
+            Data = data.SelectToken(Fields.data).ValueOrDefault(new JArray());
             Attachments = data.SelectToken(Fields.attachments).ValueOrDefault(new JArray()).ToList().ConvertAll(item => new EmailAttachment() { fullName = item.ToString() });
             CopyTo = data.SelectToken(Fields.copyToEmails).ValueOrDefault(new JArray());
 
             string templateId = data.Value<string>(Fields.templateId);
             // 获取模板
-            Template = LiteDb.SingleOrDefault<Template>(t => t._id == templateId);
+            Template = SqlDb.SingleOrDefault<Template>(t => t._id == templateId);
         }
-
         /// <summary>
         /// 生成数据
         /// excel表读取的数据会覆盖用户选择的数据
@@ -119,7 +118,7 @@ namespace Server.Http.Modules.SendEmail
             // 先从选择中获取收件人，如果没有选择，再从excel表中获取收件人
             if (Receivers != null && Receivers.Count > 0)
             {
-                receiveBoxes = TraverseReciveBoxes(Receivers);                
+                receiveBoxes = TraverseReciveBoxes(Receivers);
             }
             else if (Data != null && Data.Count > 0)
             {
@@ -130,7 +129,7 @@ namespace Server.Http.Modules.SendEmail
                     if (string.IsNullOrEmpty(userName)) continue;
 
                     // 从数据库中查找
-                    var receiver = LiteDb.FirstOrDefault<ReceiveBox>(r => r.userName == userName);
+                    var receiver = SqlDb.FirstOrDefault<ReceiveBox>(r => r.userName == userName);
                     if (receiver != null) receiveBoxes.Add(receiver);
                 }
             }
@@ -195,7 +194,7 @@ namespace Server.Http.Modules.SendEmail
                     if (!string.IsNullOrEmpty(customTemplateName))
                     {
                         // 获取新模板，如果失败，则跳过，不发送
-                        var customTemplate = LiteDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
+                        var customTemplate = SqlDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
                         if (customTemplate != null)
                         {
                             sendHtml = customTemplate.html;
@@ -323,7 +322,7 @@ namespace Server.Http.Modules.SendEmail
                 if (type == Fields.group)
                 {
                     // 找到group下所有的用户
-                    List<ReceiveBox> boxes = LiteDb.Fetch<ReceiveBox>(r => r.groupId == id);
+                    List<ReceiveBox> boxes = SqlDb.Fetch<ReceiveBox>(r => r.groupId == id).ToList();
 
                     // 如果没有，才添加
                     foreach (ReceiveBox box in boxes)
@@ -334,7 +333,7 @@ namespace Server.Http.Modules.SendEmail
                 else
                 {
                     // 选择了单个用户
-                    var box = LiteDb.SingleOrDefault<ReceiveBox>(r => r._id == id);
+                    var box = SqlDb.SingleOrDefault<ReceiveBox>(r => r._id == id);
                     if (box != null && receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
                 }
             }

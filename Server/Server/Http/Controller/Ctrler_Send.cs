@@ -16,6 +16,7 @@ using Server.Http.Definitions;
 using Newtonsoft.Json;
 using Server.Http.Modules.SendEmail;
 using Microsoft.Web.WebView2.Wpf;
+using Server.Database.Extensions;
 
 namespace Server.Http.Controller
 {
@@ -41,7 +42,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/send/preview")]
         public async Task CreatePreview()
         {
-            bool createResult = EmailPreview.CreateEmailPreview(Token.UserId, Body, LiteDb, out string message);
+            bool createResult = EmailPreview.CreateEmailPreview(Token.UserId, Body, SqlDb, out string message);
             if (createResult)
             {
                 InstanceCenter.EmailPreview[Token.UserId].Generate();
@@ -68,7 +69,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/send/task")]
         public async Task CreateTask()
         {
-            bool createResult = EmailReady.CreateEmailReady(Token.UserId, Body, LiteDb, out string message);
+            bool createResult = EmailReady.CreateEmailReady(Token.UserId, Body, SqlDb, out string message);
             if (!createResult) await ResponseErrorAsync(message);
 
             var info = InstanceCenter.EmailReady[Token.UserId].Generate();
@@ -84,7 +85,7 @@ namespace Server.Http.Controller
         public async Task StartSending(string historyGroupId)
         {
             // 因为创建 history 的时候，检查了发送模块是否进行，所以此处新建发送模块不会造成冲突
-            if (!SendTask.CreateSendTask(historyGroupId, Token.UserId, LiteDb, out string message))
+            if (!SendTask.CreateSendTask(historyGroupId, Token.UserId, SqlDb, out string message))
             {
                 await ResponseErrorAsync(message);
                 return;
@@ -106,9 +107,9 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/send/history/{id}/result")]
         public async Task GetHistoryResult(string id)
         {
-            HistoryGroup historyGroup = LiteDb.SingleById<HistoryGroup>(id);
+            HistoryGroup historyGroup = SqlDb.SingleById<HistoryGroup>(id);
             // 获取成功的数量
-            int successCount = LiteDb.Fetch<SendItem>(s => s.historyId == id && s.isSent).Count;
+            int successCount = SqlDb.Fetch<SendItem>(s => s.historyId == id && s.isSent).Count();
 
             JObject result;
             if (successCount == historyGroup.receiverIds.Count)

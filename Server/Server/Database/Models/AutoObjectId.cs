@@ -1,4 +1,4 @@
-﻿using LiteDB;
+﻿using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,12 @@ namespace Server.Database.Models
 {
     public abstract class AutoObjectId
     {
-        [BsonId]
+
+        [SugarColumn(IsPrimaryKey = true)]
         public string _id { get; set; }
         public AutoObjectId()
         {
-            _id = ObjectId.NewObjectId().ToString();
+            _id = Guid.NewGuid().ToString();
         }
 
         /// <summary>

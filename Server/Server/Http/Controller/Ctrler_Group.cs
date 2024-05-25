@@ -1,13 +1,13 @@
 ﻿using EmbedIO;
 using EmbedIO.Routing;
 using EmbedIO.WebApi;
-using LiteDB;
 using Newtonsoft.Json.Linq;
 using Server.Database.Definitions;
 using Server.Database.Extensions;
 using Server.Database.Models;
 using Server.Http.Definitions;
 using Server.SDK.Extension;
+using Swan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace Server.Http.Controller
                 await ResponseErrorAsync("请传递组的类型:[send,receive]");
             };
 
-            var results = LiteDb.Fetch<Group>(g => g.groupType == groupType).ToList();
+            var results = SqlDb.Fetch<Group>(g => g.groupType == groupType).ToList();
             await ResponseSuccessAsync(results);
         }
 
@@ -48,7 +48,7 @@ namespace Server.Http.Controller
                 description = description,
             };
 
-            LiteDb.Insert(newGroup);
+            SqlDb.Insert(newGroup);
 
             await ResponseSuccessAsync(newGroup);
         }
@@ -57,7 +57,7 @@ namespace Server.Http.Controller
         public async Task DeleteGroup()
         {
             List<string> ids = Body["groupIds"].ToObject<List<string>>();
-            LiteDb.DeleteMany<Group>(g => ids.Contains(g._id));
+            SqlDb.DeleteMany<Group>(g => ids.Contains(g._id));
             await ResponseSuccessAsync(ids);
         }
 
@@ -68,7 +68,7 @@ namespace Server.Http.Controller
             // 获取所有待更新的key
             List<string> keys = (Body as JObject).Properties().ToList().ConvertAll(p => p.Name);
             Group group = Body.ToObject<Group>();
-            var res = LiteDb.Upsert2(g => g._id == id, group, new Database.Definitions.UpdateOptions(keys));
+            var res = SqlDb.Upsert2(g => g._id == id, group, new Database.Definitions.UpdateOptions(keys));
             await ResponseSuccessAsync(res);
         }
 
@@ -77,7 +77,7 @@ namespace Server.Http.Controller
         public async Task NewEmail(string id)
         {
             // 根据id获取组
-            var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
+            var group = SqlDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -88,12 +88,12 @@ namespace Server.Http.Controller
             if (group.groupType == "send")
             {
                 var emailInfo = Body.ToObject<SendBox>();
-                res = LiteDb.Upsert2(g => g.email == emailInfo.email, emailInfo);
+                res = SqlDb.Upsert2(g => g.email == emailInfo.email, emailInfo);
             }
             else
             {
                 var emailInfo = Body.ToObject<ReceiveBox>();
-                res = LiteDb.Upsert2(g => g.email == emailInfo.email, emailInfo);
+                res = SqlDb.Upsert2(g => g.email == emailInfo.email, emailInfo);
             }
 
             await ResponseSuccessAsync(res);
@@ -104,7 +104,7 @@ namespace Server.Http.Controller
         public async Task NewEmails(string id)
         {
             // 获取所有待更新的key
-            var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
+            var group = SqlDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -115,14 +115,14 @@ namespace Server.Http.Controller
             {
                 var emailInfos = Body.ToObject<List<SendBox>>();
                 emailInfos.ForEach(e => e.groupId = id);
-                LiteDb.Database.GetCollection<SendBox>().InsertBulk(emailInfos);
+                SqlDb.InsertBulk(emailInfos);
                 await ResponseSuccessAsync(emailInfos);
             }
             else
             {
                 var emailInfos = Body.ToObject<List<ReceiveBox>>();
                 emailInfos.ForEach(e => e.groupId = id);
-                LiteDb.Database.GetCollection<ReceiveBox>().InsertBulk(emailInfos);
+                SqlDb.InsertBulk(emailInfos);
                 await ResponseSuccessAsync(emailInfos);
             }
         }
@@ -134,7 +134,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/groups/{id}/emails/count")]
         public async Task GetEmailsCount(string id)
         {
-            var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
+            var group = SqlDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -142,16 +142,15 @@ namespace Server.Http.Controller
             }
 
             var data = Body.ToObject<PageQuery>();
-
-            int count = 0;
             var regex = new System.Text.RegularExpressions.Regex(data.filter.filter);
+            int count = 0;
             if (group.groupType == "send")
             {
-                count = LiteDb.Fetch<SendBox>(e => e.groupId == id).Where(item => regex.IsMatch(item.GetFilterString())).Count();
+                count = SqlDb.Fetch<SendBox>(e => e.groupId == id).ToList().Where(item => regex.IsMatch(item.GetFilterString())).Count();
             }
             else
             {
-                count = LiteDb.Fetch<ReceiveBox>(e => e.groupId == id).Where(item => regex.IsMatch(item.GetFilterString())).Count();
+                count = SqlDb.Fetch<ReceiveBox>(e => e.groupId == id).ToList().Where(item => regex.IsMatch(item.GetFilterString())).Count(); ;
             }
 
             await ResponseSuccessAsync(count);
@@ -161,7 +160,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/groups/{id}/emails/list")]
         public async Task GetEmails(string id)
         {
-            var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
+            var group = SqlDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -171,10 +170,9 @@ namespace Server.Http.Controller
             List<EmailInfo> results = new List<EmailInfo>();
             var data = Body.ToObject<PageQuery>();
             var regex = new System.Text.RegularExpressions.Regex(data.filter.filter);
-
             if (group.groupType == "send")
             {
-                var emails = LiteDb.Fetch<SendBox>(e => e.groupId == id)
+                var emails = SqlDb.Fetch<SendBox>(e => e.groupId == id).ToList()
                     .Where(item => regex.IsMatch(item.GetFilterString()));
                 if (data.pagination.descending)
                 {
@@ -191,7 +189,7 @@ namespace Server.Http.Controller
             }
             else
             {
-                var emails = LiteDb.Fetch<ReceiveBox>(e => e.groupId == id)
+                var emails = SqlDb.Fetch<ReceiveBox>(e => e.groupId == id).ToList()
                     .Where(item => regex.IsMatch(item.GetFilterString()));
                 if (data.pagination.descending)
                 {
@@ -215,8 +213,8 @@ namespace Server.Http.Controller
         public async Task DeleteEmail(string id)
         {
             // 获取所有待更新的key
-            LiteDb.Delete<SendBox>(id);
-            LiteDb.Delete<ReceiveBox>(id);
+            SqlDb.Delete<SendBox>(id);
+            SqlDb.Delete<ReceiveBox>(id);
 
             await ResponseSuccessAsync("success");
         }
@@ -225,7 +223,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Delete, "/groups/{id}/emails")]
         public async Task DeleteEmails(string id)
         {
-            var group = LiteDb.SingleOrDefault<Group>($"_id='{id}'");
+            var group = SqlDb.SingleOrDefault<Group>(m => m._id == id);
             if (group == null)
             {
                 await ResponseErrorAsync($"未通过{id}找到组");
@@ -233,8 +231,8 @@ namespace Server.Http.Controller
             }
 
             // 删除组id对应的所有邮箱
-            LiteDb.DeleteMany<SendBox>($"groupId='{id}'");
-            LiteDb.DeleteMany<ReceiveBox>($"groupId='{id}'");
+            SqlDb.DeleteMany<SendBox>(m => m.groupId == id);
+            SqlDb.DeleteMany<ReceiveBox>(m => m.groupId == id);
 
             await ResponseSuccessAsync("success");
         }
@@ -244,17 +242,17 @@ namespace Server.Http.Controller
         public async Task ModifyEmail(string id)
         {
             // 根据id判断属于发件还是收件
-            var sendbox = LiteDb.FirstOrDefault<SendBox>(s => s._id == id);
+            var sendbox = SqlDb.FirstOrDefault<SendBox>(s => s._id == id);
             if (sendbox != null)
             {
                 var updateData1 = Body.ToObject<SendBox>();
-                var result1 = LiteDb.Upsert2(e => e._id == id, updateData1, new UpdateOptions(true) { "_id", "groupId" });
+                var result1 = SqlDb.Upsert2(e => e._id == id, updateData1, new UpdateOptions(true) { "_id", "groupId" });
                 await ResponseSuccessAsync(result1);
                 return;
             }
 
             // 收件情况
-            var receiveBox = LiteDb.FirstOrDefault<ReceiveBox>(r => r._id == id);
+            var receiveBox = SqlDb.FirstOrDefault<ReceiveBox>(r => r._id == id);
             if (receiveBox == null)
             {
                 await ResponseErrorAsync($"未找到id:{id}对应的邮箱");
@@ -263,7 +261,7 @@ namespace Server.Http.Controller
 
             var updateData2 = Body.ToObject<ReceiveBox>();
             // 更新
-            var result2 = LiteDb.Upsert2(e => e._id == id, updateData2, new UpdateOptions(true) { "_id", "groupId" });
+            var result2 = SqlDb.Upsert2(e => e._id == id, updateData2, new UpdateOptions(true) { "_id", "groupId" });
             ResponseSuccessAsync(result2);
         }
 
@@ -272,7 +270,7 @@ namespace Server.Http.Controller
         public async Task UpdateSendEmailSettings(string id)
         {
             // 根据id判断属于发件还是收件
-            var sendbox = LiteDb.FirstOrDefault<SendBox>(s => s._id == id);
+            var sendbox = SqlDb.FirstOrDefault<SendBox>(s => s._id == id);
             if (sendbox != null)
             {
                 if (sendbox.settings == null)
@@ -281,7 +279,7 @@ namespace Server.Http.Controller
                 }
 
                 sendbox.settings.UpdateObject(Body as JObject);
-                LiteDb.Update(sendbox);
+                SqlDb.Update(sendbox);
                 await ResponseSuccessAsync(sendbox);
                 return;
             }

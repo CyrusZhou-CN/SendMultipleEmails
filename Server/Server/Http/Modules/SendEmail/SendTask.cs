@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Server.Database;
+using Server.Database.Extensions;
 using Server.Database.Models;
 using Server.Http.Definitions;
 using Server.Protocol;
 using Server.Websocket.Temp;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +28,7 @@ namespace Server.Http.Modules.SendEmail
     public class SendTask
     {
         // 新建发送任务
-        public static bool CreateSendTask(string historyId, string userId, LiteDBManager liteDb, out string message)
+        public static bool CreateSendTask(string historyId, string userId, ISqlSugarClient sqlDb, out string message)
         {
             // 判断原来任务的状态
             if (InstanceCenter.SendTasks[userId] != null && !InstanceCenter.SendTasks[userId].SendStatus.HasFlag(SendStatus.SendFinish))
@@ -35,16 +37,15 @@ namespace Server.Http.Modules.SendEmail
                 return false;
             }
 
-            SendTask temp = new SendTask(historyId, userId, liteDb);
+            SendTask temp = new SendTask(historyId, userId, sqlDb);
 
             InstanceCenter.SendTasks.Upsert(userId, temp);
             message = "success";
             return true;
         }
-
         private string _userId;
         private string _currentHistoryGroupId;
-        private LiteDBManager _liteDb;
+        private ISqlSugarClient _sqlDb;
 
 
         /// <summary>
@@ -53,13 +54,12 @@ namespace Server.Http.Modules.SendEmail
         public SendStatus SendStatus { get; private set; } = SendStatus.SendFinish;
 
 
-        private SendTask(string historyId, string userId, LiteDBManager liteDb)
+        private SendTask(string historyId, string userId, ISqlSugarClient sqlDb)
         {
             _userId = userId;
             _currentHistoryGroupId = historyId;
-            _liteDb = liteDb;
+            _sqlDb = sqlDb;
         }
-
 
         private SendingProgressInfo _sendingInfo;
         public SendingProgressInfo SendingProgressInfo
@@ -95,10 +95,10 @@ namespace Server.Http.Modules.SendEmail
             // 判断是否结束
             if (!SendStatus.HasFlag(SendStatus.SendFinish)) return false;
 
-            var allSendItems = _liteDb.Fetch<SendItem>(item => item.historyId == _currentHistoryGroupId);
+            var allSendItems = _sqlDb.Fetch<SendItem>(item => item.historyId == _currentHistoryGroupId);
             var sendItems = allSendItems.FindAll(item => !item.isSent);
             // 判断数量
-            if (sendItems.Count < 1)
+            if (sendItems.Count() < 1)
             {
                 // 发送完成的进度条
                 SendingProgressInfo = new SendingProgressInfo()
@@ -113,28 +113,28 @@ namespace Server.Http.Modules.SendEmail
                 // 更改进度
                 SendingProgressInfo = new SendingProgressInfo()
                 {
-                    total = sendItems.Count,
+                    total = sendItems.Count(),
                     index = 0,
                 };
             }
 
             // 判断是发送还是重发
-            if (allSendItems.Count == sendItems.Count) SendStatus = SendStatus.Sending;
+            if (allSendItems.Count() == sendItems.Count()) SendStatus = SendStatus.Sending;
             else SendStatus = SendStatus.Resending;
 
             // 更改数据库中的状态
-            var history = _liteDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
+            var history = _sqlDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
             if (history == null) return false;
 
             history.sendStatus = SendStatus;
-            _liteDb.Update(history);
+            _sqlDb.Update(history);
 
 
             // 判断需要发送的数量
-            if (allSendItems.Count < 1)
+            if (allSendItems.Count() < 1)
             {
                 history.sendStatus = SendStatus.SendFinish;
-                _liteDb.Update(history);
+                _sqlDb.Update(history);
 
                 // 获取重发完成的信息
                 var sendingInfo = new SendingProgressInfo()
@@ -149,10 +149,10 @@ namespace Server.Http.Modules.SendEmail
             }
 
             // 处理每条邮件
-            PreHandleSendItems(sendItems);
+            PreHandleSendItems(sendItems.ToList());
 
             // 开始发件
-            SendItems(sendItems);
+            SendItems(sendItems.ToList());
 
             return true;
         }
@@ -166,7 +166,7 @@ namespace Server.Http.Modules.SendEmail
             if (sendItems.Count < 1) return;
 
             // 获取设置
-            Setting setting = _liteDb.SingleOrDefault<Setting>(s => s.userId == _userId);
+            Setting setting = _sqlDb.SingleOrDefault<Setting>(s => s.userId == _userId);
 
             // 设置发送的内容           
             if (setting.sendWithImageAndHtml) SendStatus |= SendStatus.AsImage;
@@ -205,7 +205,7 @@ namespace Server.Http.Modules.SendEmail
         {
             if (sendItemList.Count < 0) return;
 
-            var historyGroup = _liteDb.Database.GetCollection<HistoryGroup>().FindById(_currentHistoryGroupId);
+            var historyGroup = _sqlDb.FindById<HistoryGroup>(_currentHistoryGroupId);
 
             // 添加到栈中
             Stack<SendItem> sendItemStack = new Stack<SendItem>();
@@ -215,31 +215,31 @@ namespace Server.Http.Modules.SendEmail
             sendItemList.ForEach(item => sendItemStack.Push(item));
 
             // 获取发件人
-            List<SendBox> senders = _liteDb.Fetch<SendBox>(sb => historyGroup.senderIds.Contains(sb._id));
+            List<SendBox> senders = _sqlDb.Fetch<SendBox>(sb => historyGroup.senderIds.Contains(sb._id)).ToList();
 
             // 开始发送邮件，采用异步进行发送
             // 一个发件箱对应一个异步
-            List<SendThread> sendThreads = senders.ConvertAll(sender =>
+            List<SendThread> sendThreads = senders.ConvertAll((Converter<SendBox, SendThread>)(sender =>
             {
-                var sendThread = new SendThread(_userId, sender, _liteDb);
+                var sendThread = new SendThread(_userId, sender, this._sqlDb);
                 sendThread.SendCompleted += SendThread_SendCompleted;
                 return sendThread;
-            });
+            }));
 
             // 开始运行
-            Task.WhenAll(sendThreads.ConvertAll(st => st.Run(sendItemStack,sendItemList))).ContinueWith((task) =>
+            Task.WhenAll(sendThreads.ConvertAll(st => st.Run(sendItemStack, sendItemList))).ContinueWith((Action<Task>)((task) =>
             {
                 // 执行回调
                 // 发送关闭命令
                 SendStatus = SendStatus.SendFinish;
 
                 // 对于已经完成的，要更新数据的状态
-                var history = _liteDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
+                var history = this._sqlDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
                 if (history != null)
                 {
                     // 更新状态
                     history.sendStatus = SendStatus.SendFinish;
-                    _liteDb.Update(history);
+                    this._sqlDb.Update<HistoryGroup>((HistoryGroup)history);
                 }
 
                 // 发送完成数据
@@ -251,7 +251,7 @@ namespace Server.Http.Modules.SendEmail
                 };
 
                 SendCompleted?.Invoke();
-            });
+            }));
         }
 
         private void SendThread_SendCompleted(SendResult obj)

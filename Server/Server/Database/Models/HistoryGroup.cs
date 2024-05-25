@@ -1,5 +1,4 @@
-﻿using LiteDB;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Server.Http.Controller;
 using Server.Http.Definitions;
 using System;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public class HistoryGroup:AutoObjectId
+    public class HistoryGroup : AutoObjectId
     {
         public string userId { get; set; }
 

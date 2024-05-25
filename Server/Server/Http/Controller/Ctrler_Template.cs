@@ -1,5 +1,6 @@
 ﻿using EmbedIO;
 using EmbedIO.Routing;
+using Server.Database.Extensions;
 using Server.Database.Models;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Server.Http.Controller
             template.userId = Token.UserId;
             template.createDate = DateTime.Now;
 
-            LiteDb.Upsert(template);
+            SqlDb.Upsert(template);
 
             // 返回结果
             await ResponseSuccessAsync(template);
@@ -39,7 +40,7 @@ namespace Server.Http.Controller
             template.userId = Token.UserId;
             template.createDate = DateTime.Now;
 
-            LiteDb.Insert(template);
+            SqlDb.Insert(template);
             await ResponseSuccessAsync(template);
         }
 
@@ -48,7 +49,7 @@ namespace Server.Http.Controller
         public async Task GetTemplates()
         {
             // 获取用户名
-            List<Template> results = LiteDb.Fetch<Template>(t => t.userId == Token.UserId);
+            var results = SqlDb.Fetch<Template>(t => t.userId == Token.UserId);
             await ResponseSuccessAsync(results);
         }
 
@@ -57,7 +58,7 @@ namespace Server.Http.Controller
         public async Task GetTemplates(string id)
         {
             // 获取用户名
-            var result = LiteDb.SingleOrDefault<Template>(t => t.userId == Token.UserId && t._id == id);
+            var result = SqlDb.SingleOrDefault<Template>(t => t.userId == Token.UserId && t._id == id);
             await ResponseSuccessAsync(result);
         }
 
@@ -65,7 +66,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Delete, "/template/{id}")]
         public async Task DeleteTemplates(string id)
         {
-            var deleteResult = LiteDb.Delete<Template>(id);
+            var deleteResult = SqlDb.Delete<Template>(id);
             if (deleteResult) await ResponseSuccessAsync(deleteResult);
             else await ResponseErrorAsync("删除失败");
         }

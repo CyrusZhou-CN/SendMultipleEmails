@@ -15,7 +15,7 @@ namespace Server.Http.Definitions
         public Pagination pagination { get; set; }
     }
 
-    internal class Filter
+    public class Filter
     {
         public string filter { get; set; }
     }
