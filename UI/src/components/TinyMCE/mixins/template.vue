@@ -46,7 +46,7 @@ export default {
     async newTemplate() {
       // 判断数据是否变化，且没有保存
       if (this.hasChange() && this.template._id) {
-        const ok = await okCancle('模板已经被修改，是否保存并继续？')
+        const ok = await okCancle(this.$t('template_new_confirm'))
         if (ok) {
           const template = await this.generateTemplate()
           // 更新
@@ -66,7 +66,7 @@ export default {
     async saveTemplate() {
       // 检查是否是否有id，如果有id，调用保存，否则让用户输入邮件的主题
       if (this.template._id) {
-        const ok = await okCancle('是否保存数据?')
+        const ok = await okCancle(this.$t('template_save_confirm'))
         if (!ok) return
 
         // 开始保存
@@ -93,15 +93,16 @@ export default {
         this.template = newTempRes.data
       }
 
-      notifySuccess('保存成功！')
+      notifySuccess(this.$t('template_save_success'))
+      this.exit()
     },
 
     inputTemplateName() {
       return new Promise((resolve, reject) => {
         this.$q
           .dialog({
-            title: '输入名称',
-            message: '请输入模板的名称：',
+            title: this.$t('template_save_as_title'),
+            message: this.$t('template_save_as_message'),
             prompt: {
               model: '',
               type: 'text' // optional
@@ -153,7 +154,7 @@ export default {
     async exitEditor() {
       // 检查变动
       if (this.hasChange() && this.template._id) {
-        const ok = await okCancle('模板已经被修改，是否保存再退出？')
+        const ok = await okCancle(this.$t('template_exit_confirm'))
         if (ok) {
           const template = await this.generateTemplate()
           // 更新
@@ -161,9 +162,11 @@ export default {
         }
       }
 
+     this.exit()
+    },
+    exit(){
       this.$router.push({ name: 'Template' })
     },
-
     async getTemplateData() {
       // 界面中查看是否有id
       const id = this.$route.query.id

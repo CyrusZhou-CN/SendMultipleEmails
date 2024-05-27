@@ -185,6 +185,9 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageReference>
+    <PackageReference Include="Npgsql">
+      <Version>8.0.3</Version>
+    </PackageReference>
     <PackageReference Include="SqlSugar">
       <Version>5.1.4.155</Version>
     </PackageReference>

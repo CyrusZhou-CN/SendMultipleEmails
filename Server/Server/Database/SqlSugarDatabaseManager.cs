@@ -33,9 +33,23 @@ namespace Server.Database
                 ConnectionString = config.ConnectionString,
                 DbType = dbType,
                 IsAutoCloseConnection = true,
-                InitKeyType = InitKeyType.Attribute
+                ConfigureExternalServices = new ConfigureExternalServices
+                {
+                    EntityService = (c, p) =>
+                    {
+                        if (dbType == DbType.MySql && (p.DataType.ToLower() == "varchar(max)" || p.DataType.ToLower() == "nvarchar(max)"))
+                        {
+                            p.DataType = "longtext";
+                        }
+                    }
+                }
             });
 
+            _db.Aop.OnError = (error) =>
+            {
+                Console.WriteLine(error);
+                Console.WriteLine();
+            };
             _db.Aop.OnLogExecuting = (sql, pars) =>
             {
                 Console.WriteLine(sql + "\r\n" + _db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));

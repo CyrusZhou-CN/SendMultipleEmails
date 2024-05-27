@@ -60,6 +60,17 @@ export default {
 
       this.initModifyGroupParams.title = this.newGroupTitle
       this.isShowModifyGroupDialog = true
+      // 返回一个 Promise，以便在窗口关闭后执行回调
+      return new Promise((resolve, reject) => {
+        // 监听窗口关闭事件
+        this.$once('refreshData', (result) => {
+          if (result === 'success') {
+            resolve(); // 窗口成功关闭，执行 resolve 回调
+          } else {
+            reject(); // 窗口关闭但未成功添加组，执行 reject 回调
+          }
+        });
+      });
     },
 
     modifyGroup(data) {
@@ -71,6 +82,7 @@ export default {
 
       this.isShowModifyGroupDialog = false
       notifySuccess(this.$t('modifySuccess'))
+      this.$emit('refreshData', 'success'); // 通知父组件刷新数据，并传递成功标志
     }
   }
 }

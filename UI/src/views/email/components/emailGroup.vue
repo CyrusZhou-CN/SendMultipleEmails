@@ -11,16 +11,15 @@
               </div>
               <q-menu transition-show="scale" transition-hide="scale" touch-position context-menu>
                 <q-list bordered class="rounded-borders text-teal" dense>
-                  <q-item v-if="!prop.node.parentId" v-close-popup="2" clickable dense
-                    @click="showNewGroupDialog(null)">
+                  <q-item v-if="!prop.node.parentId" v-close-popup="2" clickable dense @click="showNewNodeDialog(null)">
                     <q-item-section>{{ $t('addNode') }}</q-item-section>
                   </q-item>
 
-                  <q-item v-close-popup="2" clickable dense @click="showNewGroupDialog(prop.node)">
+                  <q-item v-close-popup="2" clickable dense @click="showNewNodeDialog(prop.node)">
                     <q-item-section>{{ $t('addSubNode') }}</q-item-section>
                   </q-item>
 
-                  <q-item v-close-popup clickable dense @click="showModifyGroupDialog(prop.node)">
+                  <q-item v-close-popup clickable dense @click="showModifyNodeDialog(prop.node)">
                     <q-item-section>{{ $t('modify') }}</q-item-section>
                   </q-item>
 
@@ -33,7 +32,7 @@
           </q-tree>
           <q-menu transition-show="scale" transition-hide="scale" touch-position context-menu>
             <q-list bordered class="rounded-borders text-primary" dense>
-              <q-item v-if="groupsData.length === 0" v-close-popup clickable dense @click="showNewGroupDialog(null)">
+              <q-item v-if="groupsData.length === 0" v-close-popup clickable dense @click="showNewNodeDialog(null)">
                 <q-item-section>{{ $t('addNode') }}</q-item-section>
               </q-item>
             </q-list>
@@ -87,14 +86,14 @@ export default {
     return {
       splitterModel: 20,
       groupsOrigin: [],
-      dataTree: [],
+      dataTree: null,
       selectedNode: ''
     }
   },
 
   computed: {
     groupsData() {
-      return this.dataTree
+      return this.dataTree?.GetTree() || []
     }
   },
   watch: {
@@ -107,16 +106,19 @@ export default {
   },
 
   async mounted() {
-    // 获取所有的组
-    const res = await getGroups(this.groupType)
-
-    this.groupsOrigin = res.data
-    // 选择第一个
-    if (this.groupsOrigin && this.groupsOrigin.length > 0) { this.selectedNode = this.groupsOrigin[0]._id }
-    this.computeDataTree()
+    this.refreshGroups()
   },
 
   methods: {
+    async refreshGroups() {
+      // 获取所有的组
+      const res = await getGroups(this.groupType)
+
+      this.groupsOrigin = res.data
+      // 选择第一个
+      if (this.groupsOrigin && this.groupsOrigin.length > 0) { this.selectedNode = this.groupsOrigin[0]._id }
+      this.computeDataTree()
+    },
     computeDataTree() {
       // This method is responsible for computing the tree structure
       const ltt = new LTT(this.groupsOrigin, {
@@ -126,7 +128,18 @@ export default {
         empty_children: true
       })
 
-      this.dataTree = ltt.GetTree()
+      this.dataTree = ltt
+    },
+    async showModifyNodeDialog(data) {
+      await this.showModifyGroupDialog(data)
+      await this.refreshGroups()
+      this.selectedNode = data._id
+    },
+    async showNewNodeDialog(data) {
+      // 新增组
+      await this.showNewGroupDialog(data)
+      await this.refreshGroups()
+      this.selectedNode = data._id
     },
     async deleteNode(data) {
       const ok = await okCancle(this.$t('deleteNodeTooltip'), this.$t('deleteNodeConfirm'))
@@ -153,6 +166,7 @@ export default {
       ) {
         this.selectedNode = this.groupsOrigin[0]._id
       }
+      this.computeDataTree()
     }
   }
 }

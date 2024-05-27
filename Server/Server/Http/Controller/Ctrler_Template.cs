@@ -49,7 +49,7 @@ namespace Server.Http.Controller
         public async Task GetTemplates()
         {
             // 获取用户名
-            var results = SqlDb.Fetch<Template>(t => t.userId == Token.UserId);
+            var results = SqlDb.Fetch<Template>(t => t.userId == Token.UserId).ToList();
             await ResponseSuccessAsync(results);
         }
 

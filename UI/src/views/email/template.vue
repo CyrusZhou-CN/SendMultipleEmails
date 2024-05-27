@@ -1,11 +1,11 @@
 <template>
   <div class="column q-pa-md template-main">
     <div class="row q-gutter-sm">
-      <q-btn dense color="primary" class="q-mb-md self-center q-pl-sm q-pr-sm"
-        @click="jumpToTemplateEditor()">{{ $t('new') }}</q-btn>
+      <q-btn dense color="primary" class="q-mb-md self-center q-pl-sm q-pr-sm" @click="jumpToTemplateEditor()">{{
+        $t('new') }}</q-btn>
 
-      <q-btn dense color="primary" class="q-mb-md self-center q-pl-sm q-pr-sm"
-        @click="selectFile">{{ $t('import') }}</q-btn>
+      <q-btn dense color="primary" class="q-mb-md self-center q-pl-sm q-pr-sm" @click="selectFile">{{ $t('import')
+        }}</q-btn>
       <input id="fileInput" type="file" style="display: none" accept="text/html" @change="fileSelected">
     </div>
 
@@ -17,14 +17,14 @@
         <q-img class="rounded-borders template-image" :src="temp.imageUrl" />
 
         <div class="row justify-between q-mt-sm">
-          <div>{{ $t('createdTime') }}{{ temp.createDate | formatDate }}</div>
+          <div>{{ $t('createdTime') }}{{ temp.createDate | formatDate(dateFormat)  }}</div>
           <div class="row q-gutter-sm">
-            <q-btn color="primary" class="self-center" size="sm" dense
-              @click="jumpToTemplateEditor(temp._id)">{{ $t('edit') }}</q-btn>
-            <q-btn color="primary" class="self-center" size="sm" dense
-              @click="viewTemplate(temp.imageUrl)">{{ $t('view') }}</q-btn>
-            <q-btn color="negative" class="self-center" size="sm" dense
-              @click="deleteTemplate(temp._id)">{{ $t('delete') }}</q-btn>
+            <q-btn color="primary" class="self-center" size="sm" dense @click="jumpToTemplateEditor(temp._id)">{{
+              $t('edit') }}</q-btn>
+            <q-btn color="primary" class="self-center" size="sm" dense @click="viewTemplate(temp.imageUrl)">{{
+              $t('view') }}</q-btn>
+            <q-btn color="negative" class="self-center" size="sm" dense @click="deleteTemplate(temp._id)">{{
+              $t('delete') }}</q-btn>
           </div>
         </div>
       </q-card>
@@ -40,8 +40,8 @@
           <q-footer elevated class="bg-teal">
             <div class="row justify-end q-ma-sm q-gutter-sm">
               <q-btn v-close-popup color="warning" size="sm">{{ $t('cancel') }}</q-btn>
-              <q-btn color="primary" size="sm" :loading="isSavingTemplate"
-                @click="confirmTemplate">{{ $t('confirm') }}</q-btn>
+              <q-btn color="primary" size="sm" :loading="isSavingTemplate" @click="confirmTemplate">{{ $t('confirm')
+                }}</q-btn>
             </div>
           </q-footer>
 
@@ -68,12 +68,9 @@ import ModifyTemplate from './mixins/modifyTemplate.vue'
 
 export default {
   filters: {
-    formatDate(date) {
+    formatDate(date, dateFormat) {
       if (!date) return ''
-      if (this.$i18n.locale === 'it') {
-        return moment(date).format('DD/MM/YYYY')
-      }
-      return moment(date).format('YYYY-MM-DD')
+      return moment(date).format(dateFormat)
     }
   },
   mixins: [ModifyTemplate],
@@ -83,16 +80,27 @@ export default {
       isShowTemplateDialog: false,
       selectedFileName: '',
       data: [],
-      isSavingTemplate: false
+      isSavingTemplate: false,
+      dateFormat: 'YYYY-MM-DD',
     }
   },
-
+  watch: {
+    '$i18n.locale'() {
+      this.init()
+    },
+  },
   async mounted() {
+    this.init()
     const res = await getTemplates()
     this.data = res.data
   },
 
   methods: {
+    init() {
+      if (this.$i18n.locale === 'it') {
+        this.dateFormat = "DD/MM/YYYY"
+      }
+    },
     // 选择文件
     selectFile() {
       const elem = document.getElementById('fileInput')

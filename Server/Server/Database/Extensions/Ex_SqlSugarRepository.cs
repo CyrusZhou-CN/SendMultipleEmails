@@ -96,9 +96,9 @@ namespace Server.Database.Extensions
             return db.Queryable<T>().First(filter);
         }
 
-        public static ISugarQueryable<T> FindAll<T>(this ISugarQueryable<T> source, Expression<Func<T, bool>> filter)
+        public static IEnumerable<T> FindAll<T>(this ISugarQueryable<T> source, Expression<Func<T, bool>> filter)
         {
-            return source.Where(filter);
+            return source.Where(filter).ToList();
         }
         public static int GetPageDatasCount<T>(this ISugarQueryable<T> source, Filter filter) where T : AutoObjectId
         {
