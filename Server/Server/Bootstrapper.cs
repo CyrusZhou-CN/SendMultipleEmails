@@ -4,11 +4,12 @@ using StyletIoC;
 using log4net.Core;
 using log4net;
 using Server.Pages;
-using Server.Database;
-using Server.Config;
-using Server.Http;
-using Server.Websocket.Temp;
+using ServerLibrary.Database;
+using ServerLibrary.Config;
+using ServerLibrary.Http;
+using ServerLibrary.Websocket.Temp;
 using SqlSugar;
+using ServerLibrary.Websocket;
 
 namespace Server
 {
@@ -17,13 +18,14 @@ namespace Server
         private readonly ILog _logger = LogManager.GetLogger(typeof(Bootstrapper));
 
         private HttpServiceMain _httpServer;
-        private Websocket.WebsocketServiceMain _websocket;
+        private WebsocketServiceMain _websocket;
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
             // 获取数据库配置
             var userConfig = ConfigHelper.GetDatabaseConfig();
             builder.Bind<DatabaseConfig>().ToInstance(userConfig);
+            builder.Bind<UserConfig>().ToInstance(UserConfig.Instance);
 
             base.ConfigureIoC(builder);
         }
@@ -37,7 +39,8 @@ namespace Server
             _httpServer.Start(Container);
 
             // 加载 websocket
-            _websocket = new Websocket.WebsocketServiceMain(Container);
+            _websocket = new WebsocketServiceMain();
+            _websocket.Start(Container);
         }
 
         protected override void OnStart()

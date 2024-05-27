@@ -8,12 +8,13 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Server</RootNamespace>
     <AssemblyName>邮件批量发送</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -63,74 +64,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Config\Fields.cs" />
-    <Compile Include="Database\ConfigHelper.cs" />
-    <Compile Include="Database\DatabaseConfig.cs" />
-    <Compile Include="Database\Definitions\UpdateOptions.cs" />
-    <Compile Include="Database\Extensions\Ex_SqlSugarRepository.cs" />
-    <Compile Include="Database\Models\EmailAttachment.cs" />
-    <Compile Include="Database\Models\AutoObjectId.cs" />
-    <Compile Include="Database\Models\EmailInfo.cs" />
-    <Compile Include="Database\Models\FileAttachment.cs" />
-    <Compile Include="Database\Models\Group.cs" />
-    <Compile Include="Database\Models\HistoryGroup.cs" />
-    <Compile Include="Database\Models\ReceiveBox.cs" />
-    <Compile Include="Database\Models\SendBox.cs" />
-    <Compile Include="Database\Models\SendItem.cs" />
-    <Compile Include="Database\Models\Setting.cs" />
-    <Compile Include="Database\Models\Template.cs" />
-    <Compile Include="Database\Models\User.cs" />
-    <Compile Include="Database\SqlSugarDatabaseManager.cs" />
-    <Compile Include="Http\Controller\BaseControllerAsync.cs" />
-    <Compile Include="Http\Controller\Ctrler_Group.cs" />
-    <Compile Include="Http\Controller\Ctrler_History.cs" />
-    <Compile Include="Http\Controller\Ctrler_File.cs" />
-    <Compile Include="Http\Controller\Ctrler_Report.cs" />
-    <Compile Include="Http\Controller\Ctrler_Send.cs" />
-    <Compile Include="Http\Controller\Ctrler_Setting.cs" />
-    <Compile Include="Http\Controller\Ctrler_Template.cs" />
-    <Compile Include="Http\Definitions\PageQuery.cs" />
-    <Compile Include="Http\Headers\JwtToken.cs" />
-    <Compile Include="Http\Modules\SendEmail\EmailPreview.cs" />
-    <Compile Include="Http\Modules\SendEmail\GenerateInfo.cs" />
-    <Compile Include="Http\Modules\SendEmail\InstanceCenter.cs" />
-    <Compile Include="Http\Modules\SendEmail\ScheduleSending.cs" />
-    <Compile Include="Http\Modules\SendEmail\SendingProgressInfo.cs" />
-    <Compile Include="Http\Modules\SendEmail\EmailReady.cs" />
-    <Compile Include="Http\Modules\SendEmail\SendResult.cs" />
-    <Compile Include="Http\Modules\SendEmail\SendTask.cs" />
-    <Compile Include="Http\Modules\SendEmail\SendThread.cs" />
-    <Compile Include="Http\Modules\SendEmail\UserInstance.cs" />
-    <Compile Include="Http\Modules\Websocket\WsServer.cs" />
-    <Compile Include="Http\Response\HttpResponse.cs" />
-    <Compile Include="Http\Modules\IoCModule.cs" />
-    <Compile Include="Http\Controller\Ctrler_User.cs" />
-    <Compile Include="Http\Extensions\HttpContextExtensions.cs" />
-    <Compile Include="Http\Extensions\WebServerExtensions.cs" />
-    <Compile Include="Http\Definitions\SendStatus.cs" />
-    <Compile Include="SDK\Extension\Ex_Json.cs" />
-    <Compile Include="SDK\Extension\Ex_Object.cs" />
-    <Compile Include="Websocket\AsyncWebsocket\CallbackOption.cs" />
-    <Compile Include="Websocket\Commands\Login.cs" />
-    <Compile Include="Websocket\Commands\SelectFiles.cs" />
-    <Compile Include="Websocket\Execute\CommandClassName.cs" />
-    <Compile Include="Websocket\Execute\CommandTable.cs" />
-    <Compile Include="Websocket\Execute\CommandTrigger.cs" />
-    <Compile Include="Websocket\Execute\IWebsocketCommand.cs" />
-    <Compile Include="Websocket\AsyncWebsocket\SendCallback.cs" />
-    <Compile Include="Websocket\Protocol\BodyBase.cs" />
-    <Compile Include="Websocket\Protocol\ProtocolBase.cs" />
-    <Compile Include="Websocket\Protocol\ReceivedMessage.cs" />
-    <Compile Include="Websocket\Protocol\Response.cs" />
-    <Compile Include="Websocket\AsyncWebsocket\SessionsCenter.cs" />
-    <Compile Include="Websocket\WebsocketServiceMain.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\UserConfig.cs" />
-    <Compile Include="Http\Controller\BaseController.cs" />
-    <Compile Include="Http\Controller\Home.cs" />
-    <Compile Include="Http\HttpServiceMain.cs" />
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="Pages\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
@@ -149,9 +85,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Config\log4net.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -201,17 +134,15 @@
       <Version>1.6.6.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Database\SqlSugar\" />
-    <Folder Include="Websocket\Extensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="SendMultipleEmail.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Config\zip_x.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj">
+      <Project>{3548f97b-ab39-42ec-8099-bc4aed34edb4}</Project>
+      <Name>ServerLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

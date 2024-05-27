@@ -3,7 +3,7 @@ import Channel from 'chnl'
 import { Notify } from 'quasar'
 import { getToken } from './auth'
 
-const wsUrl = 'ws://127.0.0.1:22346'
+const wsUrl = process.env.VUE_APP_WS_URL
 const wsOption = {
   packMessage: data => JSON.stringify(data),
   unpackMessage: data => JSON.parse(data),
@@ -65,6 +65,7 @@ try {
     console.log('websocket 连接成功')
   })
 } catch (e) {
+  console.error('websocket Error')
   console.error(e)
 }
 

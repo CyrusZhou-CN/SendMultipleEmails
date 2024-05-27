@@ -1,6 +1,6 @@
 ﻿using System;
-using Server.Config;
-using Server.Http;
+using ServerLibrary.Config;
+using ServerLibrary.Http;
 using Stylet;
 
 namespace Server.Pages
