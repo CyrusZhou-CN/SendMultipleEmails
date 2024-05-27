@@ -2,7 +2,6 @@
 import { newEmail } from '@/api/group'
 import { notifySuccess } from '@/components/iPrompt'
 
-
 export default {
   data() {
     return {

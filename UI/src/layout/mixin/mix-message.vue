@@ -27,13 +27,13 @@ export default {
 
   // 在此处清除注册的事件
   beforeDestroy() {
-    ws.$eventEmitter.off(this.globalProgressEventName, () => { })
+    ws.$eventEmitter.off(this.globalProgressEventName, () => {})
   },
 
   methods: {
     onGlobalMessage(message) {
       this.websocketMsg = message
-      console.log('GlobalMessage:',message)
+      console.log('GlobalMessage:', message)
       if (message.result.index === message.result.total) {
         this.isShowGlobalMessage = false
         return

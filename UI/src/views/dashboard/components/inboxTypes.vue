@@ -35,7 +35,7 @@ export default {
     }
   },
   computed: {
-    receiptsStatistics(){
+    receiptsStatistics() {
       return this.$t('receiptsStatistics')
     }
   },

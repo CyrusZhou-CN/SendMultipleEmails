@@ -7,7 +7,7 @@
           {{ $t('subject_tooltip') }}
         </q-tooltip>
       </strong>
-      <input v-model="subject" type="text" class="send-input col-grow">
+      <input v-model="subject" type="text" class="send-input col-grow" />
     </div>
 
     <div class="receive-box row justify-between">
@@ -28,7 +28,7 @@
           :label="rec.label"
           @remove="removeSender(rec)"
         />
-        <input type="text" class="send-input col-grow">
+        <input type="text" class="send-input col-grow" />
       </div>
       <q-btn
         size="sm"
@@ -59,7 +59,7 @@
           :label="rec.label"
           @remove="removeReceiver(rec)"
         />
-        <input type="text" class="send-input col-grow">
+        <input type="text" class="send-input col-grow" />
       </div>
       <q-btn
         size="sm"
@@ -90,7 +90,7 @@
           :label="rec.label"
           @remove="removeCopyTo(rec)"
         />
-        <input type="text" class="send-input col-grow">
+        <input type="text" class="send-input col-grow" />
       </div>
       <q-btn
         size="sm"
@@ -105,7 +105,9 @@
 
     <div class="row justify-between">
       <div class="row content-center">
-        <strong style="height: auto; align-self: center">{{ $t('template_name') }}</strong>
+        <strong style="height: auto; align-self: center">
+          {{ $t('template_name') }}
+        </strong>
         <el-select
           v-model="selectedTemplate"
           :placeholder="$t('select_template')"
@@ -135,7 +137,9 @@
         style="flex: 1"
       >
         <div>
-          <strong style="height: auto; align-self: center">{{ $t('excel_file_name') }}</strong>
+          <strong style="height: auto; align-self: center">
+            {{ $t('excel_file_name') }}
+          </strong>
           {{ selectedFileName }}
         </div>
         <input
@@ -144,7 +148,7 @@
           style="display: none"
           accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           @change="fileSelected"
-        >
+        />
         <q-btn
           :label="$t('select_excel_file')"
           dense
@@ -159,7 +163,9 @@
 
     <div class="receive-box row justify-between">
       <div class="row col-grow">
-        <strong style="height: auto; align-self: center">{{ $t('attachment') }}</strong>
+        <strong style="height: auto; align-self: center">
+          {{ $t('attachment') }}
+        </strong>
         <q-chip
           v-for="att in attachments"
           :key="att"
@@ -170,7 +176,7 @@
           :label="getFileBaseName(att)"
           @remove="removeAttachment(att)"
         />
-        <input type="text" class="send-input col-grow">
+        <input type="text" class="send-input col-grow" />
       </div>
       <q-btn
         size="sm"
@@ -235,9 +241,8 @@
           <q-footer elevated class="bg-secondary">
             <div class="row justify-between q-pa-sm">
               <div>
-               {{ $t('current') }}{{ previewData.index + 1 }} {{ $t('total') }}{{
-                  previewData.total
-                }}
+                {{ $t('current') }}{{ previewData.index + 1 }} {{ $t('total')
+                }}{{ previewData.total }}
               </div>
               <div class="row justify-end q-gutter-sm">
                 <q-btn
@@ -252,7 +257,12 @@
                   size="sm"
                   @click="nextItem"
                 />
-                <q-btn v-close-popup :label="$t('close')" color="negative" size="sm" />
+                <q-btn
+                  v-close-popup
+                  :label="$t('close')"
+                  color="negative"
+                  size="sm"
+                />
               </div>
             </div>
           </q-footer>
@@ -454,13 +464,19 @@ export default {
             title: this.$t('send_dialog_title'),
             message: `
                     <div>
-                      ${this.$t('selected_receiver_count', { count: data.selectedReceiverCount })}
+                      ${this.$t('selected_receiver_count', {
+                        count: data.selectedReceiverCount
+                      })}
                     </div>
                     <div>
-                      ${this.$t('data_receiver_count', { count: data.dataReceiverCount })}
+                      ${this.$t('data_receiver_count', {
+                        count: data.dataReceiverCount
+                      })}
                     </div>
                     <div>
-                      ${this.$t('actual_receiver_count', { count: data.acctualReceiverCount })}
+                      ${this.$t('actual_receiver_count', {
+                        count: data.acctualReceiverCount
+                      })}
                     </div>
                     <div style="font-size: 1.375em; color: crimson; margin-top: 10px;">
                       ${this.$t('continue_confirmation')}

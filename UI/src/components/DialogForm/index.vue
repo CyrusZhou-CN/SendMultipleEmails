@@ -3,18 +3,38 @@
     <div class="text-subtitle1 q-mb-sm">{{ initParams.title }}</div>
 
     <div class="column q-gutter-sm">
-      <q-input
-        v-for="field in fields"
-        :key="field.name"
-        v-model="data[field.name]"
-        clearable
-        clear-icon="close"
-        outlined
-        :type="field.type"
-        :label="field.label"
-        dense
-        :readonly="field.readonly"
-      />
+      <template v-for="field in fields">
+        <template v-if="field.isSlider">
+          <div :key="'slider_' + field.name" class="text-subtitle1 q-mb-lg">
+            {{ field.label }}
+            <q-tooltip v-if="field.tooltip">{{ field.tooltip }}</q-tooltip>
+          </div>
+          <q-slider
+            :key="field.name"
+            v-model="data[field.name]"
+            :min="0"
+            :max="1000"
+            :step="10"
+            label
+            label-always
+            :label-value="data[field.name] ? data[field.name] : $t('unlimited')"
+            style="min-width: 300px"
+          />
+        </template>
+        <template v-else>
+          <q-input
+            :key="field.name"
+            v-model="data[field.name]"
+            clearable
+            clear-icon="close"
+            outlined
+            :type="field.type"
+            :label="field.label"
+            dense
+            :readonly="field.readonly"
+          />
+        </template>
+      </template>
 
       <div class="row justify-end q-gutter-sm">
         <q-btn
@@ -125,14 +145,14 @@ export default {
     async confirm() {
       // 判断数据的必要性
       for (const field of this.fields) {
-        if (field.required && !this.data[field.name]) {
-          notifyError(`${field.label} 为空`)
+        if (field.required && !this.data[field.name] && !field.isSlider) {
+          notifyError(`${field.label} ${this.$t('isRequired')}`)
           return
         }
       }
 
       if (!this.initParams.interceptApi && !this.initParams.api) {
-        throw new Error(`需要传递 api`)
+        throw new Error(this.$t('api_required'))
       }
 
       const result = await this[`${this.type}Doc`]()
@@ -150,7 +170,7 @@ export default {
         if (!this.initParams.handler.before(createData)) {
           return {
             code: 200,
-            message: '前置操作失败'
+            message: this.$t('before_handler_failed')
           }
         }
       }
@@ -162,7 +182,7 @@ export default {
         this.$emit(`${this.type}Success`, this.createData)
         return {
           code: 200,
-          message: '在外部处理更新'
+          message: this.$t('intercept_api_success')
         }
       }
 
@@ -186,7 +206,7 @@ export default {
       if (!this.data._id && !this.data.id) {
         return {
           code: 204,
-          message: '没有找到更新的_id'
+          message: this.$t('no_id_found')
         }
       }
 
@@ -203,7 +223,7 @@ export default {
         if (!this.initParams.handler.before(updateData)) {
           return {
             code: 200,
-            message: '前置操作失败'
+            message: this.$t('before_handler_failed')
           }
         }
       }
@@ -216,7 +236,7 @@ export default {
         )
         return {
           code: 200,
-          message: '在外部处理更新'
+          message: this.$t('intercept_api_success')
         }
       }
 
@@ -243,5 +263,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>

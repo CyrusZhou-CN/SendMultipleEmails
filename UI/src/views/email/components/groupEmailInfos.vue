@@ -1,20 +1,53 @@
 <template>
   <div class="emails-table">
-    <q-table row-key="_id" :data="data" :columns="columns" :pagination.sync="pagination" :loading="loading"
-      :filter="filter" dense binary-state-sort virtual-scroll class="full-height" @request="initQuasarTable_onRequest">
+    <q-table
+      row-key="_id"
+      :data="data"
+      :columns="columns"
+      :pagination.sync="pagination"
+      :loading="loading"
+      :filter="filter"
+      dense
+      binary-state-sort
+      virtual-scroll
+      class="full-height"
+      @request="initQuasarTable_onRequest"
+    >
       <template #top>
         <div class="row justify-center q-gutter-sm">
-          <q-btn :label="$t('new')" dense size="sm" color="primary" class="q-pr-xs q-pl-xs"
-            @click="openNewEmailDialog" />
-          <q-btn :label="$t('importExcel')" dense size="sm" color="primary" class="q-pr-xs q-pl-xs"
-            @click="selectExcelFile" />
+          <q-btn
+            :label="$t('new')"
+            dense
+            size="sm"
+            color="primary"
+            class="q-pr-xs q-pl-xs"
+            @click="openNewEmailDialog"
+          />
+          <q-btn
+            :label="$t('importExcel')"
+            dense
+            size="sm"
+            color="primary"
+            class="q-pr-xs q-pl-xs"
+            @click="selectExcelFile"
+          />
           <span class="text-subtitle1 text-primary">{{ group.name }}</span>
-          <input id="fileInput" type="file" style="display: none"
+          <input
+            id="fileInput"
+            type="file"
+            style="display: none"
             accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            @change="fileSelected">
+            @change="fileSelected"
+          />
         </div>
         <q-space />
-        <q-input v-model="filter" dense debounce="300" :placeholder="$t('search')" color="primary">
+        <q-input
+          v-model="filter"
+          dense
+          debounce="300"
+          :placeholder="$t('search')"
+          color="primary"
+        >
           <template #append>
             <q-icon :name="$t('search')" />
           </template>
@@ -23,35 +56,71 @@
       <template #header-cell-operation="props">
         <q-th :props="props">
           {{ props.col.label }}
-          <q-btn v-if="data.length > 0" :size="btn_delete.size" color="secondary" :label="$t('clear')"
-            :dense="btn_delete.dense" @click="clearGroup()" />
+          <q-btn
+            v-if="data.length > 0"
+            :size="btn_delete.size"
+            color="secondary"
+            :label="$t('clear')"
+            :dense="btn_delete.dense"
+            @click="clearGroup()"
+          />
         </q-th>
       </template>
 
       <template #body-cell-operation="props">
         <q-td :props="props" class="row justify-end">
-          <q-btn :size="btn_modify.size" :color="btn_modify.color" :label="btn_modify.label" :dense="btn_modify.dense"
-            class="q-mr-sm" @click="showModifyEmailDialog(props.row)" />
+          <q-btn
+            :size="btn_modify.size"
+            :color="btn_modify.color"
+            :label="btn_modify.label"
+            :dense="btn_modify.dense"
+            class="q-mr-sm"
+            @click="showModifyEmailDialog(props.row)"
+          />
 
-          <q-btn v-if="columns.length > 3" :size="btn_modify.size" :color="btn_modify.color" :label="$t('btnSettings')"
-            :dense="btn_modify.dense" class="q-mr-sm" @click="showUpdateSettings(props.row)" />
+          <q-btn
+            v-if="columns.length > 3"
+            :size="btn_modify.size"
+            :color="btn_modify.color"
+            :label="$t('btnSettings')"
+            :dense="btn_modify.dense"
+            class="q-mr-sm"
+            @click="showUpdateSettings(props.row)"
+          />
 
-          <q-btn :size="btn_delete.size" :color="btn_delete.color" :label="btn_delete.label" :dense="btn_delete.dense"
-            @click="deleteEmailInfo(props.row._id)" />
+          <q-btn
+            :size="btn_delete.size"
+            :color="btn_delete.color"
+            :label="btn_delete.label"
+            :dense="btn_delete.dense"
+            @click="deleteEmailInfo(props.row._id)"
+          />
         </q-td>
       </template>
     </q-table>
 
     <q-dialog v-model="isShowNewEmailDialog" persistent>
-      <DialogForm type="create" :init-params="initNewEmailParams" @createSuccess="addedNewEmail" />
+      <DialogForm
+        type="create"
+        :init-params="initNewEmailParams"
+        @createSuccess="addedNewEmail"
+      />
     </q-dialog>
 
     <q-dialog v-model="isShowModifyEmailDialog" persistent>
-      <DialogForm :init-params="initModifyEmailParams" type="update" @updateSuccess="modifiedEmail" />
+      <DialogForm
+        :init-params="initModifyEmailParams"
+        type="update"
+        @updateSuccess="modifiedEmail"
+      />
     </q-dialog>
 
     <q-dialog v-model="isShowUpdateSettings" persistent>
-      <DialogForm :init-params="initSettingParams" type="update" @updateSuccess="updatedSettings" />
+      <DialogForm
+        :init-params="initSettingParams"
+        type="update"
+        @updateSuccess="updatedSettings"
+      />
     </q-dialog>
   </div>
 </template>
@@ -91,8 +160,7 @@ export default {
   },
 
   data() {
-    return {
-    }
+    return {}
   },
 
   computed: {

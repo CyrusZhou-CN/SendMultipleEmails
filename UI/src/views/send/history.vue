@@ -81,7 +81,7 @@ export default {
       toShowId: '',
       isShowDetailDialog: false,
       tableKey: 0,
-      dateFormat: 'YYYY-MM-DD',
+      dateFormat: 'YYYY-MM-DD'
     }
   },
   computed: {
@@ -90,7 +90,7 @@ export default {
     },
     btn_delete() {
       return table.btn_delete
-    },
+    }
   },
   watch: {
     '$i18n.locale'() {
@@ -105,7 +105,7 @@ export default {
   methods: {
     init() {
       if (this.$i18n.locale === 'it') {
-        this.dateFormat="DD/MM/YYYY"
+        this.dateFormat = 'DD/MM/YYYY'
       }
       this.columns = [
         {
@@ -195,7 +195,9 @@ export default {
 
       if (val.sendStatus & 1) {
         status.push(
-          `${this.$t('send_status1')}：${val.successCount}/${val.receiverIds.length}`
+          `${this.$t('send_status1')}：${val.successCount}/${
+            val.receiverIds.length
+          }`
         )
       }
 

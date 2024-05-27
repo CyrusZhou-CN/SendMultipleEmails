@@ -32,7 +32,8 @@ export default {
             name: 'maxEmailsPerDay',
             type: 'number',
             label: this.$t('table.maxEmailsPerDay'),
-            required: true
+            required: true,
+            isSlider: true
           }
         ]
       }
@@ -55,7 +56,7 @@ export default {
         )
       }
 
-      this.initSettingParams.title = this.$t('btnSettings')+'：' + data.email
+      this.initSettingParams.title = this.$t('btnSettings') + '：' + data.email
       this.isShowUpdateSettings = true
     },
 

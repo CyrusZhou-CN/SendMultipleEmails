@@ -16,38 +16,42 @@
           :left-label-value="sendInterval.min + ' ' + $t('second')"
           :right-label-value="sendInterval.max + ' ' + $t('second')"
           label-always
-          style="min-width: 300px" />
+          style="min-width: 300px"
+        />
       </div>
 
       <div>
         <div class="text-subtitle1 q-mb-lg">
           {{ $t('maxEmailsPerDay') }}
-          <q-tooltip> {{ $t('maxEmailsPerDayTooltip') }} </q-tooltip>
+          <q-tooltip>{{ $t('maxEmailsPerDayTooltip') }}</q-tooltip>
         </div>
         <q-slider
           v-model="maxEmailsPerDay"
           :min="0"
-          :max="500"
+          :max="1000"
           :step="10"
           label
           label-always
           :label-value="maxEmailsPerDay ? maxEmailsPerDay : $t('unlimited')"
-          style="min-width: 300px" />
+          style="min-width: 300px"
+        />
       </div>
 
       <q-checkbox
         v-model="isAutoResend"
         :label="$t('autoResend')"
         color="secondary"
-        class="self-start q-ml-xs">
-        <q-tooltip> {{ $t('autoResendTooltip') }} </q-tooltip>
+        class="self-start q-ml-xs"
+      >
+        <q-tooltip>{{ $t('autoResendTooltip') }}</q-tooltip>
       </q-checkbox>
 
       <q-checkbox
         v-model="sendWithImageAndHtml"
         :label="$t('sendWithImageAndHtml')"
         color="secondary"
-        class="self-start q-ml-xs">
+        class="self-start q-ml-xs"
+      >
         <q-tooltip>
           {{ $t('sendWithImageAndHtmlTooltip') }}
         </q-tooltip>

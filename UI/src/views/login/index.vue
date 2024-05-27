@@ -7,7 +7,7 @@
       {{ $t('login.title') }}
     </div>
     <div class="row justify-center">
-      <embed src="resources/images/login-logo.svg" class="svg-style">
+      <embed src="resources/images/login-logo.svg" class="svg-style" />
       <el-form
         ref="loginForm"
         :model="loginForm"
@@ -53,9 +53,12 @@
           </span>
         </el-form-item>
 
-        <div class="row" style="font-size: 2em; font-family: cursive; margin-bottom: 15px;">
+        <div
+          class="row"
+          style="font-size: 2em; font-family: cursive; margin-bottom: 15px"
+        >
           {{ $t('login.language') }}
-          <lang/>
+          <lang />
         </div>
         <el-button
           :loading="loading"
@@ -135,7 +138,7 @@ export default {
           this.loading = true
           this.$store
             .dispatch('user/login', this.loginForm)
-            .then(async() => {
+            .then(async () => {
               // 登陆成功后，进行websocket 登陆
               await ws.sendRequest({
                 name: 'Login',

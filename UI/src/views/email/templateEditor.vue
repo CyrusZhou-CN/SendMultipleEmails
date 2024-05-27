@@ -6,7 +6,7 @@
 import Editor from '@/components/TinyMCE/index.vue'
 
 export default {
-  components: { Editor },
+  components: { Editor }
 }
 </script>
 

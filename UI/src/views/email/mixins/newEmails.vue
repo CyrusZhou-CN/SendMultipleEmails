@@ -36,7 +36,7 @@ export default {
       // 更新本地
       this.data.push(...res.data)
 
-      notifySuccess(thsi.$t('addSuccess'))
+      notifySuccess(this.$t('addSuccess'))
     },
 
     async readExcelData(file) {

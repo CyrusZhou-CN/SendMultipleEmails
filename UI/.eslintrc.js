@@ -14,6 +14,7 @@ module.exports = {
   // add your custom rules here
   //it is base on https://github.com/vuejs/eslint-config-vue
   rules: {
+    "vue/html-self-closing": ["off"],
     "vue/max-attributes-per-line": [
       2,
       {
@@ -50,7 +51,6 @@ module.exports = {
         properties: "always"
       }
     ],
-    "comma-dangle": [2, "never"],
     "comma-spacing": [
       2,
       {
@@ -72,13 +72,6 @@ module.exports = {
       }
     ],
     "handle-callback-err": [2, "^(err|error)$"],
-    indent: [
-      2,
-      2,
-      {
-        SwitchCase: 1
-      }
-    ],
     "jsx-quotes": [2, "prefer-single"],
     "key-spacing": [
       2,
@@ -213,14 +206,6 @@ module.exports = {
       }
     ],
     "padded-blocks": [2, "never"],
-    quotes: [
-      2,
-      "single",
-      {
-        avoidEscape: true,
-        allowTemplateLiterals: true
-      }
-    ],
     semi: [2, "never"],
     "semi-spacing": [
       2,
@@ -229,8 +214,6 @@ module.exports = {
         after: true
       }
     ],
-    "space-before-blocks": [2, "always"],
-    "space-before-function-paren": [2, "never"],
     "space-in-parens": [2, "never"],
     "space-infix-ops": 2,
     "space-unary-ops": [

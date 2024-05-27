@@ -42,7 +42,7 @@ export default {
   },
 
   watch: {
-    '$i18n.locale': function (newLocale, oldLocale) {
+    '$i18n.locale'() {
       this.reinitTinymce()
     }
   },
@@ -62,7 +62,7 @@ export default {
     this.destroyTinymce()
   },
   methods: {
-reinitTinymce() {
+    reinitTinymce() {
       this.destroyTinymce()
       this.initTinymce()
     },
@@ -83,7 +83,6 @@ reinitTinymce() {
         width: '100%', //  设置富文本编辑器宽度
         height: '100%', //  设置富文本编辑器高度
         menubar: ['custom', 'edit', 'insert', 'view', 'format', 'table'], // 菜单:指定应该出现哪些菜单
-        branding: false, // 关闭底部官网提示 默认true
         statusbar: true, // 显示底部状态栏 默认true
         resize: false, // 调节编辑器大小 默认 true
 
@@ -185,7 +184,7 @@ reinitTinymce() {
     // blob 转 dataUrl
     fileReader(blob) {
       return new Promise((resolve, reject) => {
-        let reader = new FileReader()
+        const reader = new FileReader()
         reader.onload = e => {
           resolve(e.target.result)
         }

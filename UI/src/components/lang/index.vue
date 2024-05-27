@@ -32,6 +32,11 @@ export default {
   components: {
     SvgIcon
   },
+  computed: {
+    languageIcon() {
+      return this.$i18n.locale
+    }
+  },
   methods: {
     changeLanguage(lang) {
       localStorage.setItem('lang', lang)
@@ -51,11 +56,6 @@ export default {
 
       this.$i18n.locale = lang
       this.$message.success(this.$t('langSwitchSuccess')) // 使用国际化消息
-    }
-  },
-  computed: {
-    languageIcon() {
-      return this.$i18n.locale
     }
   }
 }

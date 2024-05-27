@@ -1,10 +1,27 @@
 <template>
   <q-card class="column" style="max-width: none; height: 60%">
-    <q-table row-key="_id" :data="data" :columns="columns" :pagination.sync="pagination" :loading="loading"
-      :filter="filter" dense binary-state-sort virtual-scroll class="col-grow" @request="initQuasarTable_onRequest">
+    <q-table
+      row-key="_id"
+      :data="data"
+      :columns="columns"
+      :pagination.sync="pagination"
+      :loading="loading"
+      :filter="filter"
+      dense
+      binary-state-sort
+      virtual-scroll
+      class="col-grow"
+      @request="initQuasarTable_onRequest"
+    >
       <template #top>
         <q-space />
-        <q-input v-model="filter" dense debounce="300" :placeholder="$t('search')" color="primary">
+        <q-input
+          v-model="filter"
+          dense
+          debounce="300"
+          :placeholder="$t('search')"
+          color="primary"
+        >
           <template #append>
             <q-icon name="search" />
           </template>
@@ -39,15 +56,30 @@
       </template>
     </q-table>
     <div class="row justify-end q-pa-sm">
-      <q-btn v-if="isShowResent" :label="$t('resend')" color="teal" size="sm" class="q-mr-sm" :class="resentClass"
-        :disable="disableResend" :loading="isResending" @click="resend">
+      <q-btn
+        v-if="isShowResent"
+        :label="$t('resend')"
+        color="teal"
+        size="sm"
+        class="q-mr-sm"
+        :class="resentClass"
+        :disable="disableResend"
+        :loading="isResending"
+        @click="resend"
+      >
         <template #loading>
           <q-spinner-hourglass class="on-left" />
           {{ resendLabel }}
         </template>
       </q-btn>
 
-      <q-btn :disable="disableCancle" :label="$t('cancel')" color="negative" size="sm" @click="closeHistoryDetail" />
+      <q-btn
+        :disable="disableCancle"
+        :label="$t('cancel')"
+        color="negative"
+        size="sm"
+        @click="closeHistoryDetail"
+      />
     </div>
   </q-card>
 </template>
@@ -83,7 +115,7 @@ export default {
       disableCancle: false,
       isResending: false,
       resendLabel: this.$t('start_label'),
-      dateFormat: 'YYYY-MM-DD',
+      dateFormat: 'YYYY-MM-DD'
     }
   },
   computed: {
@@ -130,7 +162,7 @@ export default {
   methods: {
     init() {
       if (this.$i18n.locale === 'it') {
-        this.dateFormat = "DD/MM/YYYY"
+        this.dateFormat = 'DD/MM/YYYY'
       }
       this.columns = [
         {
@@ -189,7 +221,10 @@ export default {
           label: this.$t('table.isSent'),
           align: 'left',
           field: 'isSent',
-          format: val => (val ? this.$t('table.sent_state_success') : this.$t('table.sent_state_fail')),
+          format: val =>
+            val
+              ? this.$t('table.sent_state_success')
+              : this.$t('table.sent_state_fail'),
           sortable: true
         },
         {
@@ -240,7 +275,9 @@ export default {
       const ids = this.data.filter(d => !d.isSent).map(d => d._id)
 
       // 提示
-      const ok = await okCancle(this.$t('resend_confirmation', { count: ids.length }))
+      const ok = await okCancle(
+        this.$t('resend_confirmation', { count: ids.length })
+      )
       if (!ok) return
 
       if (!ids || ids.length < 1) {
