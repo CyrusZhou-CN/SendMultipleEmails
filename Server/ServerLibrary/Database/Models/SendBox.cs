@@ -16,6 +16,7 @@ namespace ServerLibrary.Database.Models
         /// <summary>
         /// 发件箱设置
         /// </summary>
+        [SugarColumn(IsJson = true)]
         public SendBoxSetting settings { get; set; } = new SendBoxSetting();
 
         /// <summary>
