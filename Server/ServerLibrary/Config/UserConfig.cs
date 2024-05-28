@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ServerLibrary.Config
 {
-   public  class UserConfig
+    public class UserConfig
     {
         private static UserConfig _instance;
         public static UserConfig Instance
@@ -31,6 +31,11 @@ namespace ServerLibrary.Config
             Directory.CreateDirectory(dirPath);
             dirPath = Path.GetDirectoryName(WebsocketLogPath);
             Directory.CreateDirectory(dirPath);
+            dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AttachmentPath);
+            if (!System.IO.Directory.Exists(AttachmentPath))
+            {
+                System.IO.Directory.CreateDirectory(AttachmentPath);
+            }
         }
 
 
@@ -64,6 +69,8 @@ namespace ServerLibrary.Config
         public string BaseRoute { get; private set; } = "/api/v1";
 
         public string HttpLogPath { get; set; } = "Logs\\httpLog.txt";
+
+        public string AttachmentPath { get; set; } = "Attachment";
 
         public string WebsocketLogPath { get; set; } = "Logs\\wsLog.txt";
 

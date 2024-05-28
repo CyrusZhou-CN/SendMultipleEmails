@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,9 @@ namespace ServerLibrary.Database.Models
         public string historyId { get; set; }
 
         // 发送者信息
+        [SugarColumn(IsNullable = true)]
         public string senderName { get; set; }
+        [SugarColumn(IsNullable = true)]
         public string senderEmail { get; set; }
 
         // 接收者信息
@@ -21,6 +24,7 @@ namespace ServerLibrary.Database.Models
         public string receiverEmail { get; set; }
 
         // 抄送人邮箱
+        [SugarColumn(IsJson = true, IsNullable = true)]
         public List<string> copyToEmails { get; set; }
 
         // 邮件主题
@@ -34,6 +38,7 @@ namespace ServerLibrary.Database.Models
         public int total { get; set; }
 
         // 生成成果
+        [SugarColumn(IsNullable = true)]
         public string sendMessage { get; set; }
         public bool isSent { get; set; }
 
@@ -49,8 +54,10 @@ namespace ServerLibrary.Database.Models
         /// <summary>
         /// 内容 url
         /// </summary>
+        [SugarColumn(IsNullable = true)]
         public string dataUrl { get; set; }
 
+        [SugarColumn(IsJson = true, IsNullable = true)]
         // 待发附件
         public List<EmailAttachment> attachments { get; set; }
 

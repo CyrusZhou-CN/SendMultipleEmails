@@ -31,7 +31,8 @@ export default {
   data() {
     return {
       chart: null,
-      source: []
+      source: [],
+      sourcedata:[]
     }
   },
   computed: {
@@ -48,7 +49,7 @@ export default {
   async mounted() {
     // 获取所有收件箱的种类和数量
     const res = await getInboxCountOfTyes()
-    this.source = res.data
+    this.sourcedata = res.data
 
     this.initChart()
   },
@@ -61,6 +62,12 @@ export default {
   },
   methods: {
     initChart() {
+      this.source = this.sourcedata.flatMap(item => {
+        return {
+          name: this.$t(item.name),
+          value: item.count
+        }
+      })
       // 参数
       const option = {
         legend: {

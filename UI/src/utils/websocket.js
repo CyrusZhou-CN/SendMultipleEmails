@@ -7,37 +7,26 @@ const wsUrl = process.env.VUE_APP_WS_URL
 const wsOption = {
   packMessage: data => JSON.stringify(data),
   unpackMessage: data => JSON.parse(data),
-  // 附加数据,添加 token 进行验证
-  // attach requestId to message as `id` field
   attachRequestId: (data, requestId) =>
     Object.assign({ id: requestId, token: getToken() }, data),
-  extractRequestId: data => data && data.id // read requestId from message `id` field
+  extractRequestId: data => data && data.id
 }
 
-// 初始化websocket
 const ws = new WebSocketAsPromised(wsUrl, wsOption)
 
-// 添加 chnl,用于保存频道消息
-// https://vitalets.github.io/chnl/#channel
 ws.$eventEmitter = new Channel.EventEmitter()
 
-// 处理消息
 function handleMessage(message) {
-  // 此处 this 为空
   console.log('消息到达:', message)
 
-  // 判断消息状态，如果消息状态码不是200,且没有取消拦截，就要报错
   if (message.status !== 200 && !message.ignoreError) {
-    // 或使用配置对象：
     Notify.create({
       message: message.statusText,
       color: 'negative',
       icon: 'error'
     })
 
-    // 重新登录
     if (message.status === 401) {
-      // 跳转到重新登录界面
       window.location.replace(
         `${window.location.protocol}//${window.location.host}/login`
       )
@@ -45,28 +34,40 @@ function handleMessage(message) {
     return
   }
 
-  // 根据频道名称触发事件
   if (message.eventName) {
     ws.$eventEmitter.dispatch(message.eventName, message)
   }
 }
 
-// 添加常驻事件
 ws.onUnpackedMessage.addListener(handleMessage)
 
-try {
-  ws.open().then(() => {
-    // 每次连接后，都要手动登陆，服务器才能记录通信 session
-    ws.sendRequest({
-      name: 'Login',
-      command: 'storeSession'
-    })
+// 重连逻辑
+function connectWebSocket() {
+  try {
+    ws.open().then(() => {
+      ws.sendRequest({
+        name: 'Login',
+        command: 'storeSession'
+      })
 
-    console.log('websocket 连接成功')
-  })
-} catch (e) {
-  console.error('websocket Error')
-  console.error(e)
+      console.log('websocket 连接成功')
+    })
+  } catch (e) {
+    console.error('websocket Error')
+    console.error(e)
+    // 如果连接失败，则尝试重新连接
+    setTimeout(connectWebSocket, 3000) // 3秒后重新连接
+  }
 }
+
+// 监听 WebSocket 的关闭事件，触发重连逻辑
+ws.onClose.addListener((event) => {
+  console.log('websocket 连接断开:', event)
+  // 如果连接关闭了，尝试重新连接
+  connectWebSocket()
+})
+
+// 初始连接
+connectWebSocket()
 
 export default ws

@@ -37,6 +37,7 @@ export default {
   settings: "Impostazioni",
   logout: "Logout",
   arrivalRate: "Tasso di arrivo",
+  notSent: "non inviato",
   receiptsStatistics: "Statistiche delle ricevute",
   sendInterval: "Intervallo di invio:",
   sendIntervalTooltip: "L'intervallo tra due email consecutive inviate da una singola casella di posta in uscita, fluttuerà casualmente all'interno di questo intervallo",

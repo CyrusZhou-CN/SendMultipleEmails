@@ -65,7 +65,7 @@ namespace ServerLibrary.Http.Controller
             var historyGroups = SqlDb.Fetch<HistoryGroup>(g => g.userId == userId).ToList();
             var defaultResults = new JArray()
                 {
-                   new JObject(){ { "name","未发件"},{ "value",0} }
+                   new JObject(){ { "name", "notSent" },{ "value",0} }
                 };
             if (historyGroups.Count < 1)
             {

@@ -11,7 +11,15 @@ namespace ServerLibrary.Database.Models
     /// </summary>
     public class EmailAttachment
     {
+
+        /// <summary>
+        /// 完整文件名
+        /// </summary>
         public string fullName { get; set; }
+        /// <summary>
+        /// 文件名
+        /// </summary>
+        public string fileName { get; set; }
 
         /// <summary>
         /// 是否发送成功

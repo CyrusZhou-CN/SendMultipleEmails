@@ -37,6 +37,7 @@ export default {
   settings: "Settings",
   logout: "Logout",
   arrivalRate: "Arrival Rate",
+  notSent: "Not Sent",
   receiptsStatistics: "Receipts Statistics",
   sendInterval: "Send Interval:",
   sendIntervalTooltip: "The interval range between two consecutive emails sent from a single outbox, will fluctuate randomly within this range",

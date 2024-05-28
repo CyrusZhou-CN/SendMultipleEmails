@@ -22,5 +22,10 @@ namespace ServerLibrary.Execute
         /// 选择文件
         /// </summary>
         SelectFiles,
+
+        /// <summary>
+        /// 删除文件
+        /// </summary>
+        DeleteFile,
     }
 }

@@ -11,10 +11,10 @@ using ServerLibrary.Config;
 
 namespace ServerLibrary.Websocket.Commands
 {
-    class SelectFiles : IWebsocketCommand
+    class DeleteFile : IWebsocketCommand
     {
         public ILog Logger { get; set; }
-        public string Name => CommandClassName.SelectFiles.ToString();
+        public string Name => CommandClassName.DeleteFile.ToString();
 
         public void ExecuteCommand(ReceivedMessage message)
         {
@@ -23,20 +23,16 @@ namespace ServerLibrary.Websocket.Commands
 
             if (fileData != null)
             {
-                string extension = Path.GetExtension(fileData.fileName);
-                // 保存文件到指定路径
-                var fullName = Path.Combine($"{Guid.NewGuid()}{extension}");
-                var savePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UserConfig.Instance.AttachmentPath, fullName);
-                var fileBytes = Convert.FromBase64String(fileData.fileContent);
-
-                File.WriteAllBytes(savePath, fileBytes);
-                var result =new ResultInfo { fileName = fileData.fileName, fullName = fullName };
-
+                var savePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UserConfig.Instance.AttachmentPath, fileData.fileName);
+                if (File.Exists(savePath))
+                {
+                    File.Delete(savePath);
+                }
                 // 发送响应给客户端
                 message.Response(new Response(message.Body)
                 {
                     ignoreError = true,
-                    result = result,
+                    result = "OK",
                     status = 200,
                 });
             }
@@ -45,7 +41,7 @@ namespace ServerLibrary.Websocket.Commands
                 message.Response(new Response(message.Body)
                 {
                     ignoreError = true,
-                    result = new ResultInfo(),
+                    result = "Error",
                     status = 400,
                 });
             }

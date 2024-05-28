@@ -84,7 +84,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
             Subject = data.SelectToken(Fields.subject).ValueOrDefault(Fields.default_);
             Receivers = data.SelectToken(Fields.receivers).ValueOrDefault(new JArray());
             Data = data.SelectToken(Fields.data).ValueOrDefault(new JArray());
-            Attachments = data.SelectToken(Fields.attachments).ValueOrDefault(new JArray()).ToList().ConvertAll(item => new EmailAttachment() { fullName = item.ToString() });
+            Attachments = data.SelectToken(Fields.attachments).ValueOrDefault(new JArray()).ToList().ConvertAll(item => new EmailAttachment() { fullName = item["fullName"].ToString(),fileName = item["fileName"].ToString() });
             CopyTo = data.SelectToken(Fields.copyToEmails).ValueOrDefault(new JArray());
 
             string templateId = data.Value<string>(Fields.templateId);
@@ -205,22 +205,22 @@ namespace ServerLibrary.Http.Modules.SendEmail
                 // 添加附件
                 // 判断是否有自定义附件
                 item.attachments = Attachments;
-                if (keys.Contains(Fields.attachments))
-                {
-                    // 中间用分号分隔，然后将 \\ 转成 /
-                    string attStr = itemObj.Value<string>(Fields.attachments);
-                    if (!string.IsNullOrEmpty(attStr))
-                    {
-                        var attStrArr = attStr.Split(';');
-                        item.attachments = attStrArr.ToList().ConvertAll(att =>
-                        {
+                //if (keys.Contains(Fields.attachments))
+                //{
+                //    // 中间用分号分隔，然后将 \\ 转成 /
+                //    string attStr = itemObj.Value<string>(Fields.attachments);
+                //    if (!string.IsNullOrEmpty(attStr))
+                //    {
+                //        var attStrArr = attStr.Split(';');
+                //        item.attachments = attStrArr.ToList().ConvertAll(att =>
+                //        {
 
-                            var fullName = att.Replace('\\', '/').Trim();
-                            return new EmailAttachment() { fullName = fullName };
+                //            var fullName = att.Replace('\\', '/').Trim();
+                //            return new EmailAttachment() { fullName = fullName };
 
-                        });
-                    }
-                }
+                //        });
+                //    }
+                //}
 
                 // 添加抄送人
                 // 判断是否有自定义抄送人

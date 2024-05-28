@@ -168,7 +168,7 @@
         </strong>
         <q-chip
           v-for="att in attachments"
-          :key="att"
+          :key="att.fileName"
           removable
           color="orange"
           size="sm"

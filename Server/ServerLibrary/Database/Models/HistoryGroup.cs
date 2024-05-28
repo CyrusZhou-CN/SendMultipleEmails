@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ServerLibrary.Http.Controller;
 using ServerLibrary.Http.Definitions;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,15 @@ namespace ServerLibrary.Database.Models
         public string userId { get; set; }
 
         // 发送人的id
+        [SugarColumn(IsJson = true)]
         public List<string> senderIds { get; set; }
 
         // 收件人的id
+        [SugarColumn(IsJson = true)]
         public List<string> receiverIds { get; set; }
 
         // 通用的抄送人id
+        [SugarColumn(IsJson = true,IsNullable =true)]
         public List<string> copyToUserIds { get; set; }
 
         public DateTime createDate { get; set; }

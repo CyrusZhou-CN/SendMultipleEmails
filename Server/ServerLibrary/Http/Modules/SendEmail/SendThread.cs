@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using ServerLibrary.Config;
 using ServerLibrary.Database;
 using ServerLibrary.Database.Extensions;
 using ServerLibrary.Database.Models;
@@ -231,7 +232,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
 
             for (int i = 0; i < sendItem.attachments.Count; i++)
             {
-                string pathFileName = sendItem.attachments[i].fullName.Replace('/', '\\');
+                string pathFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UserConfig.Instance.AttachmentPath, sendItem.attachments[i].fullName);
                 var fileInfo = new FileInfo(pathFileName);
 
                 if (!fileInfo.Exists)
@@ -242,6 +243,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
                 }
 
                 var attachment = new Attachment(pathFileName);
+                attachment.Name = sendItem.attachments[i].fileName;
                 //设置附件的MIME信息
                 ContentDisposition cd = attachment.ContentDisposition;
                 cd.CreationDate = fileInfo.CreationTime;//设置附件的创建时间

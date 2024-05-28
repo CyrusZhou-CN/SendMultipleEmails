@@ -37,6 +37,7 @@ export default {
   settings: "系统设置",
   logout: "退出登录",
   arrivalRate: "到达率",
+  notSent: "未发件",
   receiptsStatistics: "收件数量统计",
   sendInterval: "发件间隔：",
   sendIntervalTooltip: "单个发件箱发件连续两封邮件发件时间的间隔范围，在该范围内随机波动",
