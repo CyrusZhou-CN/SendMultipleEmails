@@ -64,6 +64,8 @@ export default {
   modify: "Modify",
   confirm: "Confirm",
   cancel: "Cancel",
+  upload: "Upload",
+  click_upload: "Click Upload",
   addSuccess: "Added successfully",
   addFailed: "Failed to add",
   deleteConfirm: "Delete this item?",

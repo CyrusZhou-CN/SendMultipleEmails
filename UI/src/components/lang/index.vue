@@ -1,7 +1,7 @@
 <template>
   <el-dropdown trigger="click" @command="changeLanguage">
     <div class="lang-icon-container">
-      <svg-icon :icon-class="languageIcon" style="font-size: xx-large;" />
+      <svg-icon :icon-class="languageIcon" style="font-size: xx-large" />
     </div>
     <el-dropdown-menu slot="dropdown" class="lang-dropdown">
       <el-dropdown-item command="zh" :disabled="'zh' === $i18n.locale">
@@ -22,11 +22,7 @@
 
 <script>
 import SvgIcon from '@/components/SvgIcon'
-import langZH from 'quasar/lang/zh-hans.js'
-import langEN from 'quasar/lang/en-us.js'
-import langIT from 'quasar/lang/it.js'
-import { Quasar } from 'quasar'
-
+import { ChangeLanguage } from '@/utils/changeLanguage'
 export default {
   name: 'Lang',
   components: {
@@ -39,21 +35,7 @@ export default {
   },
   methods: {
     changeLanguage(lang) {
-      localStorage.setItem('lang', lang)
-      switch (lang) {
-        case 'en':
-          Quasar.lang.set(langEN)
-          break
-        case 'zh-CN':
-          Quasar.lang.set(langZH)
-          break
-        case 'it':
-          Quasar.lang.set(langIT)
-          break
-        default:
-          Quasar.lang.set(langZH)
-      }
-
+      ChangeLanguage(lang)
       this.$i18n.locale = lang
       this.$message.success(this.$t('langSwitchSuccess')) // 使用国际化消息
     }

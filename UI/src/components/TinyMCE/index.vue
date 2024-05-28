@@ -87,8 +87,8 @@ export default {
         resize: false, // 调节编辑器大小 默认 true
 
         branding: false, // 编辑框右下角是否显示 ：”由TINY驱动“
-        selector: `#${this.tinymceId}`,
-        language: `${this.$t('system.language')}`,
+        selector: `#${_this.tinymceId}`,
+        language: `${_this.$t('system.language')}`,
         // language_url: 'https://cdn.jsdelivr.net/npm/tinymce-lang/langs/zh_CN.js', // site absolute URL
 
         // body_class: 'panel-body',
@@ -253,6 +253,8 @@ export default {
   right: 4px;
   top: 4px;
   /*z-index: 2005;*/
+}.fullscreen {
+  z-index: 1200;
 }
 .fullscreen .editor-custom-btn-container {
   z-index: 10000;

@@ -13,10 +13,10 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
-import './quasar'
 import i18n from './lang/index'
 import Lang from '@/components/lang'
 import AsyncComputed from 'vue-async-computed'
+import './quasar'
 
 Vue.use(AsyncComputed)
 Vue.component('Lang', Lang)

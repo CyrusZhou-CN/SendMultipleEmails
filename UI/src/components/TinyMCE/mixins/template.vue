@@ -1,11 +1,11 @@
 <script>
-import { notifySuccess, okCancle } from '@/components/iPrompt'
 
 import { upsertTemplate, getTemplate, newTemplate } from '@/api/template'
 import _ from 'lodash'
 
 import toImage from '@/utils/html2image'
 
+import { notifySuccess, okCancle } from '@/components/iPrompt'
 export default {
   data() {
     return {
@@ -14,7 +14,6 @@ export default {
       }
     }
   },
-
   methods: {
     hasChange() {
       // 获取内容

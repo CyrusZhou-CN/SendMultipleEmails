@@ -64,6 +64,8 @@ export default {
   modify: "修改",
   confirm: "确认",
   cancel: "取消",
+  upload: "上传",
+  click_upload: "点击上传",
   addSuccess: "添加成功",
   addFailed: "添加失败",
   deleteConfirm: "是否删除？",

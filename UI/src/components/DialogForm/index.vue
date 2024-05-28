@@ -124,19 +124,6 @@ export default {
         }
       }
     }
-
-    // console.log('form created data:', this.data)
-
-    // // 加载编辑的初始数据
-    // if (this.isUpdate && this.initData) {
-    //   this.data = _.cloneDeep(this.initData)
-
-    //   for (const field of this.initParams.update.fields) {
-    //     if (field.type === 'date') {
-    //       this.data[field.name] = moment(this.data[field.name]).format('YYYY-MM-DD')
-    //     }
-    //   }
-    // }
   },
 
   mounted() {},

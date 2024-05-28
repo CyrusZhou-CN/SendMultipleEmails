@@ -64,6 +64,8 @@ export default {
   modify: "Modifica",
   confirm: "Conferma",
   cancel: "Annulla",
+  upload: "Carica",
+  click_upload: "Fai clic su Carica",
   addSuccess: "Aggiunto con successo",
   addFailed: "Aggiunta fallita",
   deleteConfirm: "Eliminare questo elemento?",
