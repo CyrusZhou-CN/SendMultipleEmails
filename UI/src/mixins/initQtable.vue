@@ -12,7 +12,7 @@ export default {
         sortBy: '_id',
         descending: true,
         page: 1,
-        rowsPerPage: 15,
+        rowsPerPage: 25,
         rowsNumber: 0
       },
       data: []
