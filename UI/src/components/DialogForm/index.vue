@@ -2,7 +2,7 @@
   <q-card class="q-pa-sm" style="width: 400px">
     <div class="text-subtitle1 q-mb-sm">{{ initParams.title }}</div>
 
-    <div class="column q-gutter-sm">
+    <div class="column q-gutter-sm" style="margin: 10px; margin-right: 25px">
       <template v-for="field in fields">
         <template v-if="field.isSlider">
           <div :key="'slider_' + field.name" class="text-subtitle1 q-mb-lg">
@@ -12,9 +12,9 @@
           <q-slider
             :key="field.name"
             v-model="data[field.name]"
-            :min="0"
-            :max="1000"
-            :step="10"
+            :min="field.min || 0"
+            :max="field.max || 500"
+            :step="field.step || 10"
             label
             label-always
             :label-value="data[field.name] ? data[field.name] : $t('unlimited')"
@@ -263,4 +263,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss">
+.q-slider--no-value {
+  .q-slider__thumb {
+    opacity: 1 !important;
+  }
+}
+</style>
