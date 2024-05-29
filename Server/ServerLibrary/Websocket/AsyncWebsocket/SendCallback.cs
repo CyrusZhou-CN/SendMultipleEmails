@@ -28,7 +28,7 @@ namespace ServerLibrary.Websocket.Temp
         public Task<ReceivedMessage> SendAsync(string sessionKey, ProtocolBase protocol)
         {
             // 获取session
-            if (!SessionsCenter.Instance.TryGetValue(sessionKey, out WebSocketSession targetSession)) return null;
+            if (!SessionsCenter.Instance.TryGetValue(sessionKey, out List<WebSocketSession> targetSession)) return null;
 
             // 保存Task,方便下次回调
             var callBack = new CallbackOption<ReceivedMessage>();
@@ -39,8 +39,8 @@ namespace ServerLibrary.Websocket.Temp
 
             var task = callBack.Run(() =>
            {
-                // 发送数据
-                targetSession.Send(JsonConvert.SerializeObject(protocol));
+               // 发送数据
+               targetSession.ForEach(e=>e.Send(JsonConvert.SerializeObject(protocol)));
            });
 
             return task;
@@ -51,13 +51,13 @@ namespace ServerLibrary.Websocket.Temp
         /// </summary>
         /// <param name="sessionKey"></param>
         /// <param name="protocol"></param>
-        public void Send(string sessionKey,ProtocolBase protocol)
+        public void Send(string sessionKey, ProtocolBase protocol)
         {
             // 获取session
-            if (!SessionsCenter.Instance.TryGetValue(sessionKey, out WebSocketSession targetSession)) return;
+            if (!SessionsCenter.Instance.TryGetValue(sessionKey, out List<WebSocketSession> targetSession)) return;
 
             // 发送数据
-            targetSession.Send(JsonConvert.SerializeObject(protocol));
+            targetSession.ForEach(e => e.Send(JsonConvert.SerializeObject(protocol)));
         }
     }
 }

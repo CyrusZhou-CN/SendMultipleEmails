@@ -42,7 +42,7 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
-import MixMessage from '../mixin/mix-message'
+import MixMessage from '../mixin/mix-message.vue'
 import GlobalMesssage from './GlobalMessage.vue'
 
 export default {

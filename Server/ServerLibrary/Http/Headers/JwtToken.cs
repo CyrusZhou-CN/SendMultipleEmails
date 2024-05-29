@@ -1,4 +1,5 @@
-﻿using JWT.Algorithms;
+﻿using EmbedIO.Sessions;
+using JWT.Algorithms;
 using JWT.Builder;
 using JWT.Exceptions;
 using System;
@@ -13,6 +14,7 @@ namespace ServerLibrary.Http.Headers
     {
         public string Secret { get; private set; }
         public string UserId { get; private set; }
+        public string SessionId { get; private set; }
         /// <summary>
         /// 过期暖意
         /// </summary>
@@ -23,13 +25,16 @@ namespace ServerLibrary.Http.Headers
         public TokenValidState TokenValidState { get; private set; } = TokenValidState.Valid;
 
         public string Token { get; private set; }
-
+        private string GenerateSessionId()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
 
         public JwtToken(string secret, string token)
         {
             Secret = secret;
             Token = token;
-
+            SessionId = GenerateSessionId();
             DecodeToken(token);
         }
 
@@ -37,6 +42,7 @@ namespace ServerLibrary.Http.Headers
         {
             Secret = secret;
             UserId = userId;
+            SessionId = GenerateSessionId();
             Expire = exp;
             CreateToken();
         }
@@ -48,6 +54,7 @@ namespace ServerLibrary.Http.Headers
                       .WithSecret(Secret)
                       .AddClaim("exp", Expire)
                       .AddClaim("userId", UserId)
+                      .AddClaim("sessionId", SessionId)
                       .Encode();
 
             Token = token;
@@ -63,6 +70,7 @@ namespace ServerLibrary.Http.Headers
                             .MustVerifySignature()
                             .Decode<IDictionary<string, object>>(token);
                 UserId = payload["userId"].ToString();
+                SessionId = payload["sessionId"].ToString();
                 TokenValidState = TokenValidState.Valid;
             }
             catch (TokenExpiredException)

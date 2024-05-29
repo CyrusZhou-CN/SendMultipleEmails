@@ -19,6 +19,11 @@ namespace ServerLibrary.Execute
         Login,
 
         /// <summary>
+        /// 注销用户
+        /// </summary>
+        Logout,
+
+        /// <summary>
         /// 选择文件
         /// </summary>
         SelectFiles,

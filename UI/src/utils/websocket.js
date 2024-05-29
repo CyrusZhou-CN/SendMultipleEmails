@@ -2,6 +2,8 @@ import WebSocketAsPromised from 'websocket-as-promised'
 import Channel from 'chnl'
 import { Notify } from 'quasar'
 import { getToken } from './auth'
+import store from '@/store'; // 确保导入了 Vuex store
+import router from '@/router'; // 确保导入了 Vue Router
 
 const wsUrl = process.env.VUE_APP_WS_URL
 const wsOption = {
@@ -27,18 +29,23 @@ function handleMessage(message) {
     })
 
     if (message.status === 401) {
-      window.location.replace(
-        `${window.location.protocol}//${window.location.host}/login`
-      )
+      router.push(`/login`)
     }
     return
   }
-
+  if (message.eventName === 'Logout') {
+    onLogout()
+  }
   if (message.eventName) {
     ws.$eventEmitter.dispatch(message.eventName, message)
   }
 }
 
+async function onLogout() {
+  console.log('websocket 登出');
+  await store.dispatch('user/logout')
+  router.push(`/login`)
+}
 ws.onUnpackedMessage.addListener(handleMessage)
 
 // 重连逻辑
@@ -49,7 +56,6 @@ function connectWebSocket() {
         name: 'Login',
         command: 'storeSession'
       })
-
       console.log('websocket 连接成功')
     })
   } catch (e) {

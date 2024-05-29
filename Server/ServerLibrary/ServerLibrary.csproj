@@ -190,6 +190,7 @@
     <Compile Include="Websocket\AsyncWebsocket\SessionsCenter.cs" />
     <Compile Include="Websocket\Commands\DeleteFile.cs" />
     <Compile Include="Websocket\Commands\Login.cs" />
+    <Compile Include="Websocket\Commands\Logout.cs" />
     <Compile Include="Websocket\Commands\SelectFiles.cs" />
     <Compile Include="Websocket\Execute\CommandClassName.cs" />
     <Compile Include="Websocket\Execute\CommandTable.cs" />

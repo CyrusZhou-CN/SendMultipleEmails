@@ -10,12 +10,16 @@ using ServerLibrary.Database.Models;
 using ServerLibrary.Http.Headers;
 using ServerLibrary.Http.Response;
 using ServerLibrary.SDK.Extension;
+using ServerLibrary.Websocket.Temp;
+using Swan.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace ServerLibrary.Http.Controller
 {
@@ -118,6 +122,17 @@ namespace ServerLibrary.Http.Controller
         [Route(HttpVerbs.Put, "/user/logout")]
         public async Task UserLogout()
         {
+            try
+            {
+                var token = HttpContext.Request.Headers["X-Token"];
+                UserConfig uConfig = IoC.Get<UserConfig>();
+                JwtToken jwtToken = new JwtToken(uConfig.TokenSecret, token);
+                SessionsCenter.Instance.RemoveAllSessions(jwtToken.UserId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             await ResponseSuccessAsync("success");
         }
 
