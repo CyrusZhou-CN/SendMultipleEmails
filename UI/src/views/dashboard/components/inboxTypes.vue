@@ -32,7 +32,7 @@ export default {
     return {
       chart: null,
       source: [],
-      sourcedata:[]
+      sourcedata: []
     }
   },
   computed: {

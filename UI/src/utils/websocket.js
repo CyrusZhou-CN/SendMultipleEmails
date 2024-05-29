@@ -2,8 +2,8 @@ import WebSocketAsPromised from 'websocket-as-promised'
 import Channel from 'chnl'
 import { Notify } from 'quasar'
 import { getToken } from './auth'
-import store from '@/store'; // 确保导入了 Vuex store
-import router from '@/router'; // 确保导入了 Vue Router
+import store from '@/store' // 确保导入了 Vuex store
+import router from '@/router' // 确保导入了 Vue Router
 
 const wsUrl = process.env.VUE_APP_WS_URL
 const wsOption = {
@@ -42,7 +42,7 @@ function handleMessage(message) {
 }
 
 async function onLogout() {
-  console.log('websocket 登出');
+  console.log('websocket 登出')
   await store.dispatch('user/logout')
   router.push(`/login`)
 }
