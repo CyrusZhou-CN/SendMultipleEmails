@@ -76,7 +76,7 @@ namespace ServerLibrary.Http.Controller
                 }
                 catch (Exception e)
                 {
-                    ;
+                    Console.WriteLine(e.Message);
                 }
                 return;
             };
@@ -84,7 +84,7 @@ namespace ServerLibrary.Http.Controller
             List<string> historyIds = historyGroups.Select(hg => hg._id).ToList();
 
             // 查找历史组下面的所有的发件
-            var sendItems = SqlDb.Queryable<SendItem>().In(it => it.historyId, historyIds).ToList();               
+            var sendItems = SqlDb.Queryable<SendItem>().In(it => it.historyId, historyIds).Select(m=> new {m.receiverEmail }).ToList();               
             if (sendItems.Count() < 1)
             {
                 // 返回1

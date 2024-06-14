@@ -12,7 +12,7 @@ namespace ServerLibrary.Protocol
     /// <summary>
     /// get 时传递
     /// </summary>
-   public class BodyBase:ProtocolBase
+    public class BodyBase : ProtocolBase
     {
         /// <summary>
         /// 实现 ICommand 类的键值
@@ -49,7 +49,7 @@ namespace ServerLibrary.Protocol
 
         public AuthenticationHeaderValue GetToken()
         {
-            AuthenticationHeaderValue authentication = new AuthenticationHeaderValue("authorization",token);
+            AuthenticationHeaderValue authentication = new AuthenticationHeaderValue("authorization", token);
             return authentication;
         }
     }

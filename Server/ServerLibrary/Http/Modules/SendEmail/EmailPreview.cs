@@ -141,7 +141,6 @@ namespace ServerLibrary.Http.Modules.SendEmail
             // 开始添加                
             foreach (var re in receiveBoxes)
             {
-
                 var item = new SendItem()
                 {
                     receiverName = re.userName,

@@ -86,6 +86,7 @@ namespace ServerLibrary.Http.Headers
             catch (Exception e)
             {
                 TokenValidState = TokenValidState.Error;
+                Console.WriteLine(e.Message);
             }
         }
 

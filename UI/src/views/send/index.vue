@@ -457,64 +457,7 @@ export default {
         notifyError(data.message)
         return
       }
-
-      const ok = await new Promise((resolve, reject) => {
-        this.$q
-          .dialog({
-            title: this.$t('send_dialog_title'),
-            message: `
-                    <div>
-                      ${this.$t('selected_receiver_count', {
-                        count: data.selectedReceiverCount
-                      })}
-                    </div>
-                    <div>
-                      ${this.$t('data_receiver_count', {
-                        count: data.dataReceiverCount
-                      })}
-                    </div>
-                    <div>
-                      ${this.$t('actual_receiver_count', {
-                        count: data.acctualReceiverCount
-                      })}
-                    </div>
-                    <div style="font-size: 1.375em; color: crimson; margin-top: 10px;">
-                      ${this.$t('continue_confirmation')}
-                    </div>
-                  `,
-            html: true,
-            ok: {
-              dense: true,
-              color: 'primary'
-            },
-            cancel: {
-              dense: true,
-              color: 'negative'
-            },
-            persistent: true
-          })
-          .onOk(() => {
-            resolve(true)
-          })
-          .onCancel(() => {
-            reject(false)
-          })
-          .onDismiss(() => {
-            reject(false)
-          })
-      })
-      if (!ok) return
-
-      // 开始发送
-      await startSending(data.historyId)
-
-      // 获取设置，判断是否是发送图文
-      // const settingsRes = await getUserSettings()
-      // 如果是图文混发，不打开此处的进度条
-      // 一直不打开进度条，因为全局会响应
-      // if (!settingsRes.data.sendWithImageAndHtml) {
-      //   this.isShowSendingDialog = true
-      // }
+      this.isShowSendingDialog = true
     },
 
     // 定时发件

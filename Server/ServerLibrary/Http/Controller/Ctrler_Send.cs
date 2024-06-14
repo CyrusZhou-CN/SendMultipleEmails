@@ -78,10 +78,27 @@ namespace ServerLibrary.Http.Controller
             bool createResult = EmailReady.CreateEmailReady(Token.UserId, Body, SqlDb, out string message);
             if (!createResult) await ResponseErrorAsync(message);
 
-            var info = InstanceCenter.EmailReady[Token.UserId].Generate();
+            // 在后台执行邮件生成和发送任务
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    InstanceCenter.EmailReady[Token.UserId].Generate();
+                    await InstanceCenter.SendTasks[Token.UserId].StartSending();
+                }
+                catch (Exception ex)
+                {
+                    // 处理后台任务中的异常
+                    // 可以记录日志或者发送通知
+                    Console.WriteLine($"后台任务执行出错: {ex.Message}");
+                }
+            });
 
-            if (info.ok) await ResponseSuccessAsync(info);
-            else await ResponseErrorAsync(info.message);
+            var _info = new GenerateInfo
+            {
+                ok = true
+            };
+            await ResponseSuccessAsync(_info);
         }
 
 
