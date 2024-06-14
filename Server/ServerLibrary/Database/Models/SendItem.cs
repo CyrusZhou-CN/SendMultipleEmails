@@ -16,21 +16,28 @@ namespace ServerLibrary.Database.Models
         // 发送者信息
         [SugarColumn(IsNullable = true)]
         public string senderName { get; set; }
-        [SugarColumn(IsNullable = true)]
+
+        [SugarColumn(IsNullable = true, ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public string senderEmail { get; set; }
 
         // 接收者信息
+        [SugarColumn(ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public string receiverName { get; set; }
+
+        [SugarColumn(ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public string receiverEmail { get; set; }
 
         // 抄送人邮箱
-        [SugarColumn(IsJson = true, IsNullable = true)]
+        [SugarColumn(IsJson = true, IsNullable = true, ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public List<string> copyToEmails { get; set; }
 
         // 邮件主题
+        [SugarColumn(Length = 500)]
         public string subject { get; set; }
 
         // 邮件 html 内容
+
+        [SugarColumn(ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public string html { get; set; }
 
         // 进度信息
@@ -38,7 +45,7 @@ namespace ServerLibrary.Database.Models
         public int total { get; set; }
 
         // 生成成果
-        [SugarColumn(IsNullable = true)]
+        [SugarColumn(IsNullable = true, ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public string sendMessage { get; set; }
         public bool isSent { get; set; }
 
@@ -57,7 +64,7 @@ namespace ServerLibrary.Database.Models
         [SugarColumn(IsNullable = true)]
         public string dataUrl { get; set; }
 
-        [SugarColumn(IsJson = true, IsNullable = true)]
+        [SugarColumn(IsJson = true, IsNullable = true,ColumnDataType = StaticConfig.CodeFirst_BigString)]
         // 待发附件
         public List<EmailAttachment> attachments { get; set; }
 

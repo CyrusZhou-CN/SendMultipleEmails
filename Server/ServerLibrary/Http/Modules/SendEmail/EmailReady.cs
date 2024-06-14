@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace ServerLibrary.Http.Modules.SendEmail
 {
     class EmailReady : EmailPreview
-    {        
+    {
         public static bool CreateEmailReady(string userId, JToken data, ISqlSugarClient sqlDb, out string message)
         {
             // 判断是否有发送任务正在进行
@@ -71,24 +71,34 @@ namespace ServerLibrary.Http.Modules.SendEmail
                 senderIds = senders.ConvertAll(s => s._id),
                 sendStatus = SendStatus.Sending,
             };
+            try
+            {
+                // 使用事务处理插入操作
+                SqlDb.Ado.BeginTran();
+                // 插入历史记录
+                SqlDb.Insert(historyGroup);
 
-            SqlDb.Insert(historyGroup);
+                // 设置返回信息
+                _info.historyId = historyGroup._id;
+                _info.selectedReceiverCount = (Receivers == null || Receivers.Count < 1) ? 0 : receiveBoxes.Count;
+                _info.dataReceiverCount = Data.Count;
+                _info.acctualReceiverCount = sendItems.Count;
+                _info.ok = true;
+                _info.senderCount = senders.Count;
 
-            // 反回发件信息
-            _info.historyId = historyGroup._id;
+                // 为每个发送项目设置历史记录ID，并批量插入
+                sendItems.ForEach(item => item.historyId = historyGroup._id);
+                SqlDb.Fastest<SendItem>().PageSize(1000).BulkCopy(sendItems);
 
-            // 如果选择发件人，默认从数据中读取发件人，所以选择的发件人数量为0
-            if (Receivers == null || Receivers.Count < 1) _info.selectedReceiverCount = 0;
-            else _info.selectedReceiverCount = receiveBoxes.Count;
-
-            _info.dataReceiverCount = Data.Count;
-            _info.acctualReceiverCount = sendItems.Count;
-            _info.ok = true;
-            _info.senderCount = senders.Count;
-
-            // 将所有的待发信息添加到数据库
-            sendItems.ForEach(item => item.historyId = historyGroup._id);
-            SqlDb.InsertBulk(sendItems);
+                // 提交事务
+                SqlDb.Ado.CommitTran();
+            }
+            catch (Exception ex)
+            {
+                // 回滚事务
+                SqlDb.Ado.RollbackTran();
+                throw ex;
+            }
         }
 
         /// <summary>

@@ -172,37 +172,43 @@ namespace ServerLibrary.Http.Controller
             var regex = new System.Text.RegularExpressions.Regex(data.filter.filter);
             if (group.groupType == "send")
             {
-                var emails = SqlDb.Fetch<SendBox>(e => e.groupId == id).ToList()
-                    .Where(item => regex.IsMatch(item.GetFilterString()));
+                //var emails = SqlDb.Fetch<SendBox>(e => e.groupId == id).ToList()
+                //    .Where(item => regex.IsMatch(item.GetFilterString()));
+                var emails = SqlDb.Fetch<SendBox>(e => e.groupId == id);
                 if (data.pagination.descending)
                 {
-                    emails = emails.OrderByDescending(item => item.GetValue(data.pagination.sortBy));
+                    emails = emails.OrderBy($"{data.pagination.sortBy} desc");
+                    //emails = emails.OrderByDescending(item => item.GetValue(data.pagination.sortBy));
                 }
                 else
                 {
-                    emails = emails.OrderBy(item => item.GetValue(data.pagination.sortBy));
+                    //emails = emails.OrderBy(item => item.GetValue(data.pagination.sortBy));
+                    emails = emails.OrderBy(data.pagination.sortBy);
                 }
 
                 emails = emails.Skip(data.pagination.skip).Take(data.pagination.limit);
 
-                results.AddRange(emails);
+                results.AddRange(emails.ToList());
             }
             else
             {
-                var emails = SqlDb.Fetch<ReceiveBox>(e => e.groupId == id).ToList()
-                    .Where(item => regex.IsMatch(item.GetFilterString()));
+                //var emails = SqlDb.Fetch<ReceiveBox>(e => e.groupId == id).ToList()
+                //    .Where(item => regex.IsMatch(item.GetFilterString()));
+                var emails = SqlDb.Fetch<ReceiveBox>(e => e.groupId == id);
                 if (data.pagination.descending)
                 {
-                    emails = emails.OrderByDescending(item => item.GetValue(data.pagination.sortBy));
+                    // emails = emails.OrderByDescending(item => item.GetValue(data.pagination.sortBy));
+                    emails = emails.OrderBy($"{data.pagination.sortBy} desc");
                 }
                 else
                 {
-                    emails = emails.OrderBy(item => item.GetValue(data.pagination.sortBy));
+                    //emails = emails.OrderBy(item => item.GetValue(data.pagination.sortBy));
+                    emails = emails.OrderBy(data.pagination.sortBy);
                 }
 
                 emails = emails.Skip(data.pagination.skip).Take(data.pagination.limit);
 
-                results.AddRange(emails);
+                results.AddRange(emails.ToList());
             }
 
             await ResponseSuccessAsync(results);
@@ -246,7 +252,7 @@ namespace ServerLibrary.Http.Controller
             if (sendbox != null)
             {
                 var updateData1 = Body.ToObject<SendBox>();
-                var result1 = SqlDb.Upsert2(e => e._id == id, updateData1, new UpdateOptions(true) { "_id", "groupId" });
+                var result1 = SqlDb.Upsert2(e => e._id == id, updateData1, new UpdateOptions(true) { "_id", "groupId", "settings" });
                 await ResponseSuccessAsync(result1);
                 return;
             }
@@ -262,7 +268,7 @@ namespace ServerLibrary.Http.Controller
             var updateData2 = Body.ToObject<ReceiveBox>();
             // 更新
             var result2 = SqlDb.Upsert2(e => e._id == id, updateData2, new UpdateOptions(true) { "_id", "groupId" });
-            ResponseSuccessAsync(result2);
+            await ResponseSuccessAsync(result2);
         }
 
         // 修改发件箱设置

@@ -30,10 +30,9 @@ export default {
           },
           {
             name: 'maxEmailsPerDay',
-            type: 'number',
+            type: 'slider',
             label: this.$t('table.maxEmailsPerDay'),
             required: true,
-            isSlider: true,
             max: 1000,
             tooltip: this.$t('maxEmailsPerDayTooltip')
           }

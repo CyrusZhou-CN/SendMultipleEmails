@@ -26,28 +26,35 @@ export default {
   methods: {
     openNewEmailDialog() {
       // 添加 fields
-      const fields = [{
-        name: 'groupId',
-        type: 'text',
-        label: this.$t('table.groupId'),
-        required: true,
-        readonly: false,
-        hidden: true
-      },
-      {
-        name: 'userName',
-        type: 'text',
-        label: this.$t('table.userName'),
-        required: true
-      },
-      {
-        name: 'email',
-        type: 'email',
-        label: this.$t('table.email'),
-        required: true
-      }]
+      const fields = [
+        {
+          name: 'groupId',
+          type: 'text',
+          label: this.$t('table.groupId'),
+          required: true,
+          readonly: false,
+          hidden: true
+        },
+        {
+          name: 'userName',
+          type: 'text',
+          label: this.$t('table.userName'),
+          required: true
+        },
+        {
+          name: 'email',
+          type: 'email',
+          label: this.$t('table.email'),
+          required: true
+        }
+      ]
 
       const emailSender = [
+        {
+          name: 'aliasEmail',
+          type: 'text',
+          label: this.$t('table.aliasEmail')
+        },
         {
           name: 'smtp',
           type: 'text',
@@ -55,11 +62,26 @@ export default {
           required: true
         },
         {
+          name: 'port',
+          type: 'number',
+          label: this.$t('table.port'),
+          required: true,
+          default: '587'
+        },
+        {
+          name: 'enableSsl',
+          type: 'checkbox',
+          label: this.$t('table.enableSsl'),
+          required: true,
+          default: 'true'
+        },
+        {
           name: 'password',
           type: 'password',
           label: this.$t('table.password'),
           required: true
-        }]
+        }
+      ]
       if (this.group.groupType === 'send') {
         fields.push(...emailSender)
       }

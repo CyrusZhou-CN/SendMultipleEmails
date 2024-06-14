@@ -69,7 +69,7 @@ export default {
         {
           name: 'userName',
           required: true,
-          label: '姓名',
+          label: this.$t('table.userName'),
           align: 'left',
           field: row => row.userName,
           sortable: true
@@ -77,9 +77,9 @@ export default {
         {
           name: 'email',
           required: true,
-          label: '邮箱',
+          label: this.$t('table.email'),
           align: 'left',
-          field: row => row.email,
+          field: row => row.aliasEmail || row.email,
           sortable: true
         }
       ]
@@ -99,16 +99,6 @@ export default {
       this.$emit('input', results)
     }
   },
-
-  // async mounted() {
-  //   const { data } = await getEmails(this.group._id)
-  //   this.data = data || []
-
-  //   // 修改选择的数据
-  //   this.selected = this.data.filter(
-  //     d => this.selected.findIndex(s => s._id === d._id) > -1
-  //   )
-  // },
 
   methods: {
     // 获取筛选的数量

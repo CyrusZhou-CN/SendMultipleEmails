@@ -9,8 +9,7 @@ const wsUrl = process.env.VUE_APP_WS_URL
 const wsOption = {
   packMessage: data => JSON.stringify(data),
   unpackMessage: data => JSON.parse(data),
-  attachRequestId: (data, requestId) =>
-    Object.assign({ id: requestId, token: getToken() }, data),
+  attachRequestId: (data, requestId) => Object.assign({ id: requestId, token: getToken() }, data),
   extractRequestId: data => data && data.id
 }
 

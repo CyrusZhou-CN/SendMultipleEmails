@@ -16,6 +16,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ServerLibrary.Http.Modules.SendEmail
 {
@@ -29,7 +30,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
         #region 设置
         // 失败多少次后退出
         // 默认 3 次
-        public int ExitofFailureCount { get; set; } = 3;
+        public int ExitofFailureCount { get; set; } = 1;
         #endregion
 
         #region 私有属性
@@ -80,11 +81,13 @@ namespace ServerLibrary.Http.Modules.SendEmail
                     //确定smtp服务器地址 实例化一个Smtp客户端
                     SmtpClient smtpclient = new SmtpClient();
                     smtpclient.Host = _sendBox.smtp;
+                    smtpclient.Port = _sendBox.port;
                     //smtpClient.Port = "";//qq邮箱可以不用端口
                     //邮件发送方式  通过网络发送到smtp服务器
                     smtpclient.DeliveryMethod = SmtpDeliveryMethod.Network;
                     //如果服务器支持安全连接，则将安全连接设为true
                     smtpclient.EnableSsl = true;
+                    smtpclient.Timeout = 600000;
 
                     // 获取发件箱
                     var sendItem = sendItems.Pop();
@@ -110,7 +113,10 @@ namespace ServerLibrary.Http.Modules.SendEmail
                         sendItem.isSent = true;
                         sendItem.sendMessage = "mail_sent_successfully";
                         sendItem.sendDate = DateTime.Now;
-                        _sqlDb.Upsert(sendItem);
+                        var keys = new List<string>();
+                        keys.Add("html");
+
+                        _sqlDb.Upsert2(g => g._id == sendItem._id, sendItem, new Database.Definitions.UpdateOptions(keys, true));
 
                         // 更新到当前进度中
                         SendCompleted?.Invoke(new SendResult()
@@ -130,7 +136,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
                     catch (Exception ex)
                     {
                         // 超过最大尝试次数就退出
-                        if (sendItem.tryCount > 5)
+                        if (sendItem.tryCount > 1)
                         {
                             // 此时也要更新进度
                             SendCompleted?.Invoke(new SendResult()
@@ -162,7 +168,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
                     finally
                     {
                         // 每次发送完成，要等待一会儿再发送
-                        double sleep = new Random().NextDouble() * 3 + 2;
+                        double sleep = 0;
                         if (_setting != null)
                         {
                             sleep = _setting.sendInterval_min + new Random().NextDouble() * (_setting.sendInterval_max - _setting.sendInterval_min);
@@ -279,7 +285,8 @@ namespace ServerLibrary.Http.Modules.SendEmail
         private async Task<MailMessage> GenerateMailMessage(SendItem sendItem)
         {
             //确定发件地址与收件地址
-            MailAddress sendAddress = new MailAddress(_sendBox.email);
+            var _sendAddress = string.IsNullOrWhiteSpace(_sendBox.aliasEmail) ? _sendBox.email : _sendBox.aliasEmail;
+            MailAddress sendAddress = new MailAddress(_sendAddress);
 
             // 判断是否需要转成图片
             await ConvertToImage(_setting, sendItem);

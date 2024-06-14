@@ -52,14 +52,33 @@ export default {
 
       const emailSender = [
         {
+          name: 'aliasEmail',
+          type: 'text',
+          label: this.$t('table.aliasEmail')
+        },
+        {
           name: 'smtp',
           type: 'text',
           label: this.$t('table.smtp'),
           required: true
         },
         {
+          name: 'port',
+          type: 'number',
+          label: this.$t('table.port'),
+          required: true,
+          default: '587'
+        },
+        {
+          name: 'enableSsl',
+          type: 'checkbox',
+          label: this.$t('table.enableSsl'),
+          required: true,
+          default: true
+        },
+        {
           name: 'password',
-          type: 'text',
+          type: 'password',
           label: this.$t('table.password'),
           required: true
         }
@@ -93,10 +112,25 @@ export default {
         this.$set(
           this.initModifyEmailParams.fields[3],
           'default',
-          data.smtp || ''
+          data.aliasEmail || ''
         )
         this.$set(
           this.initModifyEmailParams.fields[4],
+          'default',
+          data.smtp || ''
+        )
+        this.$set(
+          this.initModifyEmailParams.fields[5],
+          'default',
+          data.port || ''
+        )
+        this.$set(
+          this.initModifyEmailParams.fields[6],
+          'default',
+          data.enableSsl || false
+        )
+        this.$set(
+          this.initModifyEmailParams.fields[7],
           'default',
           data.password || ''
         )

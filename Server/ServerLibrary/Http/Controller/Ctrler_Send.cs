@@ -56,6 +56,12 @@ namespace ServerLibrary.Http.Controller
         public async Task GetSendPreview(string key)
         {
             SendItem item = InstanceCenter.EmailPreview[Token.UserId].GetPreviewHtml(key);
+            while (item == null)
+            {
+                System.Threading.Thread.Sleep(1000);
+                item = InstanceCenter.EmailPreview[Token.UserId].GetPreviewHtml(key);
+            }
+
             if (item == null)
             {
                 await ResponseErrorAsync("没有可预览项，请检查收件箱是否为空");
@@ -91,7 +97,7 @@ namespace ServerLibrary.Http.Controller
                 return;
             }
 
-            InstanceCenter.SendTasks[Token.UserId].StartSending();
+            await InstanceCenter.SendTasks[Token.UserId].StartSending();
 
             await ResponseSuccessAsync(historyGroupId);
         }

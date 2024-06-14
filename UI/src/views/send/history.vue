@@ -81,7 +81,7 @@ export default {
       toShowId: '',
       isShowDetailDialog: false,
       tableKey: 0,
-      dateFormat: 'YYYY-MM-DD'
+      dateFormat: 'YYYY-MM-DD HH:mm:ss'
     }
   },
   computed: {
@@ -100,12 +100,13 @@ export default {
   },
   async mounted() {
     this.init()
+    this.pagination.sortBy = 'createDate'
     this.loadData()
   },
   methods: {
     init() {
       if (this.$i18n.locale === 'it') {
-        this.dateFormat = 'DD/MM/YYYY'
+        this.dateFormat = 'DD/MM/YYYY HH:mm:ss'
       }
       this.columns = [
         {

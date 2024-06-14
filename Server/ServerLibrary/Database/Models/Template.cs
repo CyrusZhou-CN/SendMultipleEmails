@@ -9,9 +9,9 @@ namespace ServerLibrary.Database.Models
 {
     public class Template:AutoObjectId
     { 
-        [SugarColumn(ColumnDataType = "nvarchar(max)")]
+        [SugarColumn(ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public string imageUrl { get; set; }
-        [SugarColumn(ColumnDataType = "nvarchar(max)")]
+        [SugarColumn(ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public string html { get; set; }
         public string name { get; set; }
         public string userId { get; set; }

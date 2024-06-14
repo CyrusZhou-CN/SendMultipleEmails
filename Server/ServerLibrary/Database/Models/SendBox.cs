@@ -14,6 +14,15 @@ namespace ServerLibrary.Database.Models
         public string smtp { get; set; }
 
         /// <summary>
+        /// 别名邮件地址（发件人地址）
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public string aliasEmail {  get; set; }
+        [SugarColumn(DefaultValue="587")]
+        public int port { get; set; } = 587;
+        [SugarColumn(DefaultValue = "true")]
+        public bool enableSsl { get; set; } = true;
+        /// <summary>
         /// 发件箱设置
         /// </summary>
         [SugarColumn(IsJson = true)]

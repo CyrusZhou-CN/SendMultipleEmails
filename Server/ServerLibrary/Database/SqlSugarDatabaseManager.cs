@@ -37,10 +37,7 @@ namespace ServerLibrary.Database
                 {
                     EntityService = (c, p) =>
                     {
-                        if (dbType == DbType.MySql && (p.DataType.ToLower() == "varchar(max)" || p.DataType.ToLower() == "nvarchar(max)"))
-                        {
-                            p.DataType = "longtext";
-                        }
+                       
                     }
                 }
             });

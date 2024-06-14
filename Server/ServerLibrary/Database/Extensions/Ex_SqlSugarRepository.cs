@@ -4,6 +4,7 @@ using ServerLibrary.Http.Definitions;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -102,28 +103,29 @@ namespace ServerLibrary.Database.Extensions
         }
         public static int GetPageDatasCount<T>(this ISugarQueryable<T> source, Filter filter) where T : AutoObjectId
         {
-            var regex = new Regex(filter.filter);
-            var results = source.ToList().Where(h => regex.IsMatch(h.GetFilterString()));
-            return results.Count();
+            //var regex = new Regex(filter.filter);
+           // var results = source.ToList().Where(h => regex.IsMatch(h.GetFilterString()));
+            return source.Count();
         }
         public static IEnumerable<T> GetPageDatas<T>(this ISugarQueryable<T> source, Filter filter, Pagination pagination) where T : AutoObjectId
         {
-            var regex = new Regex(filter.filter);
+            //var regex = new Regex(filter.filter);
 
-            // 进行筛选
-            var results = source.ToList().Where(h => regex.IsMatch(h.GetFilterString()));
+            //// 进行筛选
+            //var results = source.ToList().Where(h => regex.IsMatch(h.GetFilterString()));
 
             if (pagination.descending)
             {
-                results = results.OrderByDescending(item => item.GetValue(pagination.sortBy));
+                //source = source.OrderByDescending(item => item.GetValue(pagination.sortBy));
+                source = source.OrderBy($"{pagination.sortBy} desc");
             }
             else
             {
-                results = results.OrderBy(item => item.GetValue(pagination.sortBy));
+                source = source.OrderBy(pagination.sortBy);
+                //source = source.OrderBy(item => item.GetValue(pagination.sortBy));
             }
 
-            return results.Skip(pagination.skip).Take(pagination.limit).ToList();
+            return source.Skip(pagination.skip).Take(pagination.limit).ToList();
         }
-
     }
 }

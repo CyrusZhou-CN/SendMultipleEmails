@@ -10,7 +10,7 @@
         </div>
         <q-range
           v-model="sendInterval"
-          :min="2"
+          :min="0"
           :max="20"
           :step="0.5"
           :left-label-value="sendInterval.min + ' ' + $t('second')"
@@ -73,8 +73,8 @@ export default {
   data() {
     return {
       sendInterval: {
-        min: 3,
-        max: 8
+        min: 0,
+        max: 0
       },
 
       // 每日最大发件量
@@ -117,8 +117,8 @@ export default {
       maxEmailsPerDay
     } = res.data
 
-    this.sendInterval.min = sendInterval_min || 3
-    this.sendInterval.max = sendInterval_max || 8
+    this.sendInterval.min = sendInterval_min || 0
+    this.sendInterval.max = sendInterval_max || 0
     this.isAutoResend = isAutoResend
     this.sendWithImageAndHtml = sendWithImageAndHtml
     this.maxEmailsPerDay = maxEmailsPerDay || 0

@@ -4,7 +4,7 @@ import './styles/quasar.scss'
 import '@quasar/extras/material-icons/material-icons.css'
 import { Quasar, Notify, Dialog } from 'quasar'
 
-import {ChangeLanguage} from '@/utils/changeLanguage'
+import { ChangeLanguage } from '@/utils/changeLanguage'
 
 Vue.use(Quasar, {
   config: {

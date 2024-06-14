@@ -15,15 +15,15 @@ namespace ServerLibrary.Database.Models
         public string userId { get; set; }
 
         // 发送人的id
-        [SugarColumn(IsJson = true)]
+        [SugarColumn(IsJson = true,ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public List<string> senderIds { get; set; }
 
         // 收件人的id
-        [SugarColumn(IsJson = true)]
+        [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public List<string> receiverIds { get; set; }
 
         // 通用的抄送人id
-        [SugarColumn(IsJson = true,IsNullable =true)]
+        [SugarColumn(IsJson = true,IsNullable =true, ColumnDataType = StaticConfig.CodeFirst_BigString)]
         public List<string> copyToUserIds { get; set; }
 
         public DateTime createDate { get; set; }

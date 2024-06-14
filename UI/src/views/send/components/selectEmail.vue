@@ -127,44 +127,6 @@ export default {
     }
   },
 
-  // 原模块的v-model使用
-  // watch: {
-  //   tickedNodes(val) {
-  //     // 转换数据格式
-  //     const results = this.groupsOrigin
-  //       .filter(g => val.findIndex(t => t === g._id) > -1)
-  //       .map(g => {
-  //         return {
-  //           type: 'group',
-  //           _id: g._id,
-  //           label: g.name
-  //         }
-  //       })
-
-  //     results.push(...this.tickedUsers)
-
-  //     console.log('tickedNodes:', results)
-  //     this.$emit('input', results)
-  //   },
-
-  //   tickedUsers(val) {
-  //     console.log('tickedUsers:', val)
-  //     const results = this.groupsOrigin
-  //       .filter(g => this.tickedNodes.findIndex(t => t === g._id) > -1)
-  //       .map(g => {
-  //         return {
-  //           type: 'group',
-  //           _id: g._id,
-  //           label: g.name
-  //         }
-  //       })
-
-  //     results.push(...val)
-
-  //     this.$emit('input', results)
-  //   }
-  // },
-
   async mounted() {
     console.log('this.value:', this.value)
     // 获取所有的组

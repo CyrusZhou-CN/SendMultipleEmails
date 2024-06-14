@@ -7,6 +7,7 @@ using ServerLibrary.Http.Definitions;
 using ServerLibrary.Protocol;
 using ServerLibrary.Websocket.Temp;
 using SqlSugar;
+using Swan.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,9 +59,17 @@ namespace ServerLibrary.Http.Modules.SendEmail
         {
             _userId = userId;
             _currentHistoryGroupId = historyId;
-            _sqlDb = sqlDb;
+            _sqlDb = sqlDb.CopyNew();
+            EnsureConnectionOpen();
         }
-
+        private void EnsureConnectionOpen()
+        {
+            if (_sqlDb.Ado.Connection.State != System.Data.ConnectionState.Open)
+            {
+                _sqlDb.Ado.Connection.Close();
+                _sqlDb.Ado.Connection.Open();
+            }
+        }
         private SendingProgressInfo _sendingInfo;
         public SendingProgressInfo SendingProgressInfo
         {
@@ -90,15 +99,17 @@ namespace ServerLibrary.Http.Modules.SendEmail
         /// </summary>
         /// <param name="sendItemIds">传入需要重新发送的id</param>
         /// <returns></returns>
-        public bool StartSending()
+        public async Task<bool> StartSending()
         {
             // 判断是否结束
             if (!SendStatus.HasFlag(SendStatus.SendFinish)) return false;
 
             var allSendItems = _sqlDb.Fetch<SendItem>(item => item.historyId == _currentHistoryGroupId);
-            var sendItems = allSendItems.FindAll(item => !item.isSent);
+            var sendItems = allSendItems.Where(item => item.isSent != true);
+            var total = sendItems.Count();
+            var alltotal = allSendItems.Count();
             // 判断数量
-            if (sendItems.Count() < 1)
+            if (total < 1)
             {
                 // 发送完成的进度条
                 SendingProgressInfo = new SendingProgressInfo()
@@ -113,13 +124,13 @@ namespace ServerLibrary.Http.Modules.SendEmail
                 // 更改进度
                 SendingProgressInfo = new SendingProgressInfo()
                 {
-                    total = sendItems.Count(),
+                    total = total,
                     index = 0,
                 };
             }
 
             // 判断是发送还是重发
-            if (allSendItems.Count() == sendItems.Count()) SendStatus = SendStatus.Sending;
+            if (alltotal == total) SendStatus = SendStatus.Sending;
             else SendStatus = SendStatus.Resending;
 
             // 更改数据库中的状态
@@ -131,7 +142,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
 
 
             // 判断需要发送的数量
-            if (allSendItems.Count() < 1)
+            if (alltotal < 1)
             {
                 history.sendStatus = SendStatus.SendFinish;
                 _sqlDb.Update(history);
@@ -148,12 +159,59 @@ namespace ServerLibrary.Http.Modules.SendEmail
                 return false;
             }
 
-            // 处理每条邮件
-            PreHandleSendItems(sendItems.ToList());
+            const int pageSize = 50; // 每页处理50条记录
+            int pageIndex = 0;
+            int totalSendItems = sendItems.Count();
+            // 初始化进度
+            var sendingInfo0 = new SendingProgressInfo()
+            {
+                historyId = _currentHistoryGroupId,
+                index = 0,
+                total = totalSendItems,
+            };
 
-            // 开始发件
-            SendItems(sendItems.ToList());
+            SendingProgressInfo = sendingInfo0;
+            while (pageIndex * pageSize < totalSendItems)
+            {
+                EnsureConnectionOpen();
+                var paginatedSendItems = sendItems
+                    .Skip(pageIndex * pageSize)
+                    .Take(pageSize)
+                    .ToList();
 
+                // 处理每页的邮件
+                PreHandleSendItems(paginatedSendItems, totalSendItems);
+
+                // 开始发件
+                try
+                {
+                    await SendItems(paginatedSendItems, totalSendItems);
+                }
+                catch (Exception ex)
+                {
+                    // 记录异常日志
+                    Console.WriteLine($"An error occurred while sending items: {ex.Message}");
+                    Logger.Error(ex, "StartSending", ex.Message);
+                }
+                pageIndex++;
+            }
+
+            // 所有分页处理完成后更新状态
+            history.sendStatus = SendStatus.SendFinish;
+            _sqlDb.Update(history);
+
+            // 发送关闭命令
+            SendStatus = SendStatus.SendFinish;
+
+            // 发送完成数据
+            SendingProgressInfo = new SendingProgressInfo()
+            {
+                historyId = _currentHistoryGroupId,
+                index = totalSendItems,
+                total = totalSendItems,
+            };
+
+            SendCompleted?.Invoke();
             return true;
         }
 
@@ -161,7 +219,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
         /// 对发件进行预处理
         /// </summary>
         /// <param name="sendItems"></param>
-        private void PreHandleSendItems(List<SendItem> sendItems)
+        private void PreHandleSendItems(List<SendItem> sendItems, int totalSendItems)
         {
             if (sendItems.Count < 1) return;
 
@@ -183,16 +241,6 @@ namespace ServerLibrary.Http.Modules.SendEmail
                     sendItem.sendItemType = SendItemType.dataUrl;
                 }
             }
-
-            // 初始化进度
-            var sendingInfo0 = new SendingProgressInfo()
-            {
-                historyId = _currentHistoryGroupId,
-                index = 0,
-                total = sendItems.Count,
-            };
-
-            SendingProgressInfo = sendingInfo0;
         }
 
 
@@ -201,7 +249,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
         /// </summary>
         public event Action SendCompleted;
 
-        private void SendItems(List<SendItem> sendItemList)
+        private async Task SendItems(List<SendItem> sendItemList, int totalSendItems)
         {
             if (sendItemList.Count < 0) return;
 
@@ -227,30 +275,9 @@ namespace ServerLibrary.Http.Modules.SendEmail
             }));
 
             // 开始运行
-            Task.WhenAll(sendThreads.ConvertAll(st => st.Run(sendItemStack, sendItemList))).ContinueWith((Action<Task>)((task) =>
+            await Task.WhenAll(sendThreads.ConvertAll(st => st.Run(sendItemStack, sendItemList))).ContinueWith((Action<Task>)((task) =>
             {
-                // 执行回调
-                // 发送关闭命令
-                SendStatus = SendStatus.SendFinish;
-
-                // 对于已经完成的，要更新数据的状态
-                var history = this._sqlDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
-                if (history != null)
-                {
-                    // 更新状态
-                    history.sendStatus = SendStatus.SendFinish;
-                    this._sqlDb.Update<HistoryGroup>((HistoryGroup)history);
-                }
-
-                // 发送完成数据
-                SendingProgressInfo = new SendingProgressInfo()
-                {
-                    historyId = _currentHistoryGroupId,
-                    index = sendItemList.Count,
-                    total = sendItemList.Count,
-                };
-
-                SendCompleted?.Invoke();
+                    SendCompleted?.Invoke();
             }));
         }
 

@@ -205,22 +205,6 @@ namespace ServerLibrary.Http.Modules.SendEmail
                 // 添加附件
                 // 判断是否有自定义附件
                 item.attachments = Attachments;
-                //if (keys.Contains(Fields.attachments))
-                //{
-                //    // 中间用分号分隔，然后将 \\ 转成 /
-                //    string attStr = itemObj.Value<string>(Fields.attachments);
-                //    if (!string.IsNullOrEmpty(attStr))
-                //    {
-                //        var attStrArr = attStr.Split(';');
-                //        item.attachments = attStrArr.ToList().ConvertAll(att =>
-                //        {
-
-                //            var fullName = att.Replace('\\', '/').Trim();
-                //            return new EmailAttachment() { fullName = fullName };
-
-                //        });
-                //    }
-                //}
 
                 // 添加抄送人
                 // 判断是否有自定义抄送人
@@ -322,7 +306,7 @@ namespace ServerLibrary.Http.Modules.SendEmail
                 if (type == Fields.group)
                 {
                     // 找到group下所有的用户
-                    List<ReceiveBox> boxes = SqlDb.Fetch<ReceiveBox>(r => r.groupId == id).ToList();
+                    List<ReceiveBox> boxes = SqlDb.Queryable<ReceiveBox>().Where(r => r.groupId == id).ToList();
 
                     // 如果没有，才添加
                     foreach (ReceiveBox box in boxes)

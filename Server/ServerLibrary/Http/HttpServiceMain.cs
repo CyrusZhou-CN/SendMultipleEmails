@@ -19,7 +19,6 @@ namespace ServerLibrary.Http
         private WebServer _server;
         private IContainer _container;
         private ILogger _logger;
-
         public void Start(IContainer container)
         {
             _container = container;

@@ -4,7 +4,7 @@
 
     <div class="column q-gutter-sm" style="margin: 10px; margin-right: 25px">
       <template v-for="field in fields">
-        <template v-if="field.isSlider">
+        <template v-if="field.type === 'slider'">
           <div :key="'slider_' + field.name" class="text-subtitle1 q-mb-lg">
             {{ field.label }}
             <q-tooltip v-if="field.tooltip">{{ field.tooltip }}</q-tooltip>
@@ -19,6 +19,14 @@
             label-always
             :label-value="data[field.name] ? data[field.name] : $t('unlimited')"
             style="min-width: 300px"
+          />
+        </template>
+        <template v-else-if="field.type === 'checkbox'">
+          <q-checkbox
+            :key="field.name"
+            v-model="data[field.name]"
+            :label="field.label"
+            :checked="data[field.name]"
           />
         </template>
         <template v-else>
@@ -132,7 +140,11 @@ export default {
     async confirm() {
       // 判断数据的必要性
       for (const field of this.fields) {
-        if (field.required && !this.data[field.name] && !field.isSlider) {
+        if (
+          field.required &&
+          !this.data[field.name] &&
+          !field.type === 'slider'
+        ) {
           notifyError(`${field.label} ${this.$t('isRequired')}`)
           return
         }

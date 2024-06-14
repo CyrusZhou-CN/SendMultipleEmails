@@ -21,10 +21,14 @@
         action="https://httpbin.org/post"
         list-type="picture-card"
       >
-        <el-button size="small" type="primary">{{$t('click_upload')}}</el-button>
+        <el-button size="small" type="primary">
+          {{ $t('click_upload') }}
+        </el-button>
       </el-upload>
       <el-button @click="dialogVisible = false">{{ $t('cancel') }}</el-button>
-      <el-button type="primary" @click="handleSubmit">{{ $t('confirm') }}</el-button>
+      <el-button type="primary" @click="handleSubmit">
+        {{ $t('confirm') }}
+      </el-button>
     </el-dialog>
   </div>
 </template>

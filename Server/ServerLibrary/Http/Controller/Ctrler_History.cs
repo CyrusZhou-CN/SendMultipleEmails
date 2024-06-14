@@ -45,7 +45,7 @@ namespace ServerLibrary.Http.Controller
             var results = histories.GetPageDatas(data.filter, data.pagination);
             foreach (var item in results)
             {
-               item.successCount = SqlDb.Fetch<SendItem>(s => s.historyId == item._id && s.isSent).Count();
+               item.successCount = SqlDb.Count<SendItem>(s => s.historyId == item._id && s.isSent);
             }
             // 获取状态
             await ResponseSuccessAsync(results);
@@ -58,7 +58,7 @@ namespace ServerLibrary.Http.Controller
             var history = SqlDb.SingleById<HistoryGroup>(historyId);
 
             // 获取成功的数量
-            history.successCount = SqlDb.Fetch<SendItem>(s => s.historyId == history._id && s.isSent).Count();
+            history.successCount = SqlDb.Count<SendItem>(s => s.historyId == history._id && s.isSent);
 
 
             // 获取状态

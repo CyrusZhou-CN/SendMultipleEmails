@@ -187,7 +187,7 @@ export default {
             required: true,
             label: this.$t('table.email'),
             align: 'left',
-            field: row => row.email,
+            field: row => row.aliasEmail || row.email,
             sortable: true
           },
           {
